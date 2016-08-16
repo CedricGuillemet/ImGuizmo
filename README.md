@@ -1,2 +1,23 @@
 # ImGuizmo
-Immediate mode 3D gizmo for scene editing
+Immediate mode 3D gizmo for scene editing.
+Dear Imgui is the only dependancy.
+Add both .h and .cpp to your project then:
+
+// call BeginFrame right after ImGui_XXXX_NewFrame();
+void BeginFrame();
+
+// return true if mouse cursor is over any gizmo control (axis, plan or screen component)
+bool IsOver();
+
+// return true if mouse IsOver or if the gizmo is in moving state
+bool IsUsing();
+
+// enable/disable the gizmo. Stay in the state until next call to Enable.
+// gizmo is rendered with gray half transparent color when disabled
+void Enable(bool enable);
+
+// call it when you want a gizmo
+// Needs view and projection matrices. 
+// matrix parameter is the source matrix (where will be gizmo be drawn) and might be transformed by the function. Return deltaMatrix is optional
+// translation is applied in world space
+void Translate(const float *view, const float *projection, float *matrix, float *deltaMatrix = 0);
