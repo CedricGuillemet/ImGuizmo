@@ -1,5 +1,6 @@
 # ImGuizmo
 
+ImGizmo is a small (.h and .cpp) library built ontop of Dear ImGui that allow you to manipulate(Rotate & translate at the moment) 4x4 float matrices. No other dependancies. Coded with Immediate Mode (IM) philosophy in mind.
 
 ![Image of Rotation](http://i.imgur.com/y4mcVoT.gif)
 ![Image of Translation](http://i.imgur.com/o8q8iHq.gif)
