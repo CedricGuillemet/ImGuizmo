@@ -19,5 +19,10 @@ namespace ImGuizmo
 	// Needs view and projection matrices. 
 	// matrix parameter is the source matrix (where will be gizmo be drawn) and might be transformed by the function. Return deltaMatrix is optional
 	// translation is applied in world space
-	void Translate(const float *view, const float *projection, float *matrix, float *deltaMatrix = 0);
+	enum MODE
+	{
+		TRANSLATE,
+		ROTATE
+	};
+	void Mogwai(const float *view, const float *projection, MODE mode, float *matrix, float *deltaMatrix = 0);
 };
