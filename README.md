@@ -32,11 +32,9 @@
 // translation is applied in world space
 // rotation is applied in local space
 // Note: all matrices are 4x4 float matrix. OpenGL style.
-enum MODE
-{
-TRANSLATE,
-ROTATE
-};
+
+**enum MODE { TRANSLATE, ROTATE }; **
+
 **void Mogwai(const float *view, const float *projection, MODE mode, float *matrix, float *deltaMatrix = 0);**
 
 
