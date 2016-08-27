@@ -456,6 +456,10 @@ namespace ImGuizmo
 		ROTATE_Y,
 		ROTATE_Z,
 		ROTATE_SCREEN,
+		SCALE_X,
+		SCALE_Y,
+		SCALE_Z,
+		SCALE_XYZ,
 	};
 
 	struct Context
@@ -631,12 +635,13 @@ namespace ImGuizmo
 		ComputeCameraRay(gContext.mRayOrigin, gContext.mRayVector);
 	}
 
-	static void ComputeColors(ImU32 *colors, int type)
+	static void ComputeColors(ImU32 *colors, int type, MODE mode)
 	{
 		if (gContext.mbEnable)
 		{
-			if (type >= MOVE_X && type <= MOVE_SCREEN)
+			switch (mode)
 			{
+			case TRANSLATE:
 				colors[0] = (type == MOVE_SCREEN) ? selectionColor : 0xFFFFFFFF;
 				for (int i = 0; i < 3; i++)
 				{
@@ -644,15 +649,14 @@ namespace ImGuizmo
 					colors[i + 1] = (type == (int)(MOVE_X + i)) ? selectionColor : directionColor[i];
 					colors[i + 4] = (type == (int)(MOVE_XY + i)) ? selectionColor : directionColor[colorPlaneIndex];
 				}
-			}
-			else
-			{
-				// rotate
+				break;
+			case ROTATE:
 				colors[0] = (type == ROTATE_SCREEN) ? selectionColor : 0xFFFFFFFF;
 				for (int i = 0; i < 3; i++)
-				{
 					colors[i + 1] = (type == (int)(ROTATE_X + i)) ? selectionColor : directionColor[i];
-				}
+				break;
+			case SCALE:
+				break;
 			}
 		}
 		else
@@ -669,7 +673,7 @@ namespace ImGuizmo
 
 		// colors
 		ImU32 colors[7];
-		ComputeColors(colors, type);
+		ComputeColors(colors, type, ROTATE);
 
 		vec_t cameraToModelNormalized = Normalized(gContext.mCameraToModel);
 		cameraToModelNormalized.TransformVector(gContext.mModelInverse);
@@ -717,13 +721,79 @@ namespace ImGuizmo
 		}
 	}
 
+	static void DrawScaleGizmo(int type)
+	{
+		ImDrawList* drawList = gContext.mDrawList;
+
+		// colors
+		ImU32 colors[7];
+		ComputeColors(colors, type, SCALE);
+
+		// draw screen quad
+		drawList->AddCircle(gContext.mScreenSquareCenter, 8.f, colors[0]);
+		/*
+		// draw
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			const int planNormal = (i + 2) % 3;
+			const vec_t& dirPlaneX = direction[i];
+			const vec_t& dirPlaneY = direction[(i + 1) % 3];
+			const vec_t& dirPlaneNormal = direction[planNormal];
+
+			vec_t cameraEyeToGizmo = Normalized(gContext.mModel.position - gContext.mCameraEye);
+			const bool belowAxisLimit = (fabsf(cameraEyeToGizmo.Dot3(dirPlaneX)) < angleLimit);
+			const bool belowPlaneLimit = (fabsf(cameraEyeToGizmo.Dot3(dirPlaneNormal)) > planeLimit);
+
+			// draw axis
+			if (belowAxisLimit)
+			{
+				ImVec2 baseSSpace = worldToPos(dirPlaneX * 0.1f * gContext.mScreenFactor, gContext.mMVP);
+				ImVec2 worldDirSSpace = worldToPos(dirPlaneX * gContext.mScreenFactor, gContext.mMVP);
+
+				drawList->AddLine(baseSSpace, worldDirSSpace, colors[i + 1], 6.f);
+			}
+
+			// draw plane
+			if (belowPlaneLimit)
+			{
+				ImVec2 screenQuadPts[4];
+				for (int j = 0; j < 4; j++)
+				{
+					vec_t cornerWorldPos = (dirPlaneX * quadUV[j * 2] + dirPlaneY  * quadUV[j * 2 + 1]) * gContext.mScreenFactor;
+					screenQuadPts[j] = worldToPos(cornerWorldPos, gContext.mMVP);
+				}
+				drawList->AddConvexPolyFilled(screenQuadPts, 4, colors[i + 4], true);
+			}
+		}
+
+		if (gContext.mbUsing)
+		{
+			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
+			ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.position, gContext.mViewProjection);
+			vec_t dif(destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y);
+			dif.Normalize();
+			dif *= 5.f;
+			drawList->AddCircle(sourcePosOnScreen, 6.f, translationLineColor);
+			drawList->AddCircle(destinationPosOnScreen, 6.f, translationLineColor);
+			drawList->AddLine(ImVec2(sourcePosOnScreen.x + dif.x, sourcePosOnScreen.y + dif.y), ImVec2(destinationPosOnScreen.x - dif.x, destinationPosOnScreen.y - dif.y), translationLineColor, 2.f);
+
+			char tmps[512];
+			vec_t deltaInfo = gContext.mModel.position - gContext.mMatrixOrigin;
+			int componentInfoIndex = (type - MOVE_X) * 3;
+			ImFormatString(tmps, sizeof(tmps), translationInfoMask[type - MOVE_X], deltaInfo[translationInfoIndex[componentInfoIndex]], deltaInfo[translationInfoIndex[componentInfoIndex + 1]], deltaInfo[translationInfoIndex[componentInfoIndex + 2]]);
+			drawList->AddText(ImVec2(destinationPosOnScreen.x + 15, destinationPosOnScreen.y + 15), 0xFF000000, tmps);
+			drawList->AddText(ImVec2(destinationPosOnScreen.x + 14, destinationPosOnScreen.y + 14), 0xFFFFFFFF, tmps);
+		}
+		*/
+	}
+
 	static void DrawTranslationGizmo(int type)
 	{
 		ImDrawList* drawList = gContext.mDrawList;
 
 		// colors
 		ImU32 colors[7];
-		ComputeColors(colors, type);
+		ComputeColors(colors, type, TRANSLATE);
 
 		// draw screen quad
 		drawList->AddCircle(gContext.mScreenSquareCenter, 8.f, colors[0]);
@@ -784,6 +854,38 @@ namespace ImGuizmo
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 
+
+	static int GetScaleType()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		int type = NONE;
+		/*
+		vec_t deltaScreen(io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y);
+		float dist = deltaScreen.Length();
+		if (dist >= 0.058f * io.DisplaySize.x && dist < 0.062f * io.DisplaySize.x)
+			type = ROTATE_SCREEN;
+
+		const vec_t planNormals[] = { gContext.mModel.right, gContext.mModel.up, gContext.mModel.dir };
+
+		for (unsigned int i = 0; i < 3 && type == NONE; i++)
+		{
+			// pickup plan
+			vec_t pickupPlan = BuildPlan(gContext.mModel.position, planNormals[i]);
+
+			const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, pickupPlan);
+			vec_t localPos = gContext.mRayOrigin + gContext.mRayVector * len - gContext.mModel.position;
+
+			if (Dot(Normalized(localPos), gContext.mRayVector) > FLT_EPSILON)
+				continue;
+
+			float distance = localPos.Length() / gContext.mScreenFactor;
+			if (distance > 0.9f && distance < 1.1f)
+				type = ROTATE_X + i;
+		}
+		*/
+		return type;
+	}
+
 	static int GetRotateType()
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -908,6 +1010,64 @@ namespace ImGuizmo
 		}
 	}
 
+	static void HandleScale(float *matrix, float *deltaMatrix, int& type)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		// move
+		if (gContext.mbUsing)
+		{
+			const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
+			vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
+			vec_t newOrigin = newPos - gContext.mRelativeOrigin * gContext.mScreenFactor;
+			vec_t delta = newOrigin - gContext.mModel.position;
+			/*
+			// 1 axis constraint
+			if (gContext.mCurrentOperation >= MOVE_X && gContext.mCurrentOperation <= MOVE_Z)
+			{
+				int axisIndex = gContext.mCurrentOperation - MOVE_X;
+				const vec_t& axisValue = gContext.mModel.line[axisIndex];
+				float lengthOnAxis = Dot(axisValue, delta);
+				delta = axisValue * lengthOnAxis;
+			}
+
+			// compute matrix & delta
+			gContext.mTranslationPlanOrigin += delta;
+			matrix_t deltaMatrixTranslation;
+			deltaMatrixTranslation.translation(delta);
+			if (deltaMatrix)
+				memcpy(deltaMatrix, deltaMatrixTranslation.m16, sizeof(float) * 16);
+			matrix_t res = *(matrix_t*)matrix * deltaMatrixTranslation;
+			*(matrix_t*)matrix = res;
+			*/
+			if (!io.MouseDown[0])
+				gContext.mbUsing = false;
+
+			type = gContext.mCurrentOperation;
+		}
+		else
+		{
+			// find new possible way to move
+			vec_t gizmoHitProportion;
+			type = GetMoveType(&gizmoHitProportion);
+			if (io.MouseDown[0] && type != NONE)
+			{
+				gContext.mbUsing = true;
+				gContext.mCurrentOperation = type;
+				const vec_t movePlanNormal[] = { gContext.mModel.up, gContext.mModel.dir, gContext.mModel.right, gContext.mModel.dir, gContext.mModel.up, gContext.mModel.right, -gContext.mCameraDir };
+				// pickup plan
+				/*
+				gContext.mTranslationPlan = BuildPlan(gContext.mModel.position, movePlanNormal[type - MOVE_X]);
+				const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
+				gContext.mTranslationPlanOrigin = gContext.mRayOrigin + gContext.mRayVector * len;
+				gContext.mMatrixOrigin = gContext.mModel.position;
+
+				gContext.mRelativeOrigin = (gContext.mTranslationPlanOrigin - gContext.mModel.position) * (1.f / gContext.mScreenFactor);
+				*/
+			}
+		}
+	}
+
 	static float ComputeAngleOnPlan()
 	{
 		const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
@@ -949,12 +1109,14 @@ namespace ImGuizmo
 		{
 			gContext.mRotationAngle = ComputeAngleOnPlan();
 
+			vec_t rotationAxisLocalSpace;
+			rotationAxisLocalSpace.TransformVector(vec_t(gContext.mTranslationPlan.x, gContext.mTranslationPlan.y, gContext.mTranslationPlan.z, 0.f), gContext.mModelInverse);
+
 			matrix_t deltaRotation;
-			deltaRotation.RotationAxis(gContext.mTranslationPlan, gContext.mRotationAngle - gContext.mRotationAngleOrigin);
+			deltaRotation.RotationAxis(rotationAxisLocalSpace, gContext.mRotationAngle - gContext.mRotationAngleOrigin);
 			gContext.mRotationAngleOrigin = gContext.mRotationAngle;
 
-			matrix_t result = deltaRotation * *(matrix_t*)matrix;
-			*(matrix_t*)matrix = result;
+			*(matrix_t*)matrix = deltaRotation * gContext.mModel;
 
 			if (deltaMatrix)
 				*(matrix_t*)deltaMatrix = deltaRotation;
@@ -977,16 +1139,32 @@ namespace ImGuizmo
 		int type = NONE;
 		if (gContext.mbEnable)
 		{
-			if (mode == ROTATE)
+			switch (mode)
+			{
+			case ROTATE:
 				HandleRotation(matrix, deltaMatrix, type);
-			else
+				break;
+			case TRANSLATE:
 				HandleTranslation(matrix, deltaMatrix, type);
+				break;
+			case SCALE:
+				HandleScale(matrix, deltaMatrix, type);
+				break;
+			}
 		}
 
-		if (mode == ROTATE)
+		switch (mode)
+		{
+		case ROTATE:
 			DrawRotationGizmo(type);
-		else
+			break;
+		case TRANSLATE:
 			DrawTranslationGizmo(type);
+			break;
+		case SCALE:
+			DrawScaleGizmo(type);
+			break;
+		}
 	}
 
 };

@@ -22,7 +22,8 @@ namespace ImGuizmo
 	enum MODE
 	{
 		TRANSLATE,
-		ROTATE
+		ROTATE,
+		SCALE
 	};
 	void Mogwai(const float *view, const float *projection, MODE mode, float *matrix, float *deltaMatrix = 0);
 };
