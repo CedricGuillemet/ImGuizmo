@@ -953,12 +953,11 @@ namespace ImGuizmo
 			deltaRotation.RotationAxis(gContext.mTranslationPlan, gContext.mRotationAngle - gContext.mRotationAngleOrigin);
 			gContext.mRotationAngleOrigin = gContext.mRotationAngle;
 
-			*(matrix_t*)matrix *= deltaRotation;
+			matrix_t result = deltaRotation * *(matrix_t*)matrix;
+			*(matrix_t*)matrix = result;
 
 			if (deltaMatrix)
-			{
 				*(matrix_t*)deltaMatrix = deltaRotation;
-			}
 
 			if (!io.MouseDown[0])
 				gContext.mbUsing = false;
