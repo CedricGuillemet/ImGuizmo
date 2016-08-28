@@ -38,4 +38,6 @@ ImGizmo is a small (.h and .cpp) library built ontop of Dear ImGui that allow yo
 
 **void Mogwai(const float *view, const float *projection, MODE mode, float *matrix, float *deltaMatrix = 0);**
 
+**License**
 
+ImGuizmo is licensed under the MIT License, see LICENSE for more information.
