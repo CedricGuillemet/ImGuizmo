@@ -181,11 +181,12 @@ namespace ImGuizmo
 	{
 	public:
 		
+		
 		union
 		{
 			float m[4][4];
 			float m16[16];
-			struct vect
+			struct v
 			{
 				vec_t right, up, dir, position;
 			} v;
