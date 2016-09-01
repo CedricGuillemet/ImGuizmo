@@ -5,7 +5,8 @@
 //   _| |_| | | | | | |__| | |_| | |/ /| | | | | | (_) |
 //  |_____|_| |_| |_|\_____|\__,_|_/___|_| |_| |_|\___/ 
 //                                                      
-// v 1.0
+// https://github.com/CedricGuillemet/ImGuizmo
+// v 1.0 WIP
 //
 // The MIT License(MIT)
 // 
@@ -31,6 +32,7 @@
 //
 // -------------------------------------------------------------------------------------------
 // History : 
+// 2016/09/01 Mogwai changed to Manipulate. Draw debug cube. Fixed inverted scale. Mixing scale and translation/rotation gives bad results.
 // 2016/08/31 First version
 //
 // -------------------------------------------------------------------------------------------
@@ -91,6 +93,7 @@ namespace ImGuizmo
 
 	// helper functions for manualy editing translation/rotation/scale with an input float
 	// translation, rotation and scale float points to 3 floats each
+	// Angles are in degrees (more suitable for human editing)
 	// example:
 	// float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 	// ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix.m16, matrixTranslation, matrixRotation, matrixScale);
@@ -99,8 +102,12 @@ namespace ImGuizmo
 	// ImGui::InputFloat3("Sc", matrixScale, 3);
 	// ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix.m16);
 	//
+	// These functions have some numerical stability issues for now. Use with caution.
 	void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale);
 	void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix);
+
+	// Render a cube with face color corresponding to face normal. Usefull for debug/tests
+	void DrawCube(const float *view, const float *projection, float *matrix);
 
 	// call it when you want a gizmo
 	// Needs view and projection matrices. 
@@ -119,5 +126,5 @@ namespace ImGuizmo
 		WORLD
 	};
 
-	void Mogwai(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix = 0);
+	void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix = 0);
 };
