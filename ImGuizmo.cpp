@@ -180,13 +180,12 @@ namespace ImGuizmo
 	struct matrix_t
 	{
 	public:
-		
-		
+
 		union
 		{
 			float m[4][4];
 			float m16[16];
-			struct v
+			struct
 			{
 				vec_t right, up, dir, position;
 			} v;
