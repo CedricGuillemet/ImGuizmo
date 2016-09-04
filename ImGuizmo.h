@@ -6,7 +6,7 @@
 //  |_____|_| |_| |_|\_____|\__,_|_/___|_| |_| |_|\___/ 
 //                                                      
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.0 WIP
+// v 1.02 WIP
 //
 // The MIT License(MIT)
 // 
@@ -32,9 +32,18 @@
 //
 // -------------------------------------------------------------------------------------------
 // History : 
+// 2016/09/04 Axis switch and translation plan autohiding. Scale transform stability improved
 // 2016/09/01 Mogwai changed to Manipulate. Draw debug cube. Fixed inverted scale. Mixing scale and translation/rotation gives bad results.
 // 2016/08/31 First version
 //
+// -------------------------------------------------------------------------------------------
+// Future:
+//
+// - Multi view
+// - display rotation/translation/scale infos in local/world space and not only local
+// - finish local/world matrix application
+// - snap
+// 
 // -------------------------------------------------------------------------------------------
 // Example 
 //
