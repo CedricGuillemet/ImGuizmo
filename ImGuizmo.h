@@ -59,8 +59,6 @@
 // if (ImGui::IsKeyPressed(114)) // r Key
 //		mCurrentGizmoOperation = ImGuizmo::SCALE;
 //
-// static float gizmoMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
-//
 // if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
 //		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 // ImGui::SameLine();
@@ -71,6 +69,7 @@
 //		mCurrentGizmoOperation = ImGuizmo::SCALE;
 //
 // float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+// static float gizmoMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
 // ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix, matrixTranslation, matrixRotation, matrixScale);
 // ImGui::InputFloat3("Tr", matrixTranslation, 3);
 // ImGui::InputFloat3("Rt", matrixRotation, 3);
