@@ -47,16 +47,19 @@
 // -------------------------------------------------------------------------------------------
 // Example 
 //
+//
 // static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 // static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 // 
 // // Maya shortcut keys
-// if (ImGui::IsKeyPressed(90)) // w Key
+// if (ImGui::IsKeyPressed(119)) // w Key
 //		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-// if (ImGui::IsKeyPressed(69)) // e Key
+// if (ImGui::IsKeyPressed(101)) // e Key
 //		mCurrentGizmoOperation = ImGuizmo::ROTATE;
-// if (ImGui::IsKeyPressed(82)) // r Key
+// if (ImGui::IsKeyPressed(114)) // r Key
 //		mCurrentGizmoOperation = ImGuizmo::SCALE;
+//
+// static float gizmoMatrix[16]={1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
 //
 // if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
 //		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -68,11 +71,11 @@
 //		mCurrentGizmoOperation = ImGuizmo::SCALE;
 //
 // float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-// ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix.m16, matrixTranslation, matrixRotation, matrixScale);
+// ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix, matrixTranslation, matrixRotation, matrixScale);
 // ImGui::InputFloat3("Tr", matrixTranslation, 3);
 // ImGui::InputFloat3("Rt", matrixRotation, 3);
 // ImGui::InputFloat3("Sc", matrixScale, 3);
-// ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix.m16);
+// ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix);
 // 
 // if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
 //		mCurrentGizmoMode = ImGuizmo::LOCAL;
@@ -80,7 +83,7 @@
 // if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
 //		mCurrentGizmoMode = ImGuizmo::WORLD;
 // 
-// ImGuizmo::Mogwai(gCurrentCamera->mView.m16, gCurrentCamera->mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, gizmoMatrix.m16);
+// ImGuizmo::Manipulate(gCurrentCamera->mView.m16, gCurrentCamera->mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, gizmoMatrix);
 //
 
 #pragma once
@@ -105,11 +108,11 @@ namespace ImGuizmo
 	// Angles are in degrees (more suitable for human editing)
 	// example:
 	// float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-	// ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix.m16, matrixTranslation, matrixRotation, matrixScale);
+	// ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix, matrixTranslation, matrixRotation, matrixScale);
 	// ImGui::InputFloat3("Tr", matrixTranslation, 3);
 	// ImGui::InputFloat3("Rt", matrixRotation, 3);
 	// ImGui::InputFloat3("Sc", matrixScale, 3);
-	// ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix.m16);
+	// ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix);
 	//
 	// These functions have some numerical stability issues for now. Use with caution.
 	void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale);
