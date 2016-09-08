@@ -47,7 +47,6 @@
 // -------------------------------------------------------------------------------------------
 // Example 
 //
-//
 // static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 // static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 // 
