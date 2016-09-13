@@ -1,11 +1,3 @@
-//   _____            _____       _                     
-//  |_   _|          / ____|     (_)                    
-//    | |  _ __ ___ | |  __ _   _ _ _____ __ ___   ___  
-//    | | | '_ ` _ \| | |_ | | | | |_  / '_ ` _ \ / _ \ 
-//   _| |_| | | | | | |__| | |_| | |/ /| | | | | | (_) |
-//  |_____|_| |_| |_|\_____|\__,_|_/___|_| |_| |_|\___/ 
-//                                                      
-//                                                      
 // The MIT License(MIT)
 // 
 // Copyright(c) 2016 Cedric Guillemet
@@ -926,7 +918,7 @@ namespace ImGuizmo
 		
 		if (gContext.mbUsing)
 		{
-			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
+//			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
 			ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
 			/*vec_t dif(destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y);
 			dif.Normalize();
@@ -992,7 +984,7 @@ namespace ImGuizmo
 		{
 			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
 			ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
-			vec_t dif = { destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y };
+			vec_t dif = { destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y, 0.0f, 0.0f };
 			dif.Normalize();
 			dif *= 5.f;
 			drawList->AddCircle(sourcePosOnScreen, 6.f, translationLineColor);
@@ -1049,7 +1041,7 @@ namespace ImGuizmo
 		ImGuiIO& io = ImGui::GetIO();
 		int type = NONE;
 
-		vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y };
+		vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y, 0.0f, 0.0f };
 		float dist = deltaScreen.Length();
 		if (dist >= 0.058f * io.DisplaySize.x && dist < 0.062f * io.DisplaySize.x)
 			type = ROTATE_SCREEN;
@@ -1384,7 +1376,7 @@ namespace ImGuizmo
 		float validScale[3];
 		for (int i = 0; i < 3; i++)
 		{
-			if (fabsf(scale[i] < FLT_EPSILON))
+			if (fabsf(scale[i]) < FLT_EPSILON)
 				validScale[i] = 0.001f;
 			else
 				validScale[i] = scale[i];
