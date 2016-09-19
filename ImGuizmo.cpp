@@ -1137,9 +1137,13 @@ namespace ImGuizmo
 				vec_t cumulativeDelta = gContext.mModel.v.position + delta - gContext.mMatrixOrigin;
 				if (applyRotationLocaly)
 				{
-					cumulativeDelta.TransformVector(gContext.mModelSourceInverse);
+					matrix_t modelSourceNormalized = gContext.mModelSource;
+					modelSourceNormalized.OrthoNormalize();
+					matrix_t modelSourceNormalizedInverse;
+					modelSourceNormalizedInverse.Inverse(modelSourceNormalized);
+					cumulativeDelta.TransformVector(modelSourceNormalizedInverse);
 					ComputeSnap(cumulativeDelta, snap);
-					cumulativeDelta.TransformVector(gContext.mModelSource);
+					cumulativeDelta.TransformVector(modelSourceNormalized);
 				}
 				else
 				{
