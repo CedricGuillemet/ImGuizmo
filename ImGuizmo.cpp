@@ -1,3 +1,11 @@
+//   _____            _____       _                     
+//  |_   _|          / ____|     (_)                    
+//    | |  _ __ ___ | |  __ _   _ _ _____ __ ___   ___  
+//    | | | '_ ` _ \| | |_ | | | | |_  / '_ ` _ \ / _ \ 
+//   _| |_| | | | | | |__| | |_| | |/ /| | | | | | (_) |
+//  |_____|_| |_| |_|\_____|\__,_|_/___|_| |_| |_|\___/ 
+//                                                      
+//                                                      
 // The MIT License(MIT)
 // 
 // Copyright(c) 2016 Cedric Guillemet
@@ -495,13 +503,11 @@ namespace ImGuizmo
 
 		ImDrawList* mDrawList;
 
-		MODE mMode;
 		matrix_t mViewMat;
 		matrix_t mProjectionMat;
 		matrix_t mModel;
 		matrix_t mModelInverse;
 		matrix_t mModelSource;
-		matrix_t mModelSourceInverse;
 		matrix_t mMVP;
 		matrix_t mViewProjection;
 
@@ -532,7 +538,6 @@ namespace ImGuizmo
 		vec_t mRotationVectorSource;
 		float mRotationAngle;
 		float mRotationAngleOrigin;
-		//vec_t mWorldToLocalAxis;
 
 		// scale
 		vec_t mScale;
@@ -653,7 +658,6 @@ namespace ImGuizmo
 
 	static void ComputeContext(const float *view, const float *projection, float *matrix, MODE mode)
 	{
-		gContext.mMode = mode;
 		gContext.mViewMat = *(matrix_t*)view;
 		gContext.mProjectionMat = *(matrix_t*)projection;
 		
@@ -670,7 +674,6 @@ namespace ImGuizmo
 		gContext.mModelScaleOrigin.Set(gContext.mModelSource.v.right.Length(), gContext.mModelSource.v.up.Length(), gContext.mModelSource.v.dir.Length());
 
 		gContext.mModelInverse.Inverse(gContext.mModel);
-		gContext.mModelSourceInverse.Inverse(gContext.mModelSource);
 		gContext.mViewProjection = gContext.mViewMat * gContext.mProjectionMat;
 		gContext.mMVP = gContext.mModel * gContext.mViewProjection;
 
@@ -918,7 +921,7 @@ namespace ImGuizmo
 		
 		if (gContext.mbUsing)
 		{
-//			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
+			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
 			ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
 			/*vec_t dif(destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y);
 			dif.Normalize();
@@ -984,7 +987,7 @@ namespace ImGuizmo
 		{
 			ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
 			ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
-			vec_t dif = { destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y, 0.0f, 0.0f };
+			vec_t dif = { destinationPosOnScreen.x - sourcePosOnScreen.x, destinationPosOnScreen.y - sourcePosOnScreen.y };
 			dif.Normalize();
 			dif *= 5.f;
 			drawList->AddCircle(sourcePosOnScreen, 6.f, translationLineColor);
@@ -1041,7 +1044,7 @@ namespace ImGuizmo
 		ImGuiIO& io = ImGui::GetIO();
 		int type = NONE;
 
-		vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y, 0.0f, 0.0f };
+		vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y };
 		float dist = deltaScreen.Length();
 		if (dist >= 0.058f * io.DisplaySize.x && dist < 0.062f * io.DisplaySize.x)
 			type = ROTATE_SCREEN;
@@ -1110,7 +1113,6 @@ namespace ImGuizmo
 	static void HandleTranslation(float *matrix, float *deltaMatrix, int& type, float *snap)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		bool applyRotationLocaly = gContext.mMode == LOCAL || type == MOVE_SCREEN;
 
 		// move
 		if (gContext.mbUsing)
@@ -1135,18 +1137,8 @@ namespace ImGuizmo
 			if (snap)
 			{
 				vec_t cumulativeDelta = gContext.mModel.v.position + delta - gContext.mMatrixOrigin;
-				if (applyRotationLocaly)
-				{
-					cumulativeDelta.TransformVector(gContext.mModelSourceInverse);
-					ComputeSnap(cumulativeDelta, snap);
-					cumulativeDelta.TransformVector(gContext.mModelSource);
-				}
-				else
-				{
-					ComputeSnap(cumulativeDelta, snap);
-				}
+				ComputeSnap(cumulativeDelta, snap);
 				delta = gContext.mMatrixOrigin + cumulativeDelta - gContext.mModel.v.position;
-
 			}
 
 			// compute matrix & delta
@@ -1154,8 +1146,6 @@ namespace ImGuizmo
 			deltaMatrixTranslation.Translation(delta);
 			if (deltaMatrix)
 				memcpy(deltaMatrix, deltaMatrixTranslation.m16, sizeof(float) * 16);
-
-
 			matrix_t res = gContext.mModelSource * deltaMatrixTranslation;
 			*(matrix_t*)matrix = res;
 
@@ -1252,15 +1242,11 @@ namespace ImGuizmo
 			matrix_t deltaMatrixScale;
 			deltaMatrixScale.Scale(gContext.mScale * gContext.mScaleValueOrigin);
 			
+			if (deltaMatrix)
+				memcpy(deltaMatrix, deltaMatrixScale.m16, sizeof(float) * 16);
 			matrix_t res = deltaMatrixScale * gContext.mModel;
 			*(matrix_t*)matrix = res;
 			
-			if (deltaMatrix)
-			{
-				deltaMatrixScale.Scale(gContext.mScale);
-				memcpy(deltaMatrix, deltaMatrixScale.m16, sizeof(float) * 16);
-			}
-
 			if (!io.MouseDown[0])
 				gContext.mbUsing = false;
 
@@ -1271,7 +1257,6 @@ namespace ImGuizmo
 	static void HandleRotation(float *matrix, float *deltaMatrix, int& type, float *snap)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		bool applyRotationLocaly = gContext.mMode == LOCAL || type == ROTATE_SCREEN;
 
 		if (!gContext.mbUsing)
 		{
@@ -1282,14 +1267,7 @@ namespace ImGuizmo
 				gContext.mCurrentOperation = type;
 				const vec_t rotatePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir, -gContext.mCameraDir };
 				// pickup plan
-				if (applyRotationLocaly)
-				{
-					gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, rotatePlanNormal[type - ROTATE_X]);
-				}
-				else
-				{
-					gContext.mTranslationPlan = BuildPlan(gContext.mModelSource.v.position, directionUnary[type - ROTATE_X]);
-				}
+				gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, rotatePlanNormal[type - ROTATE_X]);
 
 				const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
 				vec_t localPos = gContext.mRayOrigin + gContext.mRayVector * len - gContext.mModel.v.position;
@@ -1308,9 +1286,7 @@ namespace ImGuizmo
 				ComputeSnap(&gContext.mRotationAngle, &snapInRadian);
 			}
 			vec_t rotationAxisLocalSpace;
-			
 			rotationAxisLocalSpace.TransformVector(makeVect(gContext.mTranslationPlan.x, gContext.mTranslationPlan.y, gContext.mTranslationPlan.z, 0.f), gContext.mModelInverse);
-			rotationAxisLocalSpace.Normalize();
 
 			matrix_t deltaRotation;
 			deltaRotation.RotationAxis(rotationAxisLocalSpace, gContext.mRotationAngle - gContext.mRotationAngleOrigin);
@@ -1319,18 +1295,8 @@ namespace ImGuizmo
 			matrix_t scaleOrigin;
 			scaleOrigin.Scale(gContext.mModelScaleOrigin);
 			
-			if (applyRotationLocaly)
-			{
-				*(matrix_t*)matrix = scaleOrigin * deltaRotation * gContext.mModel;
-			}
-			else
-			{
-				matrix_t res = gContext.mModelSource;
-				res.v.position.Set(0.f);
 
-				*(matrix_t*)matrix = res * deltaRotation;
-				((matrix_t*)matrix)->v.position = gContext.mModelSource.v.position;
-			}
+			*(matrix_t*)matrix = scaleOrigin * deltaRotation * gContext.mModel;
 
 			if (deltaMatrix)
 			{
@@ -1376,7 +1342,7 @@ namespace ImGuizmo
 		float validScale[3];
 		for (int i = 0; i < 3; i++)
 		{
-			if (fabsf(scale[i]) < FLT_EPSILON)
+			if (fabsf(scale[i] < FLT_EPSILON))
 				validScale[i] = 0.001f;
 			else
 				validScale[i] = scale[i];
@@ -1394,13 +1360,6 @@ namespace ImGuizmo
 		// set delta to identity 
 		if (deltaMatrix)
 			((matrix_t*)deltaMatrix)->SetToIdentity();
-
-		// behind camera
-		vec_t camSpacePosition;
-		camSpacePosition.TransformPoint(makeVect(0.f, 0.f, 0.f), gContext.mMVP);
-		if (camSpacePosition.z < 0.001f)
-			return;
-
 		// -- 
 		int type = NONE;
 		if (gContext.mbEnable)
@@ -1452,23 +1411,6 @@ namespace ImGuizmo
 				directionUnary[normalIndex] - directionUnary[perpXIndex] - directionUnary[perpYIndex],
 				directionUnary[normalIndex] - directionUnary[perpXIndex] + directionUnary[perpYIndex],
 			};
-
-			// clipping
-			bool skipFace = false;
-			for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
-			{
-				vec_t camSpacePosition;
-				camSpacePosition.TransformPoint(faceCoords[iCoord] * 0.5f * invert, gContext.mMVP);
-				if (camSpacePosition.z < 0.001f)
-				{
-					skipFace = true;
-					break;
-				}
-			}
-			if (skipFace)
-				continue;
-
-			// 3D->2D
 			ImVec2 faceCoordsScreen[4];
 			for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
 				faceCoordsScreen[iCoord] = worldToPos(faceCoords[iCoord] * 0.5f * invert, res);
