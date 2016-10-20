@@ -561,7 +561,7 @@ namespace ImGuizmo
 	static const char *translationInfoMask[] = { "X : %5.3f", "Y : %5.3f", "Z : %5.3f", "X : %5.3f Y : %5.3f", "Y : %5.3f Z : %5.3f", "X : %5.3f Z : %5.3f", "X : %5.3f Y : %5.3f Z : %5.3f" };
 	static const char *scaleInfoMask[] = { "X : %5.2f", "Y : %5.2f", "Z : %5.2f", "XYZ : %5.2f" };
 	static const char *rotationInfoMask[] = { "X : %5.2f deg %5.2f rad", "Y : %5.2f deg %5.2f rad", "Z : %5.2f deg %5.2f rad", "Screen : %5.2f deg %5.2f rad" };
-	static const int translationInfoIndex[] = { 0,0,0, 1,0,0, 2,0,0, 0,1,0, 0,2,0, 1,2,0, 0,1,2 };
+	static const int translationInfoIndex[] = { 0,0,0, 1,0,0, 2,0,0, 0,1,0, 1,2,0, 0,2,1, 0,1,2 };
 	static const float quadMin = 0.5f;
 	static const float quadMax = 0.8f;
 	static const float quadUV[8] = { quadMin, quadMin, quadMin, quadMax, quadMax, quadMax, quadMax, quadMin };
@@ -1275,12 +1275,18 @@ namespace ImGuizmo
 	static void HandleRotation(float *matrix, float *deltaMatrix, int& type, float *snap)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		bool applyRotationLocaly = gContext.mMode == LOCAL || type == ROTATE_SCREEN;
+		bool applyRotationLocaly = gContext.mMode == LOCAL;
 
 		if (!gContext.mbUsing)
 		{
 			type = GetRotateType();
-			if (io.MouseDown[0] && type != NONE)
+		
+            if (type == ROTATE_SCREEN)
+            {
+                applyRotationLocaly = true;
+            }
+            
+            if (io.MouseDown[0] && type != NONE)
 			{
 				gContext.mbUsing = true;
 				gContext.mCurrentOperation = type;
