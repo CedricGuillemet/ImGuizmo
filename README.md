@@ -4,7 +4,7 @@ ImGizmo is a small (.h and .cpp) library built ontop of Dear ImGui that allow yo
 
 ![Image of Rotation](http://i.imgur.com/y4mcVoT.gif)
 ![Image of Translation](http://i.imgur.com/o8q8iHq.gif)
-
+![Image of Bounds](http://i.imgur.com/3Ez5LBr.gif)
 ### API doc
 
 Call BeginFrame right after ImGui_XXXX_NewFrame();
