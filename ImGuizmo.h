@@ -132,6 +132,8 @@ namespace ImGuizmo
 	void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale);
 	void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix);
 
+	void SetRect(float x, float y, float width, float height);
+
 	// Render a cube with face color corresponding to face normal. Usefull for debug/tests
 	void DrawCube(const float *view, const float *projection, float *matrix);
 
