@@ -96,7 +96,8 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 		ImGui::InputFloat("Scale Snap", &snap.x);
 		break;
 	}
-
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	ImGuizmo::Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
 }
 #endif
