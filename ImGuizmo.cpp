@@ -65,6 +65,8 @@ namespace ImGuizmo
    //template <typename T> T LERP(T x, T y, float z) { return (x + (y - x)*z); }
    template <typename T> T Clamp(T x, T y, T z) { return ((x<y) ? y : ((x>z) ? z : x)); }
    template <typename T> T max(T x, T y) { return (x > y) ? x : y; }
+   template <typename T> T min(T x, T y) { return (x < y) ? x : y; }
+   template <typename T> bool IsWithin(T x, T y, T z) { return (x>=y) && (x<=z); }
 
    struct matrix_t;
    struct vec_t
@@ -568,6 +570,8 @@ namespace ImGuizmo
 	  float mY = 0.f;
 	  float mWidth = 0.f;
 	  float mHeight = 0.f;
+	  float mXMax = 0.f;
+	  float mYMax = 0.f;
    };
 
    static Context gContext;
@@ -641,12 +645,19 @@ namespace ImGuizmo
       return -(numer / denom);
    }
 
+   static bool IsInContextRect( ImVec2 p )
+   {
+	   return IsWithin( p.x, gContext.mX, gContext.mXMax ) && IsWithin(p.y, gContext.mY, gContext.mYMax );
+   }
+
    void SetRect(float x, float y, float width, float height)
    {
 	   gContext.mX = x;
 	   gContext.mY = y;
 	   gContext.mWidth = width;
 	   gContext.mHeight = height;
+	   gContext.mXMax = gContext.mX + gContext.mWidth;
+	   gContext.mYMax = gContext.mY + gContext.mXMax;
    }
 
    void BeginFrame()
@@ -1089,8 +1100,13 @@ namespace ImGuizmo
 	   {
 		   ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
 		   ImVec2 worldBound2 = worldToPos(aabb[(i+1)%4], boundsMVP);
+		   if( !IsInContextRect( worldBound1 ) || !IsInContextRect( worldBound2 ) )
+		   {
+			   continue;
+		   }
 		   float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
 		   int stepCount = (int)(boundDistance / 10.f);
+		   stepCount = min( stepCount, 1000 );
 		   float stepLength = 1.f / (float)stepCount;
 		   for (int j = 0; j < stepCount; j++)
 		   {
