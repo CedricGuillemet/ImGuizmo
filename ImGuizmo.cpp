@@ -1057,11 +1057,15 @@ namespace ImGuizmo
 	   ImDrawList* drawList = gContext.mDrawList;
 
 	   // compute best projection axis
+	   vec_t axesWorldDirections[3];
 	   vec_t bestAxisWorldDirection;
-	   int bestAxis = gContext.mBoundsBestAxis;
+	   int axes[3];
+	   unsigned int numAxes = 1;
+	   axes[0] = gContext.mBoundsBestAxis;
+	   int bestAxis = axes[0];
 	   if (!gContext.mbUsingBounds)
 	   {
-		   
+		   numAxes = 0;
 		   float bestDot = 0.f;
 		   for (unsigned int i = 0; i < 3; i++)
 		   {
@@ -1069,163 +1073,204 @@ namespace ImGuizmo
 			   dirPlaneNormalWorld.TransformVector(directionUnary[i], gContext.mModelSource);
 			   dirPlaneNormalWorld.Normalize();
 
-			   float dt = Dot(Normalized(gContext.mCameraEye - gContext.mModelSource.v.position), dirPlaneNormalWorld);
-			   if (fabsf(dt) >= bestDot)
+			   float dt = fabsf( Dot(Normalized(gContext.mCameraEye - gContext.mModelSource.v.position), dirPlaneNormalWorld) );
+			   if ( dt >= bestDot )
 			   {
-				   bestDot = fabsf(dt);
+				   bestDot = dt;
 				   bestAxis = i;
 				   bestAxisWorldDirection = dirPlaneNormalWorld;
 			   }
-		   }
-	   }
 
-	   // corners
-	   vec_t aabb[4];
-
-	   int secondAxis = (bestAxis + 1) % 3;
-	   int thirdAxis = (bestAxis + 2) % 3;
-
-	   for (int i = 0; i < 4; i++)
-	   {
-		   aabb[i][3] = aabb[i][bestAxis] = 0.f;
-		   aabb[i][secondAxis] = bounds[secondAxis + 3 * (i >> 1)];
-		   aabb[i][thirdAxis] = bounds[thirdAxis + 3 * ((i >> 1) ^ (i & 1))];
-	   }
-
-	   // draw bounds
-	   unsigned int anchorAlpha = gContext.mbEnable ? 0xFF000000 : 0x80000000;
-
-	   matrix_t boundsMVP = gContext.mModelSource * gContext.mViewProjection;
-	   for (int i = 0; i < 4;i++)
-	   {
-		   ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
-		   ImVec2 worldBound2 = worldToPos(aabb[(i+1)%4], boundsMVP);
-		   if( !IsInContextRect( worldBound1 ) || !IsInContextRect( worldBound2 ) )
-		   {
-			   continue;
-		   }
-		   float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
-		   int stepCount = (int)(boundDistance / 10.f);
-		   stepCount = min( stepCount, 1000 );
-		   float stepLength = 1.f / (float)stepCount;
-		   for (int j = 0; j < stepCount; j++)
-		   {
-			   float t1 = (float)j * stepLength;
-			   float t2 = (float)j * stepLength + stepLength * 0.5f;
-			   ImVec2 worldBoundSS1 = ImLerp(worldBound1, worldBound2, ImVec2(t1, t1));
-			   ImVec2 worldBoundSS2 = ImLerp(worldBound1, worldBound2, ImVec2(t2, t2));
-			   drawList->AddLine(worldBoundSS1, worldBoundSS2, 0xAAAAAA + anchorAlpha, 3.f);
-		   }
-		   vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4] ) * 0.5f;
-		   ImVec2 midBound = worldToPos(midPoint, boundsMVP);
-		   static const float AnchorBigRadius = 8.f;
-		   static const float AnchorSmallRadius = 6.f;
-		   bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
-		   bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
-
-		   
-		   unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
-		   unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
-		   
-		   drawList->AddCircleFilled(worldBound1, AnchorBigRadius, bigAnchorColor);
-		   drawList->AddCircleFilled(midBound, AnchorSmallRadius, smallAnchorColor);
-		   int oppositeIndex = (i + 2) % 4;
-		   // big anchor on corners
-		   if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && io.MouseDown[0])
-		   {
-			   gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
-			   gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
-			   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
-			   gContext.mBoundsBestAxis = bestAxis;
-			   gContext.mBoundsAxis[0] = secondAxis;
-			   gContext.mBoundsAxis[1] = thirdAxis;
-
-			   gContext.mBoundsLocalPivot.Set(0.f);
-			   gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
-			   gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
-
-			   gContext.mbUsingBounds = true;
-			   gContext.mBoundsMatrix = gContext.mModelSource;
-		   }
-		   // small anchor on middle of segment
-		   if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && io.MouseDown[0])
-		   {
-			   vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
-			   gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
-			   gContext.mBoundsAnchor.TransformPoint(midPoint, gContext.mModelSource);
-			   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
-			   gContext.mBoundsBestAxis = bestAxis;
-			   int indices[] = { secondAxis , thirdAxis };
-			   gContext.mBoundsAxis[0] = indices[i%2];
-			   gContext.mBoundsAxis[1] = -1;
-
-			   gContext.mBoundsLocalPivot.Set(0.f);
-			   gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
-
-			   gContext.mbUsingBounds = true;
-			   gContext.mBoundsMatrix = gContext.mModelSource;
-		   }
-	   }
-	   
-	   if (gContext.mbUsingBounds)
-	   {
-		   matrix_t scale;
-		   scale.SetToIdentity();
-
-		   // compute projected mouse position on plan
-		   const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mBoundsPlan);
-		   vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
-
-		   // compute a reference and delta vectors base on mouse move
-		   vec_t deltaVector = (newPos - gContext.mBoundsPivot).Abs();
-		   vec_t referenceVector = (gContext.mBoundsAnchor - gContext.mBoundsPivot).Abs();
-
-		   // for 1 or 2 axes, compute a ratio that's used for scale and snap it based on resulting length
-		   for (int i = 0; i < 2; i++)
-		   {
-			   int axisIndex = gContext.mBoundsAxis[i];
-			   if (axisIndex == -1)
-				   continue;
-
-			   float ratioAxis = 1.f;
-			   vec_t axisDir = gContext.mBoundsMatrix.component[axisIndex].Abs();
-
-			   float dtAxis = axisDir.Dot(referenceVector);
-			   float boundSize = bounds[axisIndex + 3] - bounds[axisIndex];
-			   if (dtAxis > FLT_EPSILON)
-				   ratioAxis = axisDir.Dot(deltaVector) / dtAxis;
-
-			   if (snapValues)
+			   if( dt >= 0.3f )
 			   {
-				   float length = boundSize * ratioAxis;
-				   ComputeSnap(&length, snapValues[axisIndex]);
-				   if (boundSize > FLT_EPSILON)
-					   ratioAxis = length / boundSize;
+				   axes[numAxes] = bestAxis;
+				   axesWorldDirections[numAxes] = dirPlaneNormalWorld;
+				   ++numAxes;
 			   }
-			   scale.component[axisIndex] *= ratioAxis;
+		   }
+	   }
+
+	   if( numAxes == 0 )
+	   {
+			axes[0] = bestAxis;
+			axesWorldDirections[0] = bestAxisWorldDirection;
+			numAxes = 1;
+	   }
+	   else if( bestAxis != axes[0] )
+	   {
+		  unsigned int bestIndex = 0;
+		  for (unsigned int i = 0; i < numAxes; i++)
+		  {
+			  if( axes[i] == bestAxis )
+			  {
+				  bestIndex = i;
+				  break;
+			  }
+		  }
+		  int tempAxis = axes[0];
+		  axes[0] = axes[bestIndex];
+		  axes[bestIndex] = tempAxis;
+		  vec_t tempDirection = axesWorldDirections[0];
+		  axesWorldDirections[0] = axesWorldDirections[bestIndex];
+		  axesWorldDirections[bestIndex] = tempDirection;
+	   }
+
+	   for (unsigned int axisIndex = 0; axisIndex < numAxes; ++axisIndex)
+	   {
+		   bestAxis = axes[axisIndex];
+		   bestAxisWorldDirection = axesWorldDirections[axisIndex];
+
+		   // corners
+		   vec_t aabb[4];
+
+		   int secondAxis = (bestAxis + 1) % 3;
+		   int thirdAxis = (bestAxis + 2) % 3;
+
+		   for (int i = 0; i < 4; i++)
+		   {
+			   aabb[i][3] = aabb[i][bestAxis] = 0.f;
+			   aabb[i][secondAxis] = bounds[secondAxis + 3 * (i >> 1)];
+			   aabb[i][thirdAxis] = bounds[thirdAxis + 3 * ((i >> 1) ^ (i & 1))];
 		   }
 
-		   // transform matrix
-		   matrix_t preScale, postScale;
-		   preScale.Translation(-gContext.mBoundsLocalPivot);
-		   postScale.Translation(gContext.mBoundsLocalPivot);
-		   matrix_t res = preScale * scale * postScale * gContext.mBoundsMatrix;
-		   *matrix = res;
+		   // draw bounds
+		   unsigned int anchorAlpha = gContext.mbEnable ? 0xFF000000 : 0x80000000;
 
-		   // info text
-		   char tmps[512];
-		   ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
-		   ImFormatString(tmps, sizeof(tmps), "X: %.2f Y: %.2f Z:%.2f"
-			   , (bounds[3] - bounds[0]) * gContext.mBoundsMatrix.component[0].Length() * scale.component[0].Length()
-			   , (bounds[4] - bounds[1]) * gContext.mBoundsMatrix.component[1].Length() * scale.component[1].Length()
-			   , (bounds[5] - bounds[2]) * gContext.mBoundsMatrix.component[2].Length() * scale.component[2].Length()
-		   );
-		   drawList->AddText(ImVec2(destinationPosOnScreen.x + 15, destinationPosOnScreen.y + 15), 0xFF000000, tmps);
-		   drawList->AddText(ImVec2(destinationPosOnScreen.x + 14, destinationPosOnScreen.y + 14), 0xFFFFFFFF, tmps);
- 	   }
+		   matrix_t boundsMVP = gContext.mModelSource * gContext.mViewProjection;
+		   for (int i = 0; i < 4;i++)
+		   {
+			   ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
+			   ImVec2 worldBound2 = worldToPos(aabb[(i+1)%4], boundsMVP);
+			   if( !IsInContextRect( worldBound1 ) || !IsInContextRect( worldBound2 ) )
+			   {
+				   continue;
+			   }
+			   float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
+			   int stepCount = (int)(boundDistance / 10.f);
+			   stepCount = min( stepCount, 1000 );
+			   float stepLength = 1.f / (float)stepCount;
+			   for (int j = 0; j < stepCount; j++)
+			   {
+				   float t1 = (float)j * stepLength;
+				   float t2 = (float)j * stepLength + stepLength * 0.5f;
+				   ImVec2 worldBoundSS1 = ImLerp(worldBound1, worldBound2, ImVec2(t1, t1));
+				   ImVec2 worldBoundSS2 = ImLerp(worldBound1, worldBound2, ImVec2(t2, t2));
+				   drawList->AddLine(worldBoundSS1, worldBoundSS2, 0xAAAAAA + anchorAlpha, 3.f);
+			   }
+			   vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4] ) * 0.5f;
+			   ImVec2 midBound = worldToPos(midPoint, boundsMVP);
+			   static const float AnchorBigRadius = 8.f;
+			   static const float AnchorSmallRadius = 6.f;
+			   bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
+			   bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
 
-	   if (!io.MouseDown[0])
-		   gContext.mbUsingBounds = false;
+		   
+			   unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
+			   unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
+		   
+			   drawList->AddCircleFilled(worldBound1, AnchorBigRadius, bigAnchorColor);
+			   drawList->AddCircleFilled(midBound, AnchorSmallRadius, smallAnchorColor);
+			   int oppositeIndex = (i + 2) % 4;
+			   // big anchor on corners
+			   if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && io.MouseDown[0])
+			   {
+				   gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
+				   gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
+				   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
+				   gContext.mBoundsBestAxis = bestAxis;
+				   gContext.mBoundsAxis[0] = secondAxis;
+				   gContext.mBoundsAxis[1] = thirdAxis;
+
+				   gContext.mBoundsLocalPivot.Set(0.f);
+				   gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
+				   gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
+
+				   gContext.mbUsingBounds = true;
+				   gContext.mBoundsMatrix = gContext.mModelSource;
+			   }
+			   // small anchor on middle of segment
+			   if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && io.MouseDown[0])
+			   {
+				   vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
+				   gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
+				   gContext.mBoundsAnchor.TransformPoint(midPoint, gContext.mModelSource);
+				   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
+				   gContext.mBoundsBestAxis = bestAxis;
+				   int indices[] = { secondAxis , thirdAxis };
+				   gContext.mBoundsAxis[0] = indices[i%2];
+				   gContext.mBoundsAxis[1] = -1;
+
+				   gContext.mBoundsLocalPivot.Set(0.f);
+				   gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
+
+				   gContext.mbUsingBounds = true;
+				   gContext.mBoundsMatrix = gContext.mModelSource;
+			   }
+		   }
+	   
+		   if (gContext.mbUsingBounds)
+		   {
+			   matrix_t scale;
+			   scale.SetToIdentity();
+
+			   // compute projected mouse position on plan
+			   const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mBoundsPlan);
+			   vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
+
+			   // compute a reference and delta vectors base on mouse move
+			   vec_t deltaVector = (newPos - gContext.mBoundsPivot).Abs();
+			   vec_t referenceVector = (gContext.mBoundsAnchor - gContext.mBoundsPivot).Abs();
+
+			   // for 1 or 2 axes, compute a ratio that's used for scale and snap it based on resulting length
+			   for (int i = 0; i < 2; i++)
+			   {
+				   int axisIndex = gContext.mBoundsAxis[i];
+				   if (axisIndex == -1)
+					   continue;
+
+				   float ratioAxis = 1.f;
+				   vec_t axisDir = gContext.mBoundsMatrix.component[axisIndex].Abs();
+
+				   float dtAxis = axisDir.Dot(referenceVector);
+				   float boundSize = bounds[axisIndex + 3] - bounds[axisIndex];
+				   if (dtAxis > FLT_EPSILON)
+					   ratioAxis = axisDir.Dot(deltaVector) / dtAxis;
+
+				   if (snapValues)
+				   {
+					   float length = boundSize * ratioAxis;
+					   ComputeSnap(&length, snapValues[axisIndex]);
+					   if (boundSize > FLT_EPSILON)
+						   ratioAxis = length / boundSize;
+				   }
+				   scale.component[axisIndex] *= ratioAxis;
+			   }
+
+			   // transform matrix
+			   matrix_t preScale, postScale;
+			   preScale.Translation(-gContext.mBoundsLocalPivot);
+			   postScale.Translation(gContext.mBoundsLocalPivot);
+			   matrix_t res = preScale * scale * postScale * gContext.mBoundsMatrix;
+			   *matrix = res;
+
+			   // info text
+			   char tmps[512];
+			   ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
+			   ImFormatString(tmps, sizeof(tmps), "X: %.2f Y: %.2f Z:%.2f"
+				   , (bounds[3] - bounds[0]) * gContext.mBoundsMatrix.component[0].Length() * scale.component[0].Length()
+				   , (bounds[4] - bounds[1]) * gContext.mBoundsMatrix.component[1].Length() * scale.component[1].Length()
+				   , (bounds[5] - bounds[2]) * gContext.mBoundsMatrix.component[2].Length() * scale.component[2].Length()
+			   );
+			   drawList->AddText(ImVec2(destinationPosOnScreen.x + 15, destinationPosOnScreen.y + 15), 0xFF000000, tmps);
+			   drawList->AddText(ImVec2(destinationPosOnScreen.x + 14, destinationPosOnScreen.y + 14), 0xFFFFFFFF, tmps);
+ 		   }
+
+		   if (!io.MouseDown[0])
+			   gContext.mbUsingBounds = false;
+
+		   if( gContext.mbUsingBounds )
+			   break;
+	   }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
