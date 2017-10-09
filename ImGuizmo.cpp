@@ -1081,9 +1081,9 @@ namespace ImGuizmo
 				   bestAxisWorldDirection = dirPlaneNormalWorld;
 			   }
 
-			   if( dt >= 0.3f )
+			   if( dt >= 0.1f )
 			   {
-				   axes[numAxes] = bestAxis;
+				   axes[numAxes] = i;
 				   axesWorldDirections[numAxes] = dirPlaneNormalWorld;
 				   ++numAxes;
 			   }
