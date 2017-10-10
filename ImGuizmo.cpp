@@ -773,11 +773,12 @@ namespace ImGuizmo
       }
    }
 
-   static void ComputeTripodAxisAndVisibility(int axisIndex, vec_t& dirPlaneX, vec_t& dirPlaneY, bool& belowAxisLimit, bool& belowPlaneLimit)
+   static void ComputeTripodAxisAndVisibility(int axisIndex, vec_t& dirPlaneX, vec_t& dirPlaneY, bool& belowAxisLimit, bool& belowPlaneLimit, int axisNormalIndex = 2)
    {
-      const int planNormal = (axisIndex + 2) % 3;
+	  const int planYIndex = (axisIndex + (3-axisNormalIndex) ) % 3;
+      const int planNormal = (axisIndex + axisNormalIndex) % 3;
       dirPlaneX = directionUnary[axisIndex];
-      dirPlaneY = directionUnary[(axisIndex + 1) % 3];
+      dirPlaneY = directionUnary[planYIndex];
 
       if (gContext.mbUsing)
       {
@@ -786,7 +787,7 @@ namespace ImGuizmo
          belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex];
 
          dirPlaneX *= gContext.mAxisFactor[axisIndex];
-         dirPlaneY *= gContext.mAxisFactor[(axisIndex + 1) % 3];
+         dirPlaneY *= gContext.mAxisFactor[planYIndex];
       }
       else
       {
@@ -817,7 +818,7 @@ namespace ImGuizmo
 
          // and store values
          gContext.mAxisFactor[axisIndex] = mulAxisX;
-         gContext.mAxisFactor[(axisIndex+1)%3] = mulAxisY;
+         gContext.mAxisFactor[planYIndex] = mulAxisY;
          gContext.mBelowAxisLimit[axisIndex] = belowAxisLimit;
          gContext.mBelowPlaneLimit[axisIndex] = belowPlaneLimit;
       }
@@ -1351,17 +1352,30 @@ namespace ImGuizmo
          type = MOVE_SCREEN;
 
       const vec_t direction[3] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir };
+	  int normalSelect = 2;
 
       // compute
       for (unsigned int i = 0; i < 3 && type == NONE; i++)
       {
-         vec_t dirPlaneX, dirPlaneY;
+		 // check both orthoganal axis for best planNormal
+		 int planNormalIndex = 2;
+         int planNormal = (i + normalSelect) % 3;
+		 int planNormalAlt = (i + 1) % 3;
+         vec_t planNormalChosen = direction[ planNormal ];
+         vec_t planNormalChosenAlt = direction[ planNormalAlt ];
+         float dotPlanNormal = fabsf( Dot( gContext.mCameraDir, planNormalChosen ) );
+         float dotPlanNormalAlt = fabsf( Dot( gContext.mCameraDir, planNormalChosenAlt ) );
+         if( dotPlanNormal < dotPlanNormalAlt )
+         {
+             planNormal = planNormalAlt;
+			 planNormalIndex = 1;
+         }
+
+		  vec_t dirPlaneX, dirPlaneY;
          bool belowAxisLimit, belowPlaneLimit;
-         ComputeTripodAxisAndVisibility(i, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
+         ComputeTripodAxisAndVisibility(i, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, planNormalIndex);
          dirPlaneX.TransformVector(gContext.mModel);
          dirPlaneY.TransformVector(gContext.mModel);
-
-         const int planNormal = (i + 2) % 3;
 
          const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.v.position, direction[planNormal]));
          vec_t posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len;
