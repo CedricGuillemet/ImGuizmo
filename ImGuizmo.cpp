@@ -1451,8 +1451,22 @@ namespace ImGuizmo
             gContext.mbUsing = true;
             gContext.mCurrentOperation = type;
             const vec_t movePlanNormal[] = { gContext.mModel.v.up, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.up, -gContext.mCameraDir };
+            const vec_t movePlanNormalAlt[] = { gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.up };
+            unsigned int planNormalIndex = type - MOVE_X;
+            vec_t movePlanNormalChosen = movePlanNormal[ planNormalIndex ];
+            if( planNormalIndex < 3 )
+            {
+                // single axis move, select best axis
+                vec_t movePlanNormalChosenAlt = movePlanNormalAlt[ planNormalIndex ];
+                float dotPlanNormal = fabsf( Dot( gContext.mCameraDir, movePlanNormalChosen ) );
+                float dotPlanNormalAlt = fabsf( Dot( gContext.mCameraDir, movePlanNormalChosenAlt ) );
+                if( dotPlanNormal < dotPlanNormalAlt )
+                {
+                    movePlanNormalChosen = movePlanNormalChosenAlt;
+                }
+            }
             // pickup plan
-            gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, movePlanNormal[type - MOVE_X]);
+            gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, movePlanNormalChosen );
             const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
             gContext.mTranslationPlanOrigin = gContext.mRayOrigin + gContext.mRayVector * len;
             gContext.mMatrixOrigin = gContext.mModel.v.position;
