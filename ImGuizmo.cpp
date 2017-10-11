@@ -773,7 +773,7 @@ namespace ImGuizmo
       }
    }
 
-   static void ComputeTripodAxisAndVisibility(int axisIndex, vec_t& dirPlaneX, vec_t& dirPlaneY, bool& belowAxisLimit, bool& belowPlaneLimit, vec_t* planNormal = NULL )
+   static void ComputeTripodAxisAndVisibility(int axisIndex, vec_t& dirPlaneX, vec_t& dirPlaneY, bool& belowAxisLimit, bool& belowPlaneLimit, vec_t* planNormal = NULL, bool checkNormal = true )
    {
       const vec_t direction[3] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir };
 
@@ -782,15 +782,18 @@ namespace ImGuizmo
       int planNormalIndex    = (axisIndex + 2) % 3;
 	  if( planNormal )
 	  {
-		  int planNormalIndexAlt = (axisIndex + 1) % 3;
-		  vec_t planNormalIndexChosen    = direction[ planNormalIndex ];
-		  vec_t planNormalIndexChosenAlt = direction[ planNormalIndexAlt ];
-		  float dotplanNormalIndex    = fabsf( Dot( gContext.mCameraDir, planNormalIndexChosen ) );
-		  float dotplanNormalIndexAlt = fabsf( Dot( gContext.mCameraDir, planNormalIndexChosenAlt ) );
-		  if( dotplanNormalIndex < dotplanNormalIndexAlt )
+		  if( checkNormal )
 		  {
-			  planNormalIndex = planNormalIndexAlt;
-			  axisNormalIndex = 1;
+			  int planNormalIndexAlt = (axisIndex + 1) % 3;
+			  vec_t planNormalIndexChosen    = direction[ planNormalIndex ];
+			  vec_t planNormalIndexChosenAlt = direction[ planNormalIndexAlt ];
+			  float dotplanNormalIndex    = fabsf( Dot( gContext.mCameraDir, planNormalIndexChosen ) );
+			  float dotplanNormalIndexAlt = fabsf( Dot( gContext.mCameraDir, planNormalIndexChosenAlt ) );
+			  if( dotplanNormalIndex < dotplanNormalIndexAlt )
+			  {
+				  planNormalIndex = planNormalIndexAlt;
+				  axisNormalIndex = 1;
+			  }
 		  }
 		  *planNormal = direction[ planNormalIndex ];
 	  }
@@ -1372,6 +1375,8 @@ namespace ImGuizmo
       {
 		 vec_t dirPlaneX, dirPlaneY, planNormal;
          bool belowAxisLimit, belowPlaneLimit;
+
+		 // single axis check has two potential planes, do separately from plane check
          ComputeTripodAxisAndVisibility(i, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, &planNormal);
          dirPlaneX.TransformVector(gContext.mModel);
          dirPlaneY.TransformVector(gContext.mModel);
@@ -1384,7 +1389,17 @@ namespace ImGuizmo
          if (belowAxisLimit && dy > -0.1f && dy < 0.1f && dx > 0.1f  && dx < 1.f)
             type = MOVE_X + i;
 
-         if (belowPlaneLimit && dx >= quadUV[0] && dx <= quadUV[4] && dy >= quadUV[1] && dy <= quadUV[3])
+         // perform plane check without planNormal query
+         ComputeTripodAxisAndVisibility(i, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, &planNormal, false);
+         dirPlaneX.TransformVector(gContext.mModel);
+         dirPlaneY.TransformVector(gContext.mModel);
+
+         const float lenPlane = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.v.position, planNormal ));
+         vec_t posOnPlanPlane = gContext.mRayOrigin + gContext.mRayVector * lenPlane;
+
+         const float dxPlane = dirPlaneX.Dot3((posOnPlanPlane - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
+         const float dyPlane = dirPlaneY.Dot3((posOnPlanPlane - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
+		 if (belowPlaneLimit && dxPlane >= quadUV[0] && dxPlane <= quadUV[4] && dyPlane >= quadUV[1] && dyPlane <= quadUV[3])
             type = MOVE_XY + i;
 
          if (gizmoHitProportion)
