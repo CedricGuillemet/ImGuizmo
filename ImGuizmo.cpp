@@ -664,7 +664,7 @@ namespace ImGuizmo
    {
       ImGuiIO& io = ImGui::GetIO();
       ImGui::SetNextWindowSize( io.DisplaySize );
-      ImGui::PushStyleColor(ImGuiCol_WindowBg, 0.0f );
+      ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f,0.f,0.f,0.f) );
       ImGui::Begin("gizmo", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
 	  gContext.mDrawList = ImGui::GetWindowDrawList();
