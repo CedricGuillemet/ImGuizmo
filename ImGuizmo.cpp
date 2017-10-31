@@ -88,7 +88,7 @@ namespace ImGuizmo
       vec_t& operator -= (const vec_t& v) { x -= v.x; y -= v.y; z -= v.z; w -= v.w; return *this; }
       vec_t& operator += (const vec_t& v) { x += v.x; y += v.y; z += v.z; w += v.w; return *this; }
       vec_t& operator *= (const vec_t& v) { x *= v.x; y *= v.y; z *= v.z; w *= v.w; return *this; }
-      vec_t& operator *= (float v) { x *= v;	y *= v;	z *= v;	w *= v;	return *this; }
+      vec_t& operator *= (float v) { x *= v;    y *= v;    z *= v;    w *= v;    return *this; }
 
       vec_t operator * (float f) const;
       vec_t operator - () const;
@@ -101,7 +101,7 @@ namespace ImGuizmo
       float LengthSq() const { return (x*x + y*y + z*z); };
       vec_t Normalize() { (*this) *= (1.f / Length()); return (*this); }
       vec_t Normalize(const vec_t& v) { this->Set(v.x, v.y, v.z, v.w); this->Normalize(); return (*this); }
-	  vec_t Abs() const;
+      vec_t Abs() const;
       void Cross(const vec_t& v)
       {
          vec_t res;
@@ -190,7 +190,7 @@ namespace ImGuizmo
          {
             vec_t right, up, dir, position;
          } v;
-		 vec_t component[4];
+         vec_t component[4];
       };
 
       matrix_t(const matrix_t& other) { memcpy(&m16[0], &other.m16[0], sizeof(float) * 16); }
@@ -493,7 +493,7 @@ namespace ImGuizmo
       SCALE_Y,
       SCALE_Z,
       SCALE_XYZ,
-	  BOUNDS
+      BOUNDS
    };
 
    struct Context
@@ -553,25 +553,25 @@ namespace ImGuizmo
       bool mBelowPlaneLimit[3];
       float mAxisFactor[3];
 
-	  // bounds stretching
-	  vec_t mBoundsPivot;
-	  vec_t mBoundsAnchor;
-	  vec_t mBoundsPlan;
-	  vec_t mBoundsLocalPivot;
-	  int mBoundsBestAxis;
-	  int mBoundsAxis[2];
-	  bool mbUsingBounds;
-	  matrix_t mBoundsMatrix;
+      // bounds stretching
+      vec_t mBoundsPivot;
+      vec_t mBoundsAnchor;
+      vec_t mBoundsPlan;
+      vec_t mBoundsLocalPivot;
+      int mBoundsBestAxis;
+      int mBoundsAxis[2];
+      bool mbUsingBounds;
+      matrix_t mBoundsMatrix;
 
       //
       int mCurrentOperation;
 
-	  float mX = 0.f;
-	  float mY = 0.f;
-	  float mWidth = 0.f;
-	  float mHeight = 0.f;
-	  float mXMax = 0.f;
-	  float mYMax = 0.f;
+      float mX = 0.f;
+      float mY = 0.f;
+      float mWidth = 0.f;
+      float mHeight = 0.f;
+      float mXMax = 0.f;
+      float mYMax = 0.f;
    };
 
    static Context gContext;
@@ -609,11 +609,11 @@ namespace ImGuizmo
       trans *= 0.5f / trans.w;
       trans += makeVect(0.5f, 0.5f);
       trans.y = 1.f - trans.y;
-	  trans.x *= gContext.mWidth;
-	  trans.y *= gContext.mHeight;
-	  trans.x += gContext.mX;
-	  trans.y += gContext.mY;
-	  return ImVec2(trans.x, trans.y);
+      trans.x *= gContext.mWidth;
+      trans.y *= gContext.mHeight;
+      trans.x += gContext.mX;
+      trans.y += gContext.mY;
+      return ImVec2(trans.x, trans.y);
    }
 
    static void ComputeCameraRay(vec_t &rayOrigin, vec_t &rayDir)
@@ -623,9 +623,9 @@ namespace ImGuizmo
       matrix_t mViewProjInverse;
       mViewProjInverse.Inverse(gContext.mViewMat * gContext.mProjectionMat);
 
-	  float mox = ((io.MousePos.x - gContext.mX) / gContext.mWidth) * 2.f - 1.f;
-	  float moy = (1.f - ((io.MousePos.y - gContext.mY) / gContext.mHeight)) * 2.f - 1.f;
-	  
+      float mox = ((io.MousePos.x - gContext.mX) / gContext.mWidth) * 2.f - 1.f;
+      float moy = (1.f - ((io.MousePos.y - gContext.mY) / gContext.mHeight)) * 2.f - 1.f;
+      
       rayOrigin.Transform(makeVect(mox, moy, 0.f, 1.f), mViewProjInverse);
       rayOrigin *= 1.f / rayOrigin.w;
       vec_t rayEnd;
@@ -647,17 +647,17 @@ namespace ImGuizmo
 
    static bool IsInContextRect( ImVec2 p )
    {
-	   return IsWithin( p.x, gContext.mX, gContext.mXMax ) && IsWithin(p.y, gContext.mY, gContext.mYMax );
+       return IsWithin( p.x, gContext.mX, gContext.mXMax ) && IsWithin(p.y, gContext.mY, gContext.mYMax );
    }
 
    void SetRect(float x, float y, float width, float height)
    {
-	   gContext.mX = x;
-	   gContext.mY = y;
-	   gContext.mWidth = width;
-	   gContext.mHeight = height;
-	   gContext.mXMax = gContext.mX + gContext.mWidth;
-	   gContext.mYMax = gContext.mY + gContext.mXMax;
+       gContext.mX = x;
+       gContext.mY = y;
+       gContext.mWidth = width;
+       gContext.mHeight = height;
+       gContext.mXMax = gContext.mX + gContext.mWidth;
+       gContext.mYMax = gContext.mY + gContext.mXMax;
    }
 
    void BeginFrame()
@@ -666,7 +666,7 @@ namespace ImGuizmo
 
       ImGui::Begin("gizmo", NULL, io.DisplaySize, 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
-	  gContext.mDrawList = ImGui::GetWindowDrawList();
+      gContext.mDrawList = ImGui::GetWindowDrawList();
 
       ImGui::End();
    }
@@ -684,11 +684,11 @@ namespace ImGuizmo
    void Enable(bool enable)
    {
       gContext.mbEnable = enable;
-	  if (!enable)
-	  {
-		  gContext.mbUsing = false;
-		  gContext.mbUsingBounds = false;
-	  }
+      if (!enable)
+      {
+          gContext.mbUsing = false;
+          gContext.mbUsingBounds = false;
+      }
    }
 
    static float GetUniform(const vec_t& position, const matrix_t& mat)
@@ -762,8 +762,8 @@ namespace ImGuizmo
             for (int i = 0; i < 3; i++)
                colors[i + 1] = (type == (int)(SCALE_X + i)) ? selectionColor : directionColor[i];
             break;
-		 case BOUNDS:
-			 break;
+         case BOUNDS:
+             break;
          }
       }
       else
@@ -989,8 +989,8 @@ namespace ImGuizmo
    static void DrawTranslationGizmo(int type)
    {
       ImDrawList* drawList = gContext.mDrawList;
-	  if (!drawList)
-		  return;
+      if (!drawList)
+          return;
 
       // colors
       ImU32 colors[7];
@@ -1053,224 +1053,224 @@ namespace ImGuizmo
 
    static void HandleAndDrawLocalBounds(float *bounds, matrix_t *matrix, float *snapValues)
    {
-	   ImGuiIO& io = ImGui::GetIO();
-	   ImDrawList* drawList = gContext.mDrawList;
+       ImGuiIO& io = ImGui::GetIO();
+       ImDrawList* drawList = gContext.mDrawList;
 
-	   // compute best projection axis
-	   vec_t axesWorldDirections[3];
-	   vec_t bestAxisWorldDirection;
-	   int axes[3];
-	   unsigned int numAxes = 1;
-	   axes[0] = gContext.mBoundsBestAxis;
-	   int bestAxis = axes[0];
-	   if (!gContext.mbUsingBounds)
-	   {
-		   numAxes = 0;
-		   float bestDot = 0.f;
-		   for (unsigned int i = 0; i < 3; i++)
-		   {
-			   vec_t dirPlaneNormalWorld;
-			   dirPlaneNormalWorld.TransformVector(directionUnary[i], gContext.mModelSource);
-			   dirPlaneNormalWorld.Normalize();
+       // compute best projection axis
+       vec_t axesWorldDirections[3];
+       vec_t bestAxisWorldDirection;
+       int axes[3];
+       unsigned int numAxes = 1;
+       axes[0] = gContext.mBoundsBestAxis;
+       int bestAxis = axes[0];
+       if (!gContext.mbUsingBounds)
+       {
+           numAxes = 0;
+           float bestDot = 0.f;
+           for (unsigned int i = 0; i < 3; i++)
+           {
+               vec_t dirPlaneNormalWorld;
+               dirPlaneNormalWorld.TransformVector(directionUnary[i], gContext.mModelSource);
+               dirPlaneNormalWorld.Normalize();
 
-			   float dt = fabsf( Dot(Normalized(gContext.mCameraEye - gContext.mModelSource.v.position), dirPlaneNormalWorld) );
-			   if ( dt >= bestDot )
-			   {
-				   bestDot = dt;
-				   bestAxis = i;
-				   bestAxisWorldDirection = dirPlaneNormalWorld;
-			   }
+               float dt = fabsf( Dot(Normalized(gContext.mCameraEye - gContext.mModelSource.v.position), dirPlaneNormalWorld) );
+               if ( dt >= bestDot )
+               {
+                   bestDot = dt;
+                   bestAxis = i;
+                   bestAxisWorldDirection = dirPlaneNormalWorld;
+               }
 
-			   if( dt >= 0.1f )
-			   {
-				   axes[numAxes] = i;
-				   axesWorldDirections[numAxes] = dirPlaneNormalWorld;
-				   ++numAxes;
-			   }
-		   }
-	   }
+               if( dt >= 0.1f )
+               {
+                   axes[numAxes] = i;
+                   axesWorldDirections[numAxes] = dirPlaneNormalWorld;
+                   ++numAxes;
+               }
+           }
+       }
 
-	   if( numAxes == 0 )
-	   {
-			axes[0] = bestAxis;
-			axesWorldDirections[0] = bestAxisWorldDirection;
-			numAxes = 1;
-	   }
-	   else if( bestAxis != axes[0] )
-	   {
-		  unsigned int bestIndex = 0;
-		  for (unsigned int i = 0; i < numAxes; i++)
-		  {
-			  if( axes[i] == bestAxis )
-			  {
-				  bestIndex = i;
-				  break;
-			  }
-		  }
-		  int tempAxis = axes[0];
-		  axes[0] = axes[bestIndex];
-		  axes[bestIndex] = tempAxis;
-		  vec_t tempDirection = axesWorldDirections[0];
-		  axesWorldDirections[0] = axesWorldDirections[bestIndex];
-		  axesWorldDirections[bestIndex] = tempDirection;
-	   }
+       if( numAxes == 0 )
+       {
+            axes[0] = bestAxis;
+            axesWorldDirections[0] = bestAxisWorldDirection;
+            numAxes = 1;
+       }
+       else if( bestAxis != axes[0] )
+       {
+          unsigned int bestIndex = 0;
+          for (unsigned int i = 0; i < numAxes; i++)
+          {
+              if( axes[i] == bestAxis )
+              {
+                  bestIndex = i;
+                  break;
+              }
+          }
+          int tempAxis = axes[0];
+          axes[0] = axes[bestIndex];
+          axes[bestIndex] = tempAxis;
+          vec_t tempDirection = axesWorldDirections[0];
+          axesWorldDirections[0] = axesWorldDirections[bestIndex];
+          axesWorldDirections[bestIndex] = tempDirection;
+       }
 
-	   for (unsigned int axisIndex = 0; axisIndex < numAxes; ++axisIndex)
-	   {
-		   bestAxis = axes[axisIndex];
-		   bestAxisWorldDirection = axesWorldDirections[axisIndex];
+       for (unsigned int axisIndex = 0; axisIndex < numAxes; ++axisIndex)
+       {
+           bestAxis = axes[axisIndex];
+           bestAxisWorldDirection = axesWorldDirections[axisIndex];
 
-		   // corners
-		   vec_t aabb[4];
+           // corners
+           vec_t aabb[4];
 
-		   int secondAxis = (bestAxis + 1) % 3;
-		   int thirdAxis = (bestAxis + 2) % 3;
+           int secondAxis = (bestAxis + 1) % 3;
+           int thirdAxis = (bestAxis + 2) % 3;
 
-		   for (int i = 0; i < 4; i++)
-		   {
-			   aabb[i][3] = aabb[i][bestAxis] = 0.f;
-			   aabb[i][secondAxis] = bounds[secondAxis + 3 * (i >> 1)];
-			   aabb[i][thirdAxis] = bounds[thirdAxis + 3 * ((i >> 1) ^ (i & 1))];
-		   }
+           for (int i = 0; i < 4; i++)
+           {
+               aabb[i][3] = aabb[i][bestAxis] = 0.f;
+               aabb[i][secondAxis] = bounds[secondAxis + 3 * (i >> 1)];
+               aabb[i][thirdAxis] = bounds[thirdAxis + 3 * ((i >> 1) ^ (i & 1))];
+           }
 
-		   // draw bounds
-		   unsigned int anchorAlpha = gContext.mbEnable ? 0xFF000000 : 0x80000000;
+           // draw bounds
+           unsigned int anchorAlpha = gContext.mbEnable ? 0xFF000000 : 0x80000000;
 
-		   matrix_t boundsMVP = gContext.mModelSource * gContext.mViewProjection;
-		   for (int i = 0; i < 4;i++)
-		   {
-			   ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
-			   ImVec2 worldBound2 = worldToPos(aabb[(i+1)%4], boundsMVP);
-			   if( !IsInContextRect( worldBound1 ) || !IsInContextRect( worldBound2 ) )
-			   {
-				   continue;
-			   }
-			   float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
-			   int stepCount = (int)(boundDistance / 10.f);
-			   stepCount = min( stepCount, 1000 );
-			   float stepLength = 1.f / (float)stepCount;
-			   for (int j = 0; j < stepCount; j++)
-			   {
-				   float t1 = (float)j * stepLength;
-				   float t2 = (float)j * stepLength + stepLength * 0.5f;
-				   ImVec2 worldBoundSS1 = ImLerp(worldBound1, worldBound2, ImVec2(t1, t1));
-				   ImVec2 worldBoundSS2 = ImLerp(worldBound1, worldBound2, ImVec2(t2, t2));
-				   drawList->AddLine(worldBoundSS1, worldBoundSS2, 0xAAAAAA + anchorAlpha, 3.f);
-			   }
-			   vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4] ) * 0.5f;
-			   ImVec2 midBound = worldToPos(midPoint, boundsMVP);
-			   static const float AnchorBigRadius = 8.f;
-			   static const float AnchorSmallRadius = 6.f;
-			   bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
-			   bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
+           matrix_t boundsMVP = gContext.mModelSource * gContext.mViewProjection;
+           for (int i = 0; i < 4;i++)
+           {
+               ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
+               ImVec2 worldBound2 = worldToPos(aabb[(i+1)%4], boundsMVP);
+               if( !IsInContextRect( worldBound1 ) || !IsInContextRect( worldBound2 ) )
+               {
+                   continue;
+               }
+               float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
+               int stepCount = (int)(boundDistance / 10.f);
+               stepCount = min( stepCount, 1000 );
+               float stepLength = 1.f / (float)stepCount;
+               for (int j = 0; j < stepCount; j++)
+               {
+                   float t1 = (float)j * stepLength;
+                   float t2 = (float)j * stepLength + stepLength * 0.5f;
+                   ImVec2 worldBoundSS1 = ImLerp(worldBound1, worldBound2, ImVec2(t1, t1));
+                   ImVec2 worldBoundSS2 = ImLerp(worldBound1, worldBound2, ImVec2(t2, t2));
+                   drawList->AddLine(worldBoundSS1, worldBoundSS2, 0xAAAAAA + anchorAlpha, 3.f);
+               }
+               vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4] ) * 0.5f;
+               ImVec2 midBound = worldToPos(midPoint, boundsMVP);
+               static const float AnchorBigRadius = 8.f;
+               static const float AnchorSmallRadius = 6.f;
+               bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
+               bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
 
-		   
-			   unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
-			   unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
-		   
-			   drawList->AddCircleFilled(worldBound1, AnchorBigRadius, bigAnchorColor);
-			   drawList->AddCircleFilled(midBound, AnchorSmallRadius, smallAnchorColor);
-			   int oppositeIndex = (i + 2) % 4;
-			   // big anchor on corners
-			   if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && io.MouseDown[0])
-			   {
-				   gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
-				   gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
-				   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
-				   gContext.mBoundsBestAxis = bestAxis;
-				   gContext.mBoundsAxis[0] = secondAxis;
-				   gContext.mBoundsAxis[1] = thirdAxis;
+           
+               unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
+               unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
+           
+               drawList->AddCircleFilled(worldBound1, AnchorBigRadius, bigAnchorColor);
+               drawList->AddCircleFilled(midBound, AnchorSmallRadius, smallAnchorColor);
+               int oppositeIndex = (i + 2) % 4;
+               // big anchor on corners
+               if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && io.MouseDown[0])
+               {
+                   gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
+                   gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
+                   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
+                   gContext.mBoundsBestAxis = bestAxis;
+                   gContext.mBoundsAxis[0] = secondAxis;
+                   gContext.mBoundsAxis[1] = thirdAxis;
 
-				   gContext.mBoundsLocalPivot.Set(0.f);
-				   gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
-				   gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
+                   gContext.mBoundsLocalPivot.Set(0.f);
+                   gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
+                   gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
 
-				   gContext.mbUsingBounds = true;
-				   gContext.mBoundsMatrix = gContext.mModelSource;
-			   }
-			   // small anchor on middle of segment
-			   if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && io.MouseDown[0])
-			   {
-				   vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
-				   gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
-				   gContext.mBoundsAnchor.TransformPoint(midPoint, gContext.mModelSource);
-				   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
-				   gContext.mBoundsBestAxis = bestAxis;
-				   int indices[] = { secondAxis , thirdAxis };
-				   gContext.mBoundsAxis[0] = indices[i%2];
-				   gContext.mBoundsAxis[1] = -1;
+                   gContext.mbUsingBounds = true;
+                   gContext.mBoundsMatrix = gContext.mModelSource;
+               }
+               // small anchor on middle of segment
+               if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && io.MouseDown[0])
+               {
+                   vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
+                   gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
+                   gContext.mBoundsAnchor.TransformPoint(midPoint, gContext.mModelSource);
+                   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
+                   gContext.mBoundsBestAxis = bestAxis;
+                   int indices[] = { secondAxis , thirdAxis };
+                   gContext.mBoundsAxis[0] = indices[i%2];
+                   gContext.mBoundsAxis[1] = -1;
 
-				   gContext.mBoundsLocalPivot.Set(0.f);
-				   gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
+                   gContext.mBoundsLocalPivot.Set(0.f);
+                   gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
 
-				   gContext.mbUsingBounds = true;
-				   gContext.mBoundsMatrix = gContext.mModelSource;
-			   }
-		   }
-	   
-		   if (gContext.mbUsingBounds)
-		   {
-			   matrix_t scale;
-			   scale.SetToIdentity();
+                   gContext.mbUsingBounds = true;
+                   gContext.mBoundsMatrix = gContext.mModelSource;
+               }
+           }
+       
+           if (gContext.mbUsingBounds)
+           {
+               matrix_t scale;
+               scale.SetToIdentity();
 
-			   // compute projected mouse position on plan
-			   const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mBoundsPlan);
-			   vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
+               // compute projected mouse position on plan
+               const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mBoundsPlan);
+               vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
 
-			   // compute a reference and delta vectors base on mouse move
-			   vec_t deltaVector = (newPos - gContext.mBoundsPivot).Abs();
-			   vec_t referenceVector = (gContext.mBoundsAnchor - gContext.mBoundsPivot).Abs();
+               // compute a reference and delta vectors base on mouse move
+               vec_t deltaVector = (newPos - gContext.mBoundsPivot).Abs();
+               vec_t referenceVector = (gContext.mBoundsAnchor - gContext.mBoundsPivot).Abs();
 
-			   // for 1 or 2 axes, compute a ratio that's used for scale and snap it based on resulting length
-			   for (int i = 0; i < 2; i++)
-			   {
-				   int axisIndex = gContext.mBoundsAxis[i];
-				   if (axisIndex == -1)
-					   continue;
+               // for 1 or 2 axes, compute a ratio that's used for scale and snap it based on resulting length
+               for (int i = 0; i < 2; i++)
+               {
+                   int axisIndex = gContext.mBoundsAxis[i];
+                   if (axisIndex == -1)
+                       continue;
 
-				   float ratioAxis = 1.f;
-				   vec_t axisDir = gContext.mBoundsMatrix.component[axisIndex].Abs();
+                   float ratioAxis = 1.f;
+                   vec_t axisDir = gContext.mBoundsMatrix.component[axisIndex].Abs();
 
-				   float dtAxis = axisDir.Dot(referenceVector);
-				   float boundSize = bounds[axisIndex + 3] - bounds[axisIndex];
-				   if (dtAxis > FLT_EPSILON)
-					   ratioAxis = axisDir.Dot(deltaVector) / dtAxis;
+                   float dtAxis = axisDir.Dot(referenceVector);
+                   float boundSize = bounds[axisIndex + 3] - bounds[axisIndex];
+                   if (dtAxis > FLT_EPSILON)
+                       ratioAxis = axisDir.Dot(deltaVector) / dtAxis;
 
-				   if (snapValues)
-				   {
-					   float length = boundSize * ratioAxis;
-					   ComputeSnap(&length, snapValues[axisIndex]);
-					   if (boundSize > FLT_EPSILON)
-						   ratioAxis = length / boundSize;
-				   }
-				   scale.component[axisIndex] *= ratioAxis;
-			   }
+                   if (snapValues)
+                   {
+                       float length = boundSize * ratioAxis;
+                       ComputeSnap(&length, snapValues[axisIndex]);
+                       if (boundSize > FLT_EPSILON)
+                           ratioAxis = length / boundSize;
+                   }
+                   scale.component[axisIndex] *= ratioAxis;
+               }
 
-			   // transform matrix
-			   matrix_t preScale, postScale;
-			   preScale.Translation(-gContext.mBoundsLocalPivot);
-			   postScale.Translation(gContext.mBoundsLocalPivot);
-			   matrix_t res = preScale * scale * postScale * gContext.mBoundsMatrix;
-			   *matrix = res;
+               // transform matrix
+               matrix_t preScale, postScale;
+               preScale.Translation(-gContext.mBoundsLocalPivot);
+               postScale.Translation(gContext.mBoundsLocalPivot);
+               matrix_t res = preScale * scale * postScale * gContext.mBoundsMatrix;
+               *matrix = res;
 
-			   // info text
-			   char tmps[512];
-			   ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
-			   ImFormatString(tmps, sizeof(tmps), "X: %.2f Y: %.2f Z:%.2f"
-				   , (bounds[3] - bounds[0]) * gContext.mBoundsMatrix.component[0].Length() * scale.component[0].Length()
-				   , (bounds[4] - bounds[1]) * gContext.mBoundsMatrix.component[1].Length() * scale.component[1].Length()
-				   , (bounds[5] - bounds[2]) * gContext.mBoundsMatrix.component[2].Length() * scale.component[2].Length()
-			   );
-			   drawList->AddText(ImVec2(destinationPosOnScreen.x + 15, destinationPosOnScreen.y + 15), 0xFF000000, tmps);
-			   drawList->AddText(ImVec2(destinationPosOnScreen.x + 14, destinationPosOnScreen.y + 14), 0xFFFFFFFF, tmps);
- 		   }
+               // info text
+               char tmps[512];
+               ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
+               ImFormatString(tmps, sizeof(tmps), "X: %.2f Y: %.2f Z:%.2f"
+                   , (bounds[3] - bounds[0]) * gContext.mBoundsMatrix.component[0].Length() * scale.component[0].Length()
+                   , (bounds[4] - bounds[1]) * gContext.mBoundsMatrix.component[1].Length() * scale.component[1].Length()
+                   , (bounds[5] - bounds[2]) * gContext.mBoundsMatrix.component[2].Length() * scale.component[2].Length()
+               );
+               drawList->AddText(ImVec2(destinationPosOnScreen.x + 15, destinationPosOnScreen.y + 15), 0xFF000000, tmps);
+               drawList->AddText(ImVec2(destinationPosOnScreen.x + 14, destinationPosOnScreen.y + 14), 0xFFFFFFFF, tmps);
+            }
 
-		   if (!io.MouseDown[0])
-			   gContext.mbUsingBounds = false;
+           if (!io.MouseDown[0])
+               gContext.mbUsingBounds = false;
 
-		   if( gContext.mbUsingBounds )
-			   break;
-	   }
+           if( gContext.mbUsingBounds )
+               break;
+       }
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1316,7 +1316,7 @@ namespace ImGuizmo
 
       vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y, 0.f, 0.f };
       float dist = deltaScreen.Length();
-	  if (dist >= (screenRotateSize - 0.002f) * gContext.mHeight && dist < (screenRotateSize + 0.002f) * gContext.mHeight)
+      if (dist >= (screenRotateSize - 0.002f) * gContext.mHeight && dist < (screenRotateSize + 0.002f) * gContext.mHeight)
          type = ROTATE_SCREEN;
 
       const vec_t planNormals[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir};
@@ -1519,7 +1519,7 @@ namespace ImGuizmo
             gContext.mScale[axisIndex] = max(ratio, 0.001f);
          }
          else
-         {			
+         {            
             float scaleDelta = (io.MousePos.x - gContext.mSaveMousePosx)  * 0.01f;
             gContext.mScale.Set(max(1.f + scaleDelta, 0.001f));
          }
@@ -1704,41 +1704,41 @@ namespace ImGuizmo
       int type = NONE;
       if (gContext.mbEnable)
       {
-		  if (!gContext.mbUsingBounds)
-		  {
-			  switch (operation)
-			  {
-			  case ROTATE:
-				  HandleRotation(matrix, deltaMatrix, type, snap);
-				  break;
-			  case TRANSLATE:
-				  HandleTranslation(matrix, deltaMatrix, type, snap);
-				  break;
-			  case SCALE:
-				  HandleScale(matrix, deltaMatrix, type, snap);
-				  break;
-			  }
-		  }
+          if (!gContext.mbUsingBounds)
+          {
+              switch (operation)
+              {
+              case ROTATE:
+                  HandleRotation(matrix, deltaMatrix, type, snap);
+                  break;
+              case TRANSLATE:
+                  HandleTranslation(matrix, deltaMatrix, type, snap);
+                  break;
+              case SCALE:
+                  HandleScale(matrix, deltaMatrix, type, snap);
+                  break;
+              }
+          }
       }
 
-	  if (localBounds && !gContext.mbUsing)
-		  HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap);
+      if (localBounds && !gContext.mbUsing)
+          HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap);
 
-	  if (!gContext.mbUsingBounds)
-	  {
-		  switch (operation)
-		  {
-		  case ROTATE:
-			  DrawRotationGizmo(type);
-			  break;
-		  case TRANSLATE:
-			  DrawTranslationGizmo(type);
-			  break;
-		  case SCALE:
-			  DrawScaleGizmo(type);
-			  break;
-		  }
-	  }
+      if (!gContext.mbUsingBounds)
+      {
+          switch (operation)
+          {
+          case ROTATE:
+              DrawRotationGizmo(type);
+              break;
+          case TRANSLATE:
+              DrawTranslationGizmo(type);
+              break;
+          case SCALE:
+              DrawScaleGizmo(type);
+              break;
+          }
+      }
    }
 
    void DrawCube(const float *view, const float *projection, float *matrix)
