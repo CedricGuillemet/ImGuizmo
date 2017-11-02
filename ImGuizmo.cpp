@@ -602,8 +602,6 @@ namespace ImGuizmo
 
    static ImVec2 worldToPos(const vec_t& worldPos, const matrix_t& mat)
    {
-      ImGuiIO& io = ImGui::GetIO();
-
       vec_t trans;
       trans.TransformPoint(worldPos, mat);
       trans *= 0.5f / trans.w;
@@ -864,7 +862,6 @@ namespace ImGuizmo
    static void DrawRotationGizmo(int type)
    {
       ImDrawList* drawList = gContext.mDrawList;
-      ImGuiIO& io = ImGui::GetIO();
 
       // colors
       ImU32 colors[7];
