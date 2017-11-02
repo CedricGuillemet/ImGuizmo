@@ -765,8 +765,6 @@ namespace ImGuizmo
             for (int i = 0; i < 3; i++)
                colors[i + 1] = (type == (int)(SCALE_X + i)) ? selectionColor : directionColor[i];
             break;
-         case BOUNDS:
-             break;
          }
       }
       else
