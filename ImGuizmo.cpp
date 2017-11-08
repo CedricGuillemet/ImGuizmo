@@ -1458,6 +1458,25 @@ namespace ImGuizmo
             const vec_t movePlanNormal[] = { gContext.mModel.v.up, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.up, -gContext.mCameraDir };
             // pickup plan
             gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, movePlanNormal[type - MOVE_X]);
+
+            vec_t dirVec = gContext.mRayOrigin - gContext.mModel.v.position;
+            const float dotP = Dot(dirVec, gContext.mTranslationPlan);
+ 
+            // this means that the view direction vector is coplanar with the translation plane.
+            // If this is the case, we should modify the plane if the movement type is along a single axis
+            // FLT_EPSILON isn't big enough for this value for some reason
+            if (fabsf(dotP) < 0.001f && type >= MOVE_X && type <= MOVE_Z)
+            {
+              // intersect with a different plane, that still keeps the movement vector as a direction vector
+              vec_t normDir = movePlanNormal[type - MOVE_X];
+ 
+              int axisIndex = gContext.mCurrentOperation - MOVE_X;
+              const vec_t& axisValue = *(vec_t*)&gContext.mModel.m[axisIndex];
+ 
+              vec_t newNorm = Cross(normDir, axisValue);
+              gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, newNorm);
+            }
+            
             const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
             gContext.mTranslationPlanOrigin = gContext.mRayOrigin + gContext.mRayVector * len;
             gContext.mMatrixOrigin = gContext.mModel.v.position;
@@ -1487,7 +1506,24 @@ namespace ImGuizmo
             // pickup plan
 
             gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, movePlanNormal[type - SCALE_X]);
+            vec_t dirVec = gContext.mRayOrigin - gContext.mModel.v.position;
+            const float dotP = Dot(dirVec, gContext.mTranslationPlan);
+            // this means that the view direction vector is coplanar with the translation plane.
+            // If this is the case, we should modify the plane if the movement type is along a single axis
+            // FLT_EPSILON isn't big enough for this value for some reason
+            if (fabsf(dotP) < 0.001f && type >= SCALE_X && type <= SCALE_Z)
+            {
+                // intersect with a different plane, that still keeps the movement vector as a direction vector
+                vec_t normDir = movePlanNormal[type - SCALE_X];
+            
+                int axisIndex = gContext.mCurrentOperation - SCALE_X;
+                const vec_t& axisValue = *(vec_t*)&gContext.mModel.m[axisIndex];
+            
+                vec_t newNorm = Cross(normDir, axisValue);
+                gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, newNorm);
+            }
             const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
+
             gContext.mTranslationPlanOrigin = gContext.mRayOrigin + gContext.mRayVector * len;
             gContext.mMatrixOrigin = gContext.mModel.v.position;
             gContext.mScale.Set(1.f, 1.f, 1.f);
