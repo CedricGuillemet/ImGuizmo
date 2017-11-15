@@ -21,7 +21,9 @@
 // SOFTWARE.
 
 #include "imgui.h"
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
+#endif
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
 
@@ -1051,6 +1053,13 @@ namespace ImGuizmo
       }
    }
 
+   static bool CanActivate()
+   {
+      if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered() && !ImGui::IsAnyItemActive())
+         return true;
+      return false;
+   }
+
    static void HandleAndDrawLocalBounds(float *bounds, matrix_t *matrix, float *snapValues)
    {
        ImGuiIO& io = ImGui::GetIO();
@@ -1172,7 +1181,7 @@ namespace ImGuizmo
                drawList->AddCircleFilled(midBound, AnchorSmallRadius, smallAnchorColor);
                int oppositeIndex = (i + 2) % 4;
                // big anchor on corners
-               if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && io.MouseDown[0])
+               if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && CanActivate())
                {
                    gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
                    gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
@@ -1189,7 +1198,7 @@ namespace ImGuizmo
                    gContext.mBoundsMatrix = gContext.mModelSource;
                }
                // small anchor on middle of segment
-               if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && io.MouseDown[0])
+               if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && CanActivate())
                {
                    vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
                    gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
@@ -1447,12 +1456,9 @@ namespace ImGuizmo
          // find new possible way to move
          vec_t gizmoHitProportion;
          type = GetMoveType(&gizmoHitProportion);
-         if(type != NONE)
+         if (CanActivate() && type != NONE)
          {
             ImGui::CaptureMouseFromApp();
-         }
-         if (io.MouseDown[0] && type != NONE)
-         {
             gContext.mbUsing = true;
             gContext.mCurrentOperation = type;
             const vec_t movePlanNormal[] = { gContext.mModel.v.up, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.up, -gContext.mCameraDir };
@@ -1475,12 +1481,9 @@ namespace ImGuizmo
       {
          // find new possible way to scale
          type = GetScaleType();
-         if(type != NONE)
+         if (CanActivate() && type != NONE)
          {
             ImGui::CaptureMouseFromApp();
-         }
-         if (io.MouseDown[0] && type != NONE)
-         {
             gContext.mbUsing = true;
             gContext.mCurrentOperation = type;
             const vec_t movePlanNormal[] = { gContext.mModel.v.up, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.dir, gContext.mModel.v.up, gContext.mModel.v.right, -gContext.mCameraDir };
@@ -1564,18 +1567,14 @@ namespace ImGuizmo
       {
          type = GetRotateType();
 
-         if(type != NONE)
-         {
-            ImGui::CaptureMouseFromApp();
-         }
-      
          if (type == ROTATE_SCREEN)
          {
             applyRotationLocaly = true;
          }
             
-         if (io.MouseDown[0] && type != NONE)
+         if (CanActivate() && type != NONE)
          {
+            ImGui::CaptureMouseFromApp();
             gContext.mbUsing = true;
             gContext.mCurrentOperation = type;
             const vec_t rotatePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir, -gContext.mCameraDir };
