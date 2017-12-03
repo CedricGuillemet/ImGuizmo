@@ -9,7 +9,7 @@ Built against DearImgui 1.53WIP
 ![Image of Bounds](http://i.imgur.com/3Ez5LBr.gif)
 
 There is now a sample for Win32/OpenGL ! With a binary in bin directory.
-![Image of Sample](https://imgur.com/a/VGMfW)
+![Image of Sample](https://i.imgur.com/nXlzyqD.png)
 
 ### API doc
 
