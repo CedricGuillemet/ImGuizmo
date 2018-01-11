@@ -3,7 +3,16 @@
 #include "ImApp.h"
 
 #include "ImGuizmo.h"
+#include "ImSequencer.h"
+
 #include <math.h>
+#include <vector>
+
+//
+//
+// ImGuizmo example helper functions
+//
+//
 
 void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float *m16)
 {
@@ -96,7 +105,59 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL);
 }
 
+//
+//
+// ImSequencer interface
+//
+//
+static const char* SequencerItemTypeNames[] = { "Camera","Music", "ScreenEffect", "FadeIn", "Animation" };
 
+struct MySequence : public ImSequencer::SequenceInterface
+{
+	// interface with sequencer
+	
+	virtual int GetFrameCount() const { return mFrameCount; }
+	virtual int GetItemCount() const { return (int)myItems.size(); }
+
+	virtual int GetItemTypeCount() const { return sizeof(SequencerItemTypeNames)/sizeof(char*); }
+	virtual const char *GetItemTypeName(int typeIndex) const { return SequencerItemTypeNames[typeIndex]; }
+	virtual const char *GetItemLabel(int index) const 
+	{ 
+		static char tmps[512];
+		sprintf(tmps, "[%02d] %s", index, SequencerItemTypeNames[myItems[index].mType]);
+		return tmps; 
+	}
+
+	virtual void Get(int index, int** start, int** end, int *type, unsigned int *color)
+	{
+		MySequenceItem &item = myItems[index];
+		if (color)
+			*color = 0xFFAA8080; // same color for everyone, return color based on type
+		if (start)
+			*start = &item.mFrameStart;
+		if (end)
+			*end = &item.mFrameEnd;
+		if (type)
+			*type = item.mType;
+	}
+	virtual void Add(int type) { myItems.push_back(MySequenceItem{ type, 0, 10 }); };
+	virtual void Del(int index) { myItems.erase(myItems.begin() + index); }
+	virtual void Duplicate(int index) { myItems.push_back(myItems[index]); }
+
+	// my datas
+	MySequence() : mFrameCount(0) {}
+	int mFrameCount;
+	struct MySequenceItem
+	{
+		int mType;
+		int mFrameStart, mFrameEnd;
+	};
+	std::vector<MySequenceItem> myItems;
+};
+
+
+	// return true if selection is made
+	
 int main(int, char**)
 {
 	ImApp::ImApp imApp;
@@ -120,6 +181,15 @@ int main(int, char**)
 		1.f, -1.f, -4.f, 1.f };
 
 	float cameraProjection[16];
+
+	// sequence with default values
+	MySequence mySequence;
+	mySequence.mFrameCount = 100;
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 0, 10, 30 });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30 });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 3, 12, 60 });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90 });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99 });
 	
 	// Main loop
 	while (!imApp.Done())
@@ -139,6 +209,24 @@ int main(int, char**)
 		ImGui::SetNextWindowSize(ImVec2(320, 240));
 		ImGui::Begin("Matrix Inspector");
 		EditTransform(cameraView, cameraProjection, objectMatrix);
+		ImGui::End();
+
+		// let's create the sequencer
+		static int selectedEntry = -1;
+		static int firstFrame = 0;
+		static bool expanded = true;
+		ImGui::SetNextWindowPos(ImVec2(10, 260));
+		ImGui::SetNextWindowSize(ImVec2(740, 380));
+		ImGui::Begin("Sequencer");
+		ImGui::InputInt("Frame count", &mySequence.mFrameCount);
+		Sequencer(&mySequence, NULL, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE);
+		// add a UI to edit that particular item
+		if (selectedEntry != -1)
+		{
+			MySequence::MySequenceItem &item = mySequence.myItems[selectedEntry];
+			ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
+			// switch (type) ....
+		}
 		ImGui::End();
 
 		// render everything

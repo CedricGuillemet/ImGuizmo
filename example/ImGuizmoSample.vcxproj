@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\ImGuizmo.h" />
+    <ClInclude Include="..\ImSequencer.h" />
     <ClInclude Include="ImApp.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ImGuizmo.cpp" />
+    <ClCompile Include="..\ImSequencer.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="main.cpp" />
