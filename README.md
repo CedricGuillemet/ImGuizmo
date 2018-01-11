@@ -1,3 +1,8 @@
+### ImSequencer
+A WIP little sequencer used to edit frame start/end for different events in a timeline.
+![Image of Rotation](http://i.imgur.com/BeyNwCn.png)
+Check the sample for the documentation. More to come...
+
 ### ImGuizmo
 
 ImGizmo is a small (.h and .cpp) library built ontop of Dear ImGui that allow you to manipulate(Rotate & translate at the moment) 4x4 float matrices. No other dependancies. Coded with Immediate Mode (IM) philosophy in mind.
