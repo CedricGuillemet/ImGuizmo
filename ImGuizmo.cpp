@@ -897,7 +897,7 @@ namespace ImGuizmo
          if(radiusAxis > gContext.mRadiusSquareCenter)
            gContext.mRadiusSquareCenter = radiusAxis;
 
-         drawList->AddPolyline(circlePos, halfCircleSegmentCount, colors[3 - axis], false, 2);
+         drawList->AddPolyline(circlePos, halfCircleSegmentCount, colors[3 - axis], false, 2, true);
       }
       drawList->AddCircle(worldToPos(gContext.mModel.v.position, gContext.mViewProjection), gContext.mRadiusSquareCenter, colors[0], 64, 3.f);
 
@@ -916,8 +916,8 @@ namespace ImGuizmo
             pos *= gContext.mScreenFactor;
             circlePos[i] = worldToPos(pos + gContext.mModel.v.position, gContext.mViewProjection);
          }
-         drawList->AddConvexPolyFilled(circlePos, halfCircleSegmentCount, 0x801080FF);
-         drawList->AddPolyline(circlePos, halfCircleSegmentCount, 0xFF1080FF, true, 2);
+         drawList->AddConvexPolyFilled(circlePos, halfCircleSegmentCount, 0x801080FF, true);
+         drawList->AddPolyline(circlePos, halfCircleSegmentCount, 0xFF1080FF, true, 2, true);
 
          ImVec2 destinationPosOnScreen = circlePos[1];
          char tmps[512];
@@ -1055,8 +1055,8 @@ namespace ImGuizmo
                vec_t cornerWorldPos = (dirPlaneX * quadUV[j * 2] + dirPlaneY  * quadUV[j * 2 + 1]) * gContext.mScreenFactor;
                screenQuadPts[j] = worldToPos(cornerWorldPos, gContext.mMVP);
             }
-            drawList->AddPolyline(screenQuadPts, 4, planeBorderColor[i], true, 1.0f);
-            drawList->AddConvexPolyFilled(screenQuadPts, 4, colors[i + 4]);
+            drawList->AddPolyline(screenQuadPts, 4, planeBorderColor[i], true, 1.0f, true);
+            drawList->AddConvexPolyFilled(screenQuadPts, 4, colors[i + 4], true);
          }
       }
 
@@ -1818,7 +1818,7 @@ namespace ImGuizmo
             continue;
 
          // draw face with lighter color
-         gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, directionColor[normalIndex] | 0x808080);
+         gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, directionColor[normalIndex] | 0x808080, true);
       }
    }
 };
