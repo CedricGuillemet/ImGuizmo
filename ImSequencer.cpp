@@ -155,9 +155,14 @@ namespace ImSequencer
 				int px = (int)canvas_pos.x + i * framePixelWidth + legendWidth - firstFrameUsed * framePixelWidth;
 				int tiretStart = baseIndex ? 4 : (halfIndex ? 10 : 14);
 				int tiretEnd = baseIndex ? controlHeight : ItemHeight;
-				draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)tiretStart), ImVec2((float)px, canvas_pos.y + (float)tiretEnd - 1), 0xFF606060, 1);
+				
+				if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth))
+				{
+					draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)tiretStart), ImVec2((float)px, canvas_pos.y + (float)tiretEnd - 1), 0xFF606060, 1);
 
-				draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)ItemHeight), ImVec2((float)px, canvas_pos.y + (float)controlHeight - 1), 0x30606060, 1);
+					draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)ItemHeight), ImVec2((float)px, canvas_pos.y + (float)controlHeight - 1), 0x30606060, 1);
+				}
+				
 				if (baseIndex)
 				{
 					char tmps[512];
@@ -186,7 +191,11 @@ namespace ImSequencer
 				ImVec2 slotP1(pos.x + *start * framePixelWidth, pos.y + 2);
 				ImVec2 slotP2(pos.x + *end * framePixelWidth + framePixelWidth, pos.y + ItemHeight - 2);
 				unsigned int slotColor = color | 0xFF000000;
-				draw_list->AddRectFilled(slotP1, slotP2, slotColor, 2);
+				
+				if (slotP1.x <= (canvas_size.x + canvas_pos.x) && slotP1.x >= (canvas_pos.x + legendWidth))
+				{
+					draw_list->AddRectFilled(slotP1, slotP2, slotColor, 2);
+				}
 
 				ImRect rects[3] = { ImRect(slotP1, ImVec2(slotP1.x + framePixelWidth / 2, slotP2.y))
 					, ImRect(ImVec2(slotP2.x - framePixelWidth / 2, slotP1.y), slotP2)
