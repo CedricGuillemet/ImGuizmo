@@ -2929,7 +2929,7 @@ namespace ImApp
 
 			AdjustWindowRect(&rec, dwStyle, 0);
 
-			info->hWnd = CreateWindowExA(dwExStyle, WndClsEx.lpszClassName, "", dwStyle,
+			info->hWnd = CreateWindowExA(dwExStyle, WndClsEx.lpszClassName, "", dwStyle| WS_MAXIMIZE,
 				(GetSystemMetrics(SM_CXSCREEN) - rec.right + rec.left) >> 1,
 				(GetSystemMetrics(SM_CYSCREEN) - rec.bottom + rec.top) >> 1,
 				rec.right - rec.left, rec.bottom - rec.top, 0, 0, info->hInstance, 0);

@@ -47,12 +47,34 @@ void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar
 	Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16);
 }
 
+
+void OrthoGraphic(const float l, float r, float b, const float t, float zn, const float zf, float *m16)
+{
+	m16[0] = 2 / (r - l);
+	m16[1] = 0.0f;
+	m16[2] = 0.0f;
+	m16[3] = 0.0f;
+	m16[4] = 0.0f;
+	m16[5] = 2 / (t - b);
+	m16[6] = 0.0f;
+	m16[7] = 0.0f;
+	m16[8] = 0.0f;
+	m16[9] = 0.0f;
+	m16[10] = 1.0f / (zf - zn);
+	m16[11] = 0.0f;
+	m16[12] = (l + r) / (l - r);
+	m16[13] = (t + b) / (b - t);
+	m16[14] = zn / (zn - zf);
+	m16[15] = 1.0f;
+}
+
 void EditTransform(const float *cameraView, float *cameraProjection, float* matrix)
 {
-	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
-	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 	static bool useSnap = false;
 	static float snap[3] = { 1.f, 1.f, 1.f };
+	static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
 
 	if (ImGui::IsKeyPressed(90))
 		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -102,7 +124,7 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 	}
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL);
+	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, bounds);
 }
 
 //
@@ -156,7 +178,29 @@ struct MySequence : public ImSequencer::SequenceInterface
 };
 
 
-	// return true if selection is made
+inline void rotationY(const float angle, float *m16)
+{
+	float c = cosf(angle);
+	float s = sinf(angle);
+
+	m16[0] = c;
+	m16[1] = 0.0f;
+	m16[2] = -s;
+	m16[3] = 0.0f;
+	m16[4] = 0.0f;
+	m16[5] = 1.f;
+	m16[6] = 0.0f;
+	m16[7] = 0.0f;
+	m16[8] = s;
+	m16[9] = 0.0f;
+	m16[10] = c;
+	m16[11] = 0.0f;
+	m16[12] = 0.f;
+	m16[13] = 0.f;
+	m16[14] = 0.f;
+	m16[15] = 1.0f;
+}
+
 	
 int main(int, char**)
 {
@@ -191,23 +235,58 @@ int main(int, char**)
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90 });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99 });
 	
+	// Camera projection
+	bool isPerspective = false;
+	float fov = 27.f;
+	float viewWidth = 10.f;
+
+	rotationY(0.f, objectMatrix);
+
+	
 	// Main loop
 	while (!imApp.Done())
 	{
 		imApp.NewFrame();
 
 		ImGuiIO& io = ImGui::GetIO();
-		Perspective(27.f, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, cameraProjection);
-
+		if (isPerspective)
+		{
+			Perspective(fov, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, cameraProjection);
+		}
+		else
+		{
+			float viewHeight = viewWidth*io.DisplaySize.y / io.DisplaySize.x;
+			OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, -viewWidth, viewWidth, cameraProjection);
+		}
 		ImGuizmo::BeginFrame();
 
+
+		//static float ng = 0.f;
+		//ng += 0.01f;
+		//ng = 1.f;
+		//rotationY(ng, objectMatrix);
+		//objectMatrix[12] = 5.f;
 		// debug
 		ImGuizmo::DrawCube(cameraView, cameraProjection, objectMatrix);
 
 		// create a window and insert the inspector
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
-		ImGui::SetNextWindowSize(ImVec2(320, 240));
-		ImGui::Begin("Matrix Inspector");
+		ImGui::SetNextWindowSize(ImVec2(320, 250));
+		ImGui::Begin("Editor");
+		ImGui::Text("Camera");
+		if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("Orthographic", !isPerspective)) isPerspective = false;
+		if (isPerspective)
+		{
+			ImGui::SliderFloat("Fov", &fov, 20.f, 110.f);
+		}
+		else
+		{
+			ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
+		}
+		ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
+		ImGui::Separator();
 		EditTransform(cameraView, cameraProjection, objectMatrix);
 		ImGui::End();
 
@@ -215,7 +294,7 @@ int main(int, char**)
 		static int selectedEntry = -1;
 		static int firstFrame = 0;
 		static bool expanded = true;
-		ImGui::SetNextWindowPos(ImVec2(10, 260));
+		ImGui::SetNextWindowPos(ImVec2(10, 270));
 		ImGui::SetNextWindowSize(ImVec2(740, 380));
 		ImGui::Begin("Sequencer");
 		ImGui::InputInt("Frame count", &mySequence.mFrameCount);
