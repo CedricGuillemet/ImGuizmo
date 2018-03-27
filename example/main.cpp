@@ -75,6 +75,9 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 	static bool useSnap = false;
 	static float snap[3] = { 1.f, 1.f, 1.f };
 	static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
+	static float boundsSnap[] = { 0.1f, 0.1f, 0.1f };
+	static bool boundSizing = false;
+	static bool boundSizingSnap = false;
 
 	if (ImGui::IsKeyPressed(90))
 		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -122,9 +125,18 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 		ImGui::InputFloat("Scale Snap", &snap[0]);
 		break;
 	}
+	ImGui::Checkbox("Bound Sizing", &boundSizing);
+	if (boundSizing)
+	{
+		ImGui::PushID(3);
+		ImGui::Checkbox("", &boundSizingSnap);
+		ImGui::SameLine();
+		ImGui::InputFloat3("Snap", boundsSnap);
+		ImGui::PopID();
+	}
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, bounds);
+	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing?bounds:NULL, boundSizingSnap?boundsSnap:NULL);
 }
 
 //
@@ -271,7 +283,7 @@ int main(int, char**)
 
 		// create a window and insert the inspector
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
-		ImGui::SetNextWindowSize(ImVec2(320, 250));
+		ImGui::SetNextWindowSize(ImVec2(320, 300));
 		ImGui::Begin("Editor");
 		ImGui::Text("Camera");
 		if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
@@ -294,7 +306,7 @@ int main(int, char**)
 		static int selectedEntry = -1;
 		static int firstFrame = 0;
 		static bool expanded = true;
-		ImGui::SetNextWindowPos(ImVec2(10, 270));
+		ImGui::SetNextWindowPos(ImVec2(10, 310));
 		ImGui::SetNextWindowSize(ImVec2(740, 380));
 		ImGui::Begin("Sequencer");
 		ImGui::InputInt("Frame count", &mySequence.mFrameCount);

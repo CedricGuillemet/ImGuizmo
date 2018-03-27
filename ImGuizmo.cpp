@@ -1161,7 +1161,7 @@ namespace ImGuizmo
       return false;
    }
 
-   static void HandleAndDrawLocalBounds(float *bounds, matrix_t *matrix, float *snapValues)
+   static void HandleAndDrawLocalBounds(float *bounds, matrix_t *matrix, float *snapValues, OPERATION operation)
    {
        ImGuiIO& io = ImGui::GetIO();
        ImDrawList* drawList = gContext.mDrawList;
@@ -1274,6 +1274,21 @@ namespace ImGuizmo
                static const float AnchorSmallRadius = 6.f;
                bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
                bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius*AnchorBigRadius);
+
+			   int type = NONE;
+			   vec_t gizmoHitProportion;
+			   
+			   switch (operation)
+			   {
+			   case TRANSLATE: type = GetMoveType(&gizmoHitProportion); break;
+			   case ROTATE: type = GetRotateType(); break;
+			   case SCALE: type = GetScaleType(); break;
+			   }
+			   if (type != NONE)
+			   {
+				   overBigAnchor = false;
+				   overSmallAnchor = false;
+			   }
 
            
                unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (0xAAAAAA + anchorAlpha);
@@ -1407,20 +1422,7 @@ namespace ImGuizmo
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
          ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
-		 /*
-         dirPlaneX.TransformVector(gContext.mModel);
-         dirPlaneY.TransformVector(gContext.mModel);
 
-         const int planNormal = (i + 2) % 3;
-
-         const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.v.position, direction[planNormal]));
-         vec_t posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len;
-
-         const float dx = dirPlaneX.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
-         const float dy = dirPlaneY.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
-         if (belowAxisLimit && dy > -0.1f && dy < 0.1f && dx > 0.1f  && dx < 1.f)
-            type = SCALE_X + i;
-			*/
 		 const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.v.position, dirAxis));
 		 vec_t posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len;
 
@@ -1876,7 +1878,7 @@ namespace ImGuizmo
       }
 
       if (localBounds && !gContext.mbUsing)
-          HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap);
+          HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation);
 
       if (!gContext.mbUsingBounds)
       {
