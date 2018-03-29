@@ -1464,7 +1464,7 @@ namespace ImGuizmo
 		 idealPosOnCircle.TransformVector(gContext.mModelInverse);
 		 ImVec2 idealPosOnCircleScreen = worldToPos(idealPosOnCircle * gContext.mScreenFactor, gContext.mMVP);
 
-		 gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, 0xFFFFFFFF);
+		 //gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, 0xFFFFFFFF);
 		 ImVec2 distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
 		 
          float distance = makeVect(distanceOnScreen).Length();
@@ -1897,7 +1897,7 @@ namespace ImGuizmo
       }
    }
 
-   void DrawCube(const float *view, const float *projection, float *matrix)
+   void DrawCube(const float *view, const float *projection, const float *matrix)
    {
       matrix_t viewInverse;
       viewInverse.Inverse(*(matrix_t*)view);
@@ -1948,6 +1948,17 @@ namespace ImGuizmo
          // draw face with lighter color
          gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, directionColor[normalIndex] | 0x808080);
       }
+   }
+
+   void DrawGrid(const float *view, const float *projection, const float *matrix, const float gridSize)
+   {
+	   matrix_t res = *(matrix_t*)matrix * *(matrix_t*)view * *(matrix_t*)projection;
+
+	   for (float f = -gridSize; f <= gridSize; f += 1.f)
+	   {
+		   gContext.mDrawList->AddLine(worldToPos(makeVect(f, 0.f, -gridSize), res), worldToPos(makeVect(f, 0.f, gridSize), res), 0xFF808080);
+		   gContext.mDrawList->AddLine(worldToPos(makeVect(-gridSize, 0.f, f), res), worldToPos(makeVect(gridSize, 0.f, f), res), 0xFF808080);
+	   }
    }
 };
 

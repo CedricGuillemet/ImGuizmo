@@ -146,7 +146,8 @@ namespace ImGuizmo
 	IMGUI_API void SetRect(float x, float y, float width, float height);
 
 	// Render a cube with face color corresponding to face normal. Usefull for debug/tests
-	IMGUI_API void DrawCube(const float *view, const float *projection, float *matrix);
+	IMGUI_API void DrawCube(const float *view, const float *projection, const float *matrix);
+	IMGUI_API void DrawGrid(const float *view, const float *projection, const float *matrix, const float gridSize);
 
 	// call it when you want a gizmo
 	// Needs view and projection matrices. 

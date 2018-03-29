@@ -47,6 +47,65 @@ void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar
 	Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16);
 }
 
+void Cross(const float* a, const float* b, float* r)
+{
+	r[0] = a[1] * b[2] - a[2] * b[1];
+	r[1] = a[2] * b[0] - a[0] * b[2];
+	r[2] = a[0] * b[1] - a[1] * b[0];
+}
+
+float Dot(const float* a, const float* b)
+{
+	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+void Normalize(const float* a, float *r)
+{
+	float il = 1.f / (sqrtf(Dot(a, a)) + FLT_EPSILON);
+	r[0] = a[0] * il;
+	r[1] = a[1] * il;
+	r[2] = a[2] * il;
+}
+
+void LookAt(const float* eye, const float* at, const float* up, float *m16)
+{
+	float X[3], Y[3], Z[3], tmp[3];
+
+	tmp[0] = eye[0] - at[0];
+	tmp[1] = eye[1] - at[1];
+	tmp[2] = eye[2] - at[2];
+	//Z.normalize(eye - at);
+	Normalize(tmp, Z);
+	Normalize(up, Y);
+	//Y.normalize(up);
+
+	Cross(Y, Z, tmp);
+	//tmp.cross(Y, Z);
+	Normalize(tmp, X);
+	//X.normalize(tmp);
+
+	Cross(Z, X, tmp);
+	//tmp.cross(Z, X);
+	Normalize(tmp, Y);
+	//Y.normalize(tmp);
+
+	m16[0] = X[0];
+	m16[1] = Y[0];
+	m16[2] = Z[0];
+	m16[3] = 0.0f;
+	m16[4] = X[1];
+	m16[5] = Y[1];
+	m16[6] = Z[1];
+	m16[7] = 0.0f;
+	m16[8] = X[2];
+	m16[9] = Y[2];
+	m16[10] = Z[2];
+	m16[11] = 0.0f;
+	m16[12] = -Dot(X, eye);
+	m16[13] = -Dot(Y, eye);
+	m16[14] = -Dot(Z, eye);
+	m16[15] = 1.0f;
+}
 
 void OrthoGraphic(const float l, float r, float b, const float t, float zn, const float zf, float *m16)
 {
@@ -134,6 +193,7 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 		ImGui::InputFloat3("Snap", boundsSnap);
 		ImGui::PopID();
 	}
+
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing?bounds:NULL, boundSizingSnap?boundsSnap:NULL);
@@ -230,11 +290,17 @@ int main(int, char**)
 		0.f, 0.f, 1.f, 0.f,
 		0.f, 0.f, 0.f, 1.f };
 
+	static const float identityMatrix[16] =
+	{ 1.f, 0.f, 0.f, 0.f,
+		0.f, 1.f, 0.f, 0.f,
+		0.f, 0.f, 1.f, 0.f,
+		0.f, 0.f, 0.f, 1.f };
+
 	float cameraView[16] = 
 	  { 1.f, 0.f, 0.f, 0.f,
 		0.f, 1.f, 0.f, 0.f,
 		0.f, 0.f, 1.f, 0.f,
-		1.f, -1.f, -4.f, 1.f };
+		0.f, 0.f, 0.f, 1.f };
 
 	float cameraProjection[16];
 
@@ -250,8 +316,10 @@ int main(int, char**)
 	// Camera projection
 	bool isPerspective = false;
 	float fov = 27.f;
-	float viewWidth = 10.f;
-
+	float viewWidth = 10.f; // for orthographic
+	float camYAngle = 165.f / 180.f * 3.14159f;
+	float camXAngle = 52.f / 180.f * 3.14159f;
+	float camDistance = 8.f;
 	rotationY(0.f, objectMatrix);
 
 	
@@ -270,6 +338,10 @@ int main(int, char**)
 			float viewHeight = viewWidth*io.DisplaySize.y / io.DisplaySize.x;
 			OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, -viewWidth, viewWidth, cameraProjection);
 		}
+		float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
+		float at[] = { 0.f, 0.f, 0.f };
+		float up[] = { 0.f, 1.f, 0.f };
+		LookAt(eye, at, up, cameraView);
 		ImGuizmo::BeginFrame();
 
 
@@ -280,10 +352,11 @@ int main(int, char**)
 		//objectMatrix[12] = 5.f;
 		// debug
 		ImGuizmo::DrawCube(cameraView, cameraProjection, objectMatrix);
+		ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 10.f);
 
 		// create a window and insert the inspector
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
-		ImGui::SetNextWindowSize(ImVec2(320, 300));
+		ImGui::SetNextWindowSize(ImVec2(320, 340));
 		ImGui::Begin("Editor");
 		ImGui::Text("Camera");
 		if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
@@ -297,6 +370,9 @@ int main(int, char**)
 		{
 			ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
 		}
+		ImGui::SliderAngle("Camera X", &camXAngle, 0.f, 179.f);
+		ImGui::SliderAngle("Camera Y", &camYAngle);
+		ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
 		ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
 		ImGui::Separator();
 		EditTransform(cameraView, cameraProjection, objectMatrix);
@@ -306,7 +382,7 @@ int main(int, char**)
 		static int selectedEntry = -1;
 		static int firstFrame = 0;
 		static bool expanded = true;
-		ImGui::SetNextWindowPos(ImVec2(10, 310));
+		ImGui::SetNextWindowPos(ImVec2(10, 350));
 		ImGui::SetNextWindowSize(ImVec2(740, 380));
 		ImGui::Begin("Sequencer");
 		ImGui::InputInt("Frame count", &mySequence.mFrameCount);
