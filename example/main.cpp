@@ -338,6 +338,8 @@ int main(int, char**)
 			float viewHeight = viewWidth*io.DisplaySize.y / io.DisplaySize.x;
 			OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, -viewWidth, viewWidth, cameraProjection);
 		}
+		ImGuizmo::SetOrthographic(!isPerspective);
+
 		float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
 		float at[] = { 0.f, 0.f, 0.f };
 		float up[] = { 0.f, 1.f, 0.f };
