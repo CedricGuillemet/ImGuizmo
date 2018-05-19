@@ -494,8 +494,7 @@ namespace ImGuizmo
       SCALE_X,
       SCALE_Y,
       SCALE_Z,
-      SCALE_XYZ,
-      BOUNDS
+      SCALE_XYZ
    };
 
    struct Context
@@ -576,6 +575,8 @@ namespace ImGuizmo
       float mXMax = 0.f;
       float mYMax = 0.f;
 	  float mDisplayRatio = 1.f;
+
+	  bool mIsOrthographic = false;
    };
 
    static Context gContext;
@@ -722,6 +723,11 @@ namespace ImGuizmo
        gContext.mXMax = gContext.mX + gContext.mWidth;
        gContext.mYMax = gContext.mY + gContext.mXMax;
 	   gContext.mDisplayRatio = width / height;
+   }
+
+   IMGUI_API void SetOrthographic(bool isOrthographic)
+   {
+	   gContext.mIsOrthographic = isOrthographic;
    }
 
    void SetDrawlist()
@@ -946,7 +952,18 @@ namespace ImGuizmo
       ImU32 colors[7];
       ComputeColors(colors, type, ROTATE);
 
-      vec_t cameraToModelNormalized = Normalized(gContext.mModel.v.position - gContext.mCameraEye);
+	  vec_t cameraToModelNormalized;
+	  if (gContext.mIsOrthographic)
+	  {
+		  matrix_t viewInverse;
+		  viewInverse.Inverse(*(matrix_t*)&gContext.mViewMat);
+		  cameraToModelNormalized = viewInverse.v.dir;
+	  }
+	  else
+	  {
+		  cameraToModelNormalized = Normalized(gContext.mModel.v.position - gContext.mCameraEye);
+	  }
+
       cameraToModelNormalized.TransformVector(gContext.mModelInverse);
       
       gContext.mRadiusSquareCenter = screenRotateSize * gContext.mHeight;

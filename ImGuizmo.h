@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.04 WIP
+// v 1.61 WIP
 //
 // The MIT License(MIT)
 // 
@@ -144,6 +144,8 @@ namespace ImGuizmo
 	IMGUI_API void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix);
 
 	IMGUI_API void SetRect(float x, float y, float width, float height);
+	// default is false
+	IMGUI_API void SetOrthographic(bool isOrthographic);
 
 	// Render a cube with face color corresponding to face normal. Usefull for debug/tests
 	IMGUI_API void DrawCube(const float *view, const float *projection, const float *matrix);
@@ -157,7 +159,8 @@ namespace ImGuizmo
 	{
 		TRANSLATE,
 		ROTATE,
-		SCALE
+		SCALE,
+		BOUNDS,
 	};
 
 	enum MODE

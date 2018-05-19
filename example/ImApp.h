@@ -2716,7 +2716,9 @@ namespace ImApp
 				if (config.mFullscreen && ChangeDisplaySettingsA(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
 					return 0;
 			}
-
+#ifdef IMGUI_API
+			ImGui::CreateContext();
+#endif
 			if (!WindowInit(info))
 			{
 				WindowEnd(info);
@@ -3460,7 +3462,6 @@ namespace ImApp
 		void ImGui_Shutdown()
 		{
 			ImGui_InvalidateDeviceObjects();
-			ImGui::Shutdown();
 		}
 
 		void ImGui_NewFrame()
