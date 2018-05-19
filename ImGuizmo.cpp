@@ -1863,7 +1863,7 @@ namespace ImGuizmo
       // behind camera
       vec_t camSpacePosition;
       camSpacePosition.TransformPoint(makeVect(0.f, 0.f, 0.f), gContext.mMVP);
-      if (camSpacePosition.z < 0.001f)
+      if (!gContext.mIsOrthographic && camSpacePosition.z < 0.001f)
          return;
 
       // --
