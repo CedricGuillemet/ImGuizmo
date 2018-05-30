@@ -131,7 +131,7 @@ namespace ImSequencer
 			}
 
 			// clipping rect so items bars are not visible in the legend on the left when scrolled
-			draw_list->PushClipRect(ImVec2(canvas_pos.x + legendWidth, canvas_pos.y), ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + controlHeight));
+			draw_list->PushClipRect(ImVec2(canvas_pos.x + legendWidth, canvas_pos.y), ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + controlHeight), true);
 			
 			// slots background
 			for (int i = 0; i < sequenceCount; i++)
