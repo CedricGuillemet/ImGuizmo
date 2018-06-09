@@ -1,7 +1,7 @@
 #include "ImSequencer.h"
 #include "imgui.h"
 #include "imgui_internal.h"
-
+#include <cstdlib>
 
 namespace ImSequencer
 {
@@ -58,7 +58,7 @@ namespace ImSequencer
 			ImGui::InvisibleButton("canvas", ImVec2(canvas_size.x - canvas_pos.x, (float)ItemHeight));
 			draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
 			char tmps[512];
-			sprintf_s(tmps, sizeof(tmps), "%d Frames / %d entries", frameCount, sequenceCount);
+			snprintf(tmps, sizeof(tmps), "%d Frames / %d entries", frameCount, sequenceCount);
 			draw_list->AddText(ImVec2(canvas_pos.x + 26, canvas_pos.y + 2), 0xFFFFFFFF, tmps);
 		}
 		else
@@ -166,7 +166,7 @@ namespace ImSequencer
 				if (baseIndex)
 				{
 					char tmps[512];
-					sprintf_s(tmps, sizeof(tmps), "%d", (i == frameCount) ? i : (i / 10));
+					snprintf(tmps, sizeof(tmps), "%d", (i == frameCount) ? i : (i / 10));
 					draw_list->AddText(ImVec2((float)px + 3.f, canvas_pos.y), 0xFFBBBBBB, tmps);
 				}
 			}
@@ -234,7 +234,7 @@ namespace ImSequencer
 			{
 				ImGui::CaptureMouseFromApp();
 				int diffFrame = (cx - movingPos) / framePixelWidth;
-				if (abs(diffFrame) > 0)
+				if (std::abs(diffFrame) > 0)
 				{
 					int *start, *end;
 					sequence->Get(movingEntry, &start, &end, NULL, NULL);
