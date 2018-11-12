@@ -7,6 +7,8 @@
 
 #include <math.h>
 #include <vector>
+#include <algorithm>
+#include "ImCurveEdit.h"
 
 //
 //
@@ -273,6 +275,83 @@ inline void rotationY(const float angle, float *m16)
 	m16[15] = 1.0f;
 }
 
+struct RampEdit : public ImCurveEdit::Delegate
+{
+   RampEdit()
+   {
+      mPts[0][0] = ImVec2(0, 0);
+      mPts[0][1] = ImVec2(0.2f, 0.6f);
+      mPts[0][2] = ImVec2(0.5f, 0.2f);
+      mPts[0][3] = ImVec2(0.7f, 0.4f);
+      mPts[0][4] = ImVec2(1.f, 1.f);
+      mPointCount[0] = 5;
+
+      mPts[1][0] = ImVec2(0, 0.2f);
+      mPts[1][1] = ImVec2(0.35f, 0.7f);
+      mPts[1][2] = ImVec2(0.5f, 0.2f);
+      mPts[1][3] = ImVec2(1.f, 0.8f);
+      mPointCount[1] = 4;
+
+
+      mPts[2][0] = ImVec2(0, 0);
+      mPts[2][1] = ImVec2(0.4f, 0.1f);
+      mPts[2][2] = ImVec2(0.55f, 0.82f);
+      mPts[2][3] = ImVec2(0.85f, 0.24f);
+      mPts[2][4] = ImVec2(0.95f, 0.34f);
+      mPts[2][5] = ImVec2(1.f, 0.12f);
+      mPointCount[2] = 6;
+
+   }
+   size_t GetCurveCount()
+   {
+      return 3;
+   }
+
+   size_t GetPointCount(size_t curveIndex)
+   {
+      return mPointCount[curveIndex];
+   }
+
+   uint32_t GetCurveColor(size_t curveIndex)
+   {
+      uint32_t cols[] = { 0xFF0000FF, 0xFF00FF00, 0xFFFF0000 };
+      return cols[curveIndex];
+   }
+   ImVec2* GetPoints(size_t curveIndex)
+   {
+      return mPts[curveIndex];
+   }
+
+   virtual int EditPoint(size_t curveIndex, int pointIndex, ImVec2 value)
+   {
+      mPts[curveIndex][pointIndex] = value;
+      SortValues(curveIndex);
+      for (size_t i = 0; i < GetPointCount(curveIndex); i++)
+      {
+         if (mPts[curveIndex][i].x == value.x)
+            return i;
+      }
+      return pointIndex;
+   }
+   virtual void AddPoint(size_t curveIndex, ImVec2 value)
+   {
+      if (mPointCount[curveIndex] >= 8)
+         return;
+      mPts[curveIndex][mPointCount[curveIndex]++] = value;
+      SortValues(curveIndex);
+   }
+   ImVec2 mPts[3][8];
+   size_t mPointCount[3];
+
+private:
+   void SortValues(size_t curveIndex)
+   {
+      auto b = std::begin(mPts[curveIndex]);
+      auto e = std::begin(mPts[curveIndex]) + GetPointCount(curveIndex);
+      std::sort(b, e, [](ImVec2 a, ImVec2 b) { return a.x < b.x; });
+
+   }
+};
 	
 int main(int, char**)
 {
@@ -385,7 +464,7 @@ int main(int, char**)
 		static int firstFrame = 0;
 		static bool expanded = true;
 		ImGui::SetNextWindowPos(ImVec2(10, 350));
-		ImGui::SetNextWindowSize(ImVec2(740, 380));
+		ImGui::SetNextWindowSize(ImVec2(740, 480));
 		ImGui::Begin("Sequencer");
 		ImGui::InputInt("Frame count", &mySequence.mFrameCount);
 		Sequencer(&mySequence, NULL, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE);
@@ -396,6 +475,9 @@ int main(int, char**)
 			ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
 			// switch (type) ....
 		}
+
+      static RampEdit rampEdit;
+      ImCurveEdit::Edit(rampEdit, ImVec2(600, 300));
 		ImGui::End();
 
 		// render everything
