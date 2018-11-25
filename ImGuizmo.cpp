@@ -1716,7 +1716,16 @@ namespace ImGuizmo
 
          if (deltaMatrix)
          {
-            deltaMatrixScale.Scale(gContext.mScale);
+            vec_t deltaScale = gContext.mScale * gContext.mScaleValueOrigin;
+
+            vec_t originalScaleDivider;
+            originalScaleDivider.x = 1 / gContext.mModelScaleOrigin.x;
+            originalScaleDivider.y = 1 / gContext.mModelScaleOrigin.y;
+            originalScaleDivider.z = 1 / gContext.mModelScaleOrigin.z;
+
+            deltaScale = deltaScale * originalScaleDivider;
+
+            deltaMatrixScale.Scale(deltaScale);
             memcpy(deltaMatrix, deltaMatrixScale.m16, sizeof(float) * 16);
          }
 
