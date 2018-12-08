@@ -1,8 +1,9 @@
 #pragma once
 
+struct ImDrawList;
+struct ImRect;
 namespace ImSequencer
 {
-
 	enum SEQUENCER_OPTIONS
 	{
 		SEQUENCER_EDIT_NONE = 0,
@@ -30,6 +31,10 @@ namespace ImSequencer
 
 		virtual void Copy() {}
 		virtual void Paste() {}
+
+		virtual size_t GetCustomHeight(int /*index*/) { return 0; }
+      virtual void DoubleClick(int /*index*/) {}
+      virtual void CustomDraw(int /*index*/, ImDrawList* /*draw_list*/, const ImRect& /*rc*/) {}
 	};
 
 

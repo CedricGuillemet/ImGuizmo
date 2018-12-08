@@ -7,7 +7,9 @@
 
 #include <math.h>
 #include <vector>
-
+#include <algorithm>
+#include "ImCurveEdit.h"
+#include "imgui_internal.h"
 //
 //
 // ImGuizmo example helper functions
@@ -206,6 +208,86 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 //
 static const char* SequencerItemTypeNames[] = { "Camera","Music", "ScreenEffect", "FadeIn", "Animation" };
 
+
+struct RampEdit : public ImCurveEdit::Delegate
+{
+   RampEdit()
+   {
+      mPts[0][0] = ImVec2(0, 0);
+      mPts[0][1] = ImVec2(0.2f, 0.6f);
+      mPts[0][2] = ImVec2(0.5f, 0.2f);
+      mPts[0][3] = ImVec2(0.7f, 0.4f);
+      mPts[0][4] = ImVec2(1.f, 1.f);
+      mPointCount[0] = 5;
+
+      mPts[1][0] = ImVec2(0, 0.2f);
+      mPts[1][1] = ImVec2(0.35f, 0.7f);
+      mPts[1][2] = ImVec2(0.5f, 0.2f);
+      mPts[1][3] = ImVec2(1.f, 0.8f);
+      mPointCount[1] = 4;
+
+
+      mPts[2][0] = ImVec2(0, 0);
+      mPts[2][1] = ImVec2(0.4f, 0.1f);
+      mPts[2][2] = ImVec2(0.55f, 0.82f);
+      mPts[2][3] = ImVec2(0.85f, 0.24f);
+      mPts[2][4] = ImVec2(0.95f, 0.34f);
+      mPts[2][5] = ImVec2(1.f, 0.12f);
+      mPointCount[2] = 6;
+
+   }
+   size_t GetCurveCount()
+   {
+      return 3;
+   }
+
+   size_t GetPointCount(size_t curveIndex)
+   {
+      return mPointCount[curveIndex];
+   }
+
+   uint32_t GetCurveColor(size_t curveIndex)
+   {
+      uint32_t cols[] = { 0xFF0000FF, 0xFF00FF00, 0xFFFF0000 };
+      return cols[curveIndex];
+   }
+   ImVec2* GetPoints(size_t curveIndex)
+   {
+      return mPts[curveIndex];
+   }
+
+   virtual int EditPoint(size_t curveIndex, int pointIndex, ImVec2 value)
+   {
+      mPts[curveIndex][pointIndex] = value;
+      SortValues(curveIndex);
+      for (size_t i = 0; i < GetPointCount(curveIndex); i++)
+      {
+         if (mPts[curveIndex][i].x == value.x)
+            return i;
+      }
+      return pointIndex;
+   }
+   virtual void AddPoint(size_t curveIndex, ImVec2 value)
+   {
+      if (mPointCount[curveIndex] >= 8)
+         return;
+      mPts[curveIndex][mPointCount[curveIndex]++] = value;
+      SortValues(curveIndex);
+   }
+   virtual unsigned int GetBackgroundColor() { return 0; }
+   ImVec2 mPts[3][8];
+   size_t mPointCount[3];
+
+private:
+   void SortValues(size_t curveIndex)
+   {
+      auto b = std::begin(mPts[curveIndex]);
+      auto e = std::begin(mPts[curveIndex]) + GetPointCount(curveIndex);
+      std::sort(b, e, [](ImVec2 a, ImVec2 b) { return a.x < b.x; });
+
+   }
+};
+
 struct MySequence : public ImSequencer::SequenceInterface
 {
 	// interface with sequencer
@@ -234,9 +316,11 @@ struct MySequence : public ImSequencer::SequenceInterface
 		if (type)
 			*type = item.mType;
 	}
-	virtual void Add(int type) { myItems.push_back(MySequenceItem{ type, 0, 10 }); };
+	virtual void Add(int type) { myItems.push_back(MySequenceItem{ type, 0, 10, false }); };
 	virtual void Del(int index) { myItems.erase(myItems.begin() + index); }
 	virtual void Duplicate(int index) { myItems.push_back(myItems[index]); }
+
+	virtual size_t GetCustomHeight(int index) { return myItems[index].mExpanded?300:0; }
 
 	// my datas
 	MySequence() : mFrameCount(0) {}
@@ -245,10 +329,35 @@ struct MySequence : public ImSequencer::SequenceInterface
 	{
 		int mType;
 		int mFrameStart, mFrameEnd;
+      bool mExpanded;
 	};
 	std::vector<MySequenceItem> myItems;
-};
 
+   virtual void DoubleClick(int index) {
+      myItems[index].mExpanded = !myItems[index].mExpanded;
+   }
+
+   virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc)
+   {
+      draw_list->AddRect(rc.Min, rc.Max, 0xFF0000FF, 0, 15, 4);
+      static RampEdit rampEdit;
+      //ImGui::SetCursorPos(ImVec2(0, 0));// rc.Min);
+      ImGui::SetCursorScreenPos(rc.Min);
+      //ImGui::SetWindowPos(rc.Min);
+      ImCurveEdit::Edit(rampEdit, rc.Max-rc.Min);
+   }
+};
+/*
+* dbl click on sequence
+* middle mouse for view pan
+* wheel zoom centered on mouse
+- custom draw call
+* hscroll bar use delta
+- tweaks : scrool bar before 0
+- clipping rects & hscroll always visible
+- virtual area
+
+*/
 
 inline void rotationY(const float angle, float *m16)
 {
@@ -306,12 +415,12 @@ int main(int, char**)
 
 	// sequence with default values
 	MySequence mySequence;
-	mySequence.mFrameCount = 100;
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 0, 10, 30 });
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30 });
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 3, 12, 60 });
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90 });
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99 });
+	mySequence.mFrameCount = 1000;
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 0, 10, 30, false });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30, false });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 3, 12, 60, false });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90, false });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99, false });
 	
 	// Camera projection
 	bool isPerspective = false;
@@ -385,10 +494,10 @@ int main(int, char**)
 		static int firstFrame = 0;
 		static bool expanded = true;
 		ImGui::SetNextWindowPos(ImVec2(10, 350));
-		ImGui::SetNextWindowSize(ImVec2(740, 380));
+		//ImGui::SetNextWindowSize(ImVec2(740, 480));
 		ImGui::Begin("Sequencer");
 		ImGui::InputInt("Frame count", &mySequence.mFrameCount);
-		Sequencer(&mySequence, NULL, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE);
+		Sequencer(&mySequence, NULL, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
 		// add a UI to edit that particular item
 		if (selectedEntry != -1)
 		{
@@ -396,8 +505,12 @@ int main(int, char**)
 			ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
 			// switch (type) ....
 		}
+      /*
+      static RampEdit rampEdit;
+      ImCurveEdit::Edit(rampEdit, ImVec2(600, 300));
+      */
 		ImGui::End();
-
+      
 		// render everything
 		glClearColor(0.45f, 0.4f, 0.4f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
