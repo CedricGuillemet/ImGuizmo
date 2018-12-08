@@ -110,7 +110,7 @@ namespace ImCurveEdit
 
       ImGuiIO& io = ImGui::GetIO();
       ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-      //ImGui::BeginChildFrame(137, size);
+      ImGui::BeginChildFrame(137, size);
 
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -281,7 +281,7 @@ namespace ImCurveEdit
          quadSelection = io.MousePos;
       }
 
-      //ImGui::EndChildFrame();
+      ImGui::EndChildFrame();
       ImGui::PopStyleVar();
       return 0;
    }
