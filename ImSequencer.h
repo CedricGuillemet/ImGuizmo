@@ -17,7 +17,8 @@ namespace ImSequencer
 
 	struct SequenceInterface
 	{
-		virtual int GetFrameCount() const = 0;
+		virtual int GetFrameMin() const = 0;
+      virtual int GetFrameMax() const = 0;
 		virtual int GetItemCount() const = 0;
 
 		virtual int GetItemTypeCount() const { return 0; }

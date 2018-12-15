@@ -292,7 +292,12 @@ struct MySequence : public ImSequencer::SequenceInterface
 {
 	// interface with sequencer
 	
-	virtual int GetFrameCount() const { return mFrameCount; }
+   virtual int GetFrameMin() const {
+      return mFrameMin;
+   }
+   virtual int GetFrameMax() const {
+      return mFrameMax;
+   }
 	virtual int GetItemCount() const { return (int)myItems.size(); }
 
 	virtual int GetItemTypeCount() const { return sizeof(SequencerItemTypeNames)/sizeof(char*); }
@@ -320,11 +325,11 @@ struct MySequence : public ImSequencer::SequenceInterface
 	virtual void Del(int index) { myItems.erase(myItems.begin() + index); }
 	virtual void Duplicate(int index) { myItems.push_back(myItems[index]); }
 
-   virtual size_t GetCustomHeight(int index) { return 300;/* myItems[index].mExpanded ? 300 : 0;*/ }
+   virtual size_t GetCustomHeight(int index) { return myItems[index].mExpanded ? 300 : 0; }
 
 	// my datas
-	MySequence() : mFrameCount(0) {}
-	int mFrameCount;
+	MySequence() : mFrameMin(0), mFrameMax(0) {}
+	int mFrameMin, mFrameMax;
 	struct MySequenceItem
 	{
 		int mType;
@@ -348,14 +353,8 @@ struct MySequence : public ImSequencer::SequenceInterface
    }
 };
 /*
-* dbl click on sequence
-* middle mouse for view pan
-* wheel zoom centered on mouse
-- custom draw call
-* hscroll bar use delta
-- tweaks : scrool bar before 0
-- clipping rects & hscroll always visible
-- virtual area
+- frame min/max + clamp (hscroll)
+- clipping segments 
 
 */
 
@@ -415,7 +414,8 @@ int main(int, char**)
 
 	// sequence with default values
 	MySequence mySequence;
-	mySequence.mFrameCount = 1000;
+	mySequence.mFrameMin = -100;
+   mySequence.mFrameMax = 1000;
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 0, 10, 30, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 3, 12, 60, false });
@@ -493,11 +493,14 @@ int main(int, char**)
 		static int selectedEntry = -1;
 		static int firstFrame = 0;
 		static bool expanded = true;
+      static int currentFrame = 120;
 		ImGui::SetNextWindowPos(ImVec2(10, 350));
+
 		//ImGui::SetNextWindowSize(ImVec2(740, 480));
 		ImGui::Begin("Sequencer");
-		ImGui::InputInt("Frame count", &mySequence.mFrameCount);
-		Sequencer(&mySequence, NULL, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
+		ImGui::InputInt("Frame Min", &mySequence.mFrameMin);
+      ImGui::InputInt("Frame Max", &mySequence.mFrameMax);
+		Sequencer(&mySequence, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
 		// add a UI to edit that particular item
 		if (selectedEntry != -1)
 		{

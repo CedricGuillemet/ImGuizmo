@@ -50,10 +50,10 @@ namespace ImSequencer
 		int firstFrameUsed = firstFrame ? *firstFrame : 0;
 
 		int sequenceCount = sequence->GetItemCount();
-		int controlHeight = (sequenceCount + 1) * ItemHeight;
+		int controlHeight = sequenceCount * ItemHeight;
       for (int i = 0; i < sequenceCount; i++)
          controlHeight += sequence->GetCustomHeight(i);
-		int frameCount = sequence->GetFrameCount();
+		int frameCount = ImMax(sequence->GetFrameMax() - sequence->GetFrameMin(), 1);
 
 		static bool MovingScrollBar = false;
 		static bool MovingCurrentFrame = false;
@@ -133,40 +133,26 @@ namespace ImSequencer
          if ((framesPixelWidth + legendWidth) >= canvas_size.x)
          {
             hasScrollBar = true;
-            controlHeight += scrollBarHeight;
          }
 
          // test scroll area
          ImVec2 headerSize(canvas_size.x, (float)ItemHeight);
-         ImVec2 scrollBarSize(canvas_size.x, 12.f);
+         ImVec2 scrollBarSize(canvas_size.x, 14.f);
          ImGui::InvisibleButton("topBar", headerSize);
          draw_list->AddRectFilled(canvas_pos, canvas_pos + headerSize, 0xFFFF0000, 0);
          ImVec2 childFramePos = ImGui::GetCursorScreenPos();
-         ImVec2 childFrameSize(canvas_size.x, canvas_size.y - 10.f - headerSize.y - (hasScrollBar ? scrollBarSize.y : 0));
+         ImVec2 childFrameSize(canvas_size.x, canvas_size.y - 8.f - headerSize.y - (hasScrollBar ? scrollBarSize.y : 0));
+         ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
          ImGui::BeginChildFrame(889, childFrameSize);
-         ImGui::InvisibleButton("contentBar", ImVec2(canvas_size.x, 1000.f));
+         ImGui::InvisibleButton("contentBar", ImVec2(canvas_size.x, controlHeight));
          const ImVec2 contentMin = ImGui::GetItemRectMin();
          const ImVec2 contentMax = ImGui::GetItemRectMax();
          const ImRect contentRect(contentMin, contentMax);
          const float contentHeight = contentMax.y - contentMin.y;
          
-
-         /*if (hasScrollBar)
-         {
-            ImGui::InvisibleButton("scrollBar", scrollBarSize);
-            ImVec2 scrollBarMin = ImGui::GetItemRectMin();
-            ImVec2 scrollBarMax = ImGui::GetItemRectMax();
-            draw_list->AddRectFilled(scrollBarMin, scrollBarMax, 0xFFF0F000, 0);
-         }
-         */
-
-
-			/*ImRect backgroundRect(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + controlHeight));
-			ImGui::InvisibleButton("canvas", ImVec2(canvas_size.x, (float)controlHeight));
-
 			// full background
-			draw_list->AddRectFilled(backgroundRect.Min, backgroundRect.Max, 0xFF262222, 0);
-         */
+			draw_list->AddRectFilled(canvas_pos, canvas_pos+canvas_size, 0xFF242424, 0);
+         
 			// current frame top
 			ImRect topRect(ImVec2(canvas_pos.x + legendWidth, canvas_pos.y), ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + ItemHeight));
 
@@ -179,10 +165,10 @@ namespace ImSequencer
 				if (frameCount)
 				{
 					*currentFrame = (int)((io.MousePos.x - topRect.Min.x) / framePixelWidth) + firstFrameUsed;
-					if (*currentFrame < 0)
-						*currentFrame = 0;
-					if (*currentFrame >= frameCount)
-						*currentFrame = frameCount - 1;
+					if (*currentFrame < sequence->GetFrameMin())
+						*currentFrame = sequence->GetFrameMin();
+					if (*currentFrame >= sequence->GetFrameMax())
+						*currentFrame = sequence->GetFrameMax();
 				}
 				if (!io.MouseDown[0])
 					MovingCurrentFrame = false;
@@ -220,7 +206,7 @@ namespace ImSequencer
          int halfModFrameCount = modFrameCount / 2;
 
          auto drawLine = [&](int i, int regionHeight) {
-            bool baseIndex = ((i % modFrameCount) == 0) || (i == frameCount);
+            bool baseIndex = ((i % modFrameCount) == 0) || (i == sequence->GetFrameMax() || i == sequence->GetFrameMin());
             bool halfIndex = (i % halfModFrameCount) == 0;
             int px = (int)canvas_pos.x + int(i * framePixelWidth) + legendWidth - int(firstFrameUsed * framePixelWidth);
             int tiretStart = baseIndex ? 4 : (halfIndex ? 10 : 14);
@@ -241,11 +227,25 @@ namespace ImSequencer
             }
 
          };
-         for (int i = 0; i <= frameCount; i += frameStep)
+
+         auto drawLineContent = [&](int i, int regionHeight) {
+            int px = (int)canvas_pos.x + int(i * framePixelWidth) + legendWidth - int(firstFrameUsed * framePixelWidth);
+            int tiretStart = contentMin.y;
+            int tiretEnd = contentMax.y;
+
+            if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth))
+            {
+               //draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)tiretStart), ImVec2((float)px, canvas_pos.y + (float)tiretEnd - 1), 0xFF606060, 1);
+
+               draw_list->AddLine(ImVec2((float)px, tiretStart), ImVec2((float)px, tiretEnd), 0x30606060, 1);
+            }
+         };
+         for (int i = sequence->GetFrameMin(); i <= sequence->GetFrameMax(); i += frameStep)
          {
             drawLine(i, ItemHeight);
          }
-         drawLine(frameCount, ItemHeight);
+         drawLine(sequence->GetFrameMin(), ItemHeight);
+         drawLine(sequence->GetFrameMax(), ItemHeight);
 /*
          draw_list->AddLine(canvas_pos, ImVec2(canvas_pos.x, canvas_pos.y + controlHeight), 0xFF000000, 1);
          draw_list->AddLine(ImVec2(canvas_pos.x, canvas_pos.y + ItemHeight), ImVec2(canvas_size.x, canvas_pos.y + ItemHeight), 0xFF000000, 1);
@@ -297,19 +297,21 @@ namespace ImSequencer
             customHeight += localCustomHeight;
 			}
 
-         // vertical frame lines in content area
-         
-         for (int i = 0; i <= frameCount; i += frameStep)
-         {
-            drawLine(i, contentHeight);
-         }
-         drawLine(frameCount, contentHeight);
+         draw_list->PushClipRect(childFramePos + ImVec2(legendWidth, 0), childFramePos + childFrameSize);
 
+         // vertical frame lines in content area
+         for (int i = sequence->GetFrameMin(); i <= sequence->GetFrameMax(); i += frameStep)
+         {
+            drawLineContent(i, contentHeight);
+         }
+         drawLineContent(sequence->GetFrameMin(), contentHeight);
+         drawLineContent(sequence->GetFrameMax(), contentHeight);
+         
 			// selection
 			bool selected = selectedEntry && (*selectedEntry >= 0);
 			if (selected)
 			{
-				draw_list->AddRectFilled(ImVec2(contentMin.x, contentMin.y + ItemHeight * (*selectedEntry + 1)), ImVec2(contentMin.x + canvas_size.x, contentMin.y + ItemHeight * (*selectedEntry + 2)), 0x801080FF, 1.f);
+				draw_list->AddRectFilled(ImVec2(contentMin.x, contentMin.y + ItemHeight * *selectedEntry), ImVec2(contentMin.x + canvas_size.x, contentMin.y + ItemHeight * (*selectedEntry + 1)), 0x801080FF, 1.f);
 			}
 
 			// slots
@@ -370,7 +372,7 @@ namespace ImSequencer
             }
 				customHeight += localCustomHeight;
 			}
-			//ImGui::PopClipRect();
+			
 
 			// moving
 			if (/*backgroundRect.Contains(io.MousePos) && */movingEntry >= 0)
@@ -413,26 +415,32 @@ namespace ImSequencer
 					movingEntry = -1;
 				}
 			}
+         draw_list->PopClipRect();
+
          for (auto& customDraw : customDraws)
             sequence->CustomDraw(customDraw.index, draw_list, customDraw.customArea);
+         draw_list->PopClipRect();
 			// cursor
-			if (currentFrame && *currentFrame >= 0)
+			if (currentFrame && *currentFrame >= sequence->GetFrameMin() && *currentFrame <= sequence->GetFrameMax())
 			{
 				float cursorOffset = contentMin.x + legendWidth + (*currentFrame - firstFrameUsed) * framePixelWidth + framePixelWidth / 2;
-				draw_list->AddLine(ImVec2(cursorOffset, contentMin.y), ImVec2(cursorOffset, contentMin.y + controlHeight), 0xA02A2AFF, 8);
+				draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, 8);
+            char tmps[512];
+            sprintf(tmps, "%d", *currentFrame);
+            draw_list->AddText(ImVec2(cursorOffset + 10, canvas_pos.y + 2), 0xFF2A2AFF, tmps);
 			}
-			draw_list->PopClipRect();
+			
 			// copy paste
 			if (sequenceOptions&SEQUENCER_COPYPASTE)
 			{
-				ImRect rectCopy(ImVec2(contentMin.x + 100, contentMin.y + 2)
-					, ImVec2(contentMin.x + 100 + 30, contentMin.y + ItemHeight - 2));
+				ImRect rectCopy(ImVec2(contentMin.x + 100, canvas_pos.y + 2)
+					, ImVec2(contentMin.x + 100 + 30, canvas_pos.y + ItemHeight - 2));
 				bool inRectCopy = rectCopy.Contains(io.MousePos);
 				unsigned int copyColor = inRectCopy ? 0xFF1080FF : 0xFF000000;
 				draw_list->AddText(rectCopy.Min, copyColor, "Copy");
 
-				ImRect rectPaste(ImVec2(contentMin.x + 140, contentMin.y + 2)
-					, ImVec2(contentMin.x + 140 + 30, contentMin.y + ItemHeight - 2));
+				ImRect rectPaste(ImVec2(contentMin.x + 140, canvas_pos.y + 2)
+					, ImVec2(contentMin.x + 140 + 30, canvas_pos.y + ItemHeight - 2));
 				bool inRectPaste = rectPaste.Contains(io.MousePos);
 				unsigned int pasteColor = inRectPaste ? 0xFF1080FF : 0xFF000000;
 				draw_list->AddText(rectPaste.Min, pasteColor, "Paste");
@@ -449,6 +457,7 @@ namespace ImSequencer
 			//
 
          ImGui::EndChildFrame();
+         ImGui::PopStyleColor();
 			if (hasScrollBar)
 			{
             ImGui::InvisibleButton("scrollBar", scrollBarSize);
@@ -458,7 +467,7 @@ namespace ImSequencer
 
 				// ratio = number of frames visible in control / number to total frames
 				
-				float startFrameOffset = ((float)firstFrameUsed / (float)frameCount) * (canvas_size.x - legendWidth);
+				float startFrameOffset = ((float)(firstFrameUsed - sequence->GetFrameMin()) / (float)frameCount) * (canvas_size.x - legendWidth);
 				ImVec2 scrollBarA(scrollBarMin.x + legendWidth, scrollBarMin.y);
 				ImVec2 scrollBarB(scrollBarMin.x + legendWidth + canvas_size.x, scrollBarMax.y);
 				draw_list->AddRectFilled(scrollBarA, scrollBarB, 0xFF222222, 0);
@@ -479,6 +488,7 @@ namespace ImSequencer
 					{
                   float framesPerPixelInBar = barWidthInPixels / (float)visibleFrameCount;
                   *firstFrame = int((io.MousePos.x - panningViewSource.x) / framesPerPixelInBar) - panningViewFrame;
+                  *firstFrame = ImClamp(*firstFrame, sequence->GetFrameMin(), sequence->GetFrameMax() - visibleFrameCount);
 					}
 				}
 				else
@@ -491,9 +501,7 @@ namespace ImSequencer
 					}
 				}
 			}
-
 		}
-
 
 		ImGui::EndGroup();
 
