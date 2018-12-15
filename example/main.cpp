@@ -320,7 +320,7 @@ struct MySequence : public ImSequencer::SequenceInterface
 	virtual void Del(int index) { myItems.erase(myItems.begin() + index); }
 	virtual void Duplicate(int index) { myItems.push_back(myItems[index]); }
 
-	virtual size_t GetCustomHeight(int index) { return myItems[index].mExpanded?300:0; }
+   virtual size_t GetCustomHeight(int index) { return 300;/* myItems[index].mExpanded ? 300 : 0;*/ }
 
 	// my datas
 	MySequence() : mFrameCount(0) {}
