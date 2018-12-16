@@ -77,7 +77,7 @@ namespace ImCurveEdit
       return ret;
    }
 
-   int Edit(Delegate &delegate, const ImVec2& size)
+   int Edit(Delegate &delegate, const ImVec2& size, unsigned int id)
    {
       struct EditPoint
       {
@@ -110,7 +110,7 @@ namespace ImCurveEdit
 
       ImGuiIO& io = ImGui::GetIO();
       ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
-      ImGui::BeginChildFrame(137, size);
+      ImGui::BeginChildFrame(id, size);
 
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -138,6 +138,8 @@ namespace ImCurveEdit
       int localOverCurve = -1;
       for (size_t c = 0; c < curveCount; c++)
       {
+         if (!delegate.IsVisible(c))
+            continue;
          const size_t ptCount = delegate.GetPointCount(c);
          if (ptCount < 1)
             continue;
@@ -259,6 +261,9 @@ namespace ImCurveEdit
             // select everythnig is quad
             for (size_t c = 0; c < curveCount; c++)
             {
+               if (!delegate.IsVisible(c))
+                  continue;
+
                const size_t ptCount = delegate.GetPointCount(c);
                if (ptCount < 1)
                   continue;

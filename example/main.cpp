@@ -213,34 +213,38 @@ struct RampEdit : public ImCurveEdit::Delegate
 {
    RampEdit()
    {
-      mPts[0][0] = ImVec2(0, 0);
-      mPts[0][1] = ImVec2(0.2f, 0.6f);
-      mPts[0][2] = ImVec2(0.5f, 0.2f);
-      mPts[0][3] = ImVec2(0.7f, 0.4f);
-      mPts[0][4] = ImVec2(1.f, 1.f);
+      mPts[0][0] = ImVec2(-10.f, 0);
+      mPts[0][1] = ImVec2(20.f, 0.6f);
+      mPts[0][2] = ImVec2(25.f, 0.2f);
+      mPts[0][3] = ImVec2(70.f, 0.4f);
+      mPts[0][4] = ImVec2(120.f, 1.f);
       mPointCount[0] = 5;
 
-      mPts[1][0] = ImVec2(0, 0.2f);
-      mPts[1][1] = ImVec2(0.35f, 0.7f);
-      mPts[1][2] = ImVec2(0.5f, 0.2f);
-      mPts[1][3] = ImVec2(1.f, 0.8f);
+      mPts[1][0] = ImVec2(-50.f, 0.2f);
+      mPts[1][1] = ImVec2(33.f, 0.7f);
+      mPts[1][2] = ImVec2(80.f, 0.2f);
+      mPts[1][3] = ImVec2(82.f, 0.8f);
       mPointCount[1] = 4;
 
 
-      mPts[2][0] = ImVec2(0, 0);
-      mPts[2][1] = ImVec2(0.4f, 0.1f);
-      mPts[2][2] = ImVec2(0.55f, 0.82f);
-      mPts[2][3] = ImVec2(0.85f, 0.24f);
-      mPts[2][4] = ImVec2(0.95f, 0.34f);
-      mPts[2][5] = ImVec2(1.f, 0.12f);
+      mPts[2][0] = ImVec2(40.f, 0);
+      mPts[2][1] = ImVec2(60.f, 0.1f);
+      mPts[2][2] = ImVec2(90.f, 0.82f);
+      mPts[2][3] = ImVec2(150.f, 0.24f);
+      mPts[2][4] = ImVec2(200.f, 0.34f);
+      mPts[2][5] = ImVec2(250.f, 0.12f);
       mPointCount[2] = 6;
-
+      mbVisible[0] = mbVisible[1] = mbVisible[2] = true;
    }
    size_t GetCurveCount()
    {
       return 3;
    }
 
+   bool IsVisible(size_t curveIndex)
+   {
+      return mbVisible[curveIndex];
+   }
    size_t GetPointCount(size_t curveIndex)
    {
       return mPointCount[curveIndex];
@@ -258,7 +262,7 @@ struct RampEdit : public ImCurveEdit::Delegate
 
    virtual int EditPoint(size_t curveIndex, int pointIndex, ImVec2 value)
    {
-      mPts[curveIndex][pointIndex] = value;
+      mPts[curveIndex][pointIndex] = ImVec2(floorf(value.x), value.y);
       SortValues(curveIndex);
       for (size_t i = 0; i < GetPointCount(curveIndex); i++)
       {
@@ -277,7 +281,7 @@ struct RampEdit : public ImCurveEdit::Delegate
    virtual unsigned int GetBackgroundColor() { return 0; }
    ImVec2 mPts[3][8];
    size_t mPointCount[3];
-
+   bool mbVisible[3];
 private:
    void SortValues(size_t curveIndex)
    {
@@ -339,17 +343,31 @@ struct MySequence : public ImSequencer::SequenceInterface
 	std::vector<MySequenceItem> myItems;
 
    virtual void DoubleClick(int index) {
+      if (myItems[index].mExpanded)
+      {
+         myItems[index].mExpanded = false;
+         return;
+      }
+      for (auto& item : myItems)
+         item.mExpanded = false;
       myItems[index].mExpanded = !myItems[index].mExpanded;
    }
 
-   virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc)
+   virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& legendRect)
    {
-      draw_list->AddRect(rc.Min, rc.Max, 0xFF0000FF, 0, 15, 4);
+      static const char *labels[] = { "Translation", "Rotation" , "Scale" };
       static RampEdit rampEdit;
-      //ImGui::SetCursorPos(ImVec2(0, 0));// rc.Min);
+      for (int i = 0; i < 3; i++)
+      {
+         ImVec2 pta(legendRect.Min.x + 30, legendRect.Min.y + i * 14.f);
+         ImVec2 ptb(legendRect.Max.x, legendRect.Min.y + (i+1) * 14.f);
+         draw_list->AddText(pta, rampEdit.mbVisible[i]?0xFFFFFFFF:0x80FFFFFF, labels[i]);
+         if (ImRect(pta, ptb).Contains(ImGui::GetMousePos()) && ImGui::IsMouseClicked(0))
+            rampEdit.mbVisible[i] = !rampEdit.mbVisible[i];
+      }
+
       ImGui::SetCursorScreenPos(rc.Min);
-      //ImGui::SetWindowPos(rc.Min);
-      ImCurveEdit::Edit(rampEdit, rc.Max-rc.Min);
+      ImCurveEdit::Edit(rampEdit, rc.Max-rc.Min, 137 + index);
    }
 };
 /*
@@ -498,8 +516,14 @@ int main(int, char**)
 
 		//ImGui::SetNextWindowSize(ImVec2(740, 480));
 		ImGui::Begin("Sequencer");
+
+      ImGui::PushItemWidth(130);
 		ImGui::InputInt("Frame Min", &mySequence.mFrameMin);
+      ImGui::SameLine();
+      ImGui::InputInt("Frame ", &currentFrame);
+      ImGui::SameLine();
       ImGui::InputInt("Frame Max", &mySequence.mFrameMax);
+      ImGui::PopItemWidth();
 		Sequencer(&mySequence, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
 		// add a UI to edit that particular item
 		if (selectedEntry != -1)
@@ -508,10 +532,7 @@ int main(int, char**)
 			ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
 			// switch (type) ....
 		}
-      /*
-      static RampEdit rampEdit;
-      ImCurveEdit::Edit(rampEdit, ImVec2(600, 300));
-      */
+
 		ImGui::End();
       
 		// render everything
