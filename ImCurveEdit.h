@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
+#include "imgui.h"
 
-struct ImVec2;
 
 namespace ImCurveEdit
 {
@@ -9,6 +9,7 @@ namespace ImCurveEdit
    {
       virtual size_t GetCurveCount() = 0;
       virtual bool IsVisible(size_t curveIndex) { return true; }
+      virtual ImVec2 GetRange() { return ImVec2(1.f, 1.f); }
       virtual size_t GetPointCount(size_t curveIndex) = 0;
       virtual uint32_t GetCurveColor(size_t curveIndex) = 0;
       virtual ImVec2* GetPoints(size_t curveIndex) = 0;

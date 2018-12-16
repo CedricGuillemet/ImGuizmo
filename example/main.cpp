@@ -235,6 +235,7 @@ struct RampEdit : public ImCurveEdit::Delegate
       mPts[2][5] = ImVec2(250.f, 0.12f);
       mPointCount[2] = 6;
       mbVisible[0] = mbVisible[1] = mbVisible[2] = true;
+      mRange = ImVec2(1.f, 1.f);
    }
    size_t GetCurveCount()
    {
@@ -278,10 +279,14 @@ struct RampEdit : public ImCurveEdit::Delegate
       mPts[curveIndex][mPointCount[curveIndex]++] = value;
       SortValues(curveIndex);
    }
+   virtual ImVec2 GetRange() {
+      return mRange;
+   }
    virtual unsigned int GetBackgroundColor() { return 0; }
    ImVec2 mPts[3][8];
    size_t mPointCount[3];
    bool mbVisible[3];
+   ImVec2 mRange;
 private:
    void SortValues(size_t curveIndex)
    {
@@ -353,10 +358,11 @@ struct MySequence : public ImSequencer::SequenceInterface
       myItems[index].mExpanded = !myItems[index].mExpanded;
    }
 
-   virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& legendRect)
+   virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& legendRect, const ImRect& clippingRect)
    {
       static const char *labels[] = { "Translation", "Rotation" , "Scale" };
       static RampEdit rampEdit;
+      rampEdit.mRange = ImVec2(mFrameMax - mFrameMin, 1.f);
       for (int i = 0; i < 3; i++)
       {
          ImVec2 pta(legendRect.Min.x + 30, legendRect.Min.y + i * 14.f);
@@ -367,14 +373,11 @@ struct MySequence : public ImSequencer::SequenceInterface
       }
 
       ImGui::SetCursorScreenPos(rc.Min);
+      draw_list->PushClipRect(clippingRect.Min, clippingRect.Max);
       ImCurveEdit::Edit(rampEdit, rc.Max-rc.Min, 137 + index);
+      draw_list->PopClipRect();
    }
 };
-/*
-- frame min/max + clamp (hscroll)
-- clipping segments 
-
-*/
 
 inline void rotationY(const float angle, float *m16)
 {

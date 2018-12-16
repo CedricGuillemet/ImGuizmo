@@ -62,6 +62,7 @@ namespace ImSequencer
          int index;
          ImRect customRect;
          ImRect legendRect;
+         ImRect clippingRect;
       };
       ImVector<CustomDraw> customDraws;
 		// zoom in/out
@@ -375,9 +376,12 @@ namespace ImSequencer
 				}
             if (localCustomHeight > 0)
             {
-               ImRect customRect(pos - ImVec2(legendWidth, 0), ImVec2(contentMin.x + canvas_size.x, slotP3.y));
+               ImVec2 rp(contentMin.x, contentMin.y + ItemHeight * i + 1 + customHeight);
+               ImRect customRect(rp + ImVec2(legendWidth + (-sequence->GetFrameMin() + firstFrameUsed) * framePixelWidth, 0),
+                  rp + ImVec2(legendWidth + (sequence->GetFrameMax() + firstFrameUsed) * framePixelWidth, localCustomHeight));
+               ImRect clippingRect(ImVec2(contentMin.x + legendWidth, rp.y), ImVec2(contentMax.x + legendWidth, rp.y + localCustomHeight));
                ImRect legendRect(pos + ImVec2(-legendWidth, ItemHeight), pos + ImVec2(legendWidth, localCustomHeight));
-               customDraws.push_back({ i, customRect, legendRect });
+               customDraws.push_back({ i, customRect, legendRect, clippingRect });
             }
 				customHeight += localCustomHeight;
 			}
@@ -437,7 +441,7 @@ namespace ImSequencer
          draw_list->PopClipRect();
 
          for (auto& customDraw : customDraws)
-            sequence->CustomDraw(customDraw.index, draw_list, customDraw.customRect, customDraw.legendRect);
+            sequence->CustomDraw(customDraw.index, draw_list, customDraw.customRect, customDraw.legendRect, customDraw.clippingRect);
          draw_list->PopClipRect();
 			// copy paste
 			if (sequenceOptions&SEQUENCER_COPYPASTE)
