@@ -63,6 +63,7 @@ namespace ImSequencer
          ImRect customRect;
          ImRect legendRect;
          ImRect clippingRect;
+         ImRect legendClippingRect;
       };
       ImVector<CustomDraw> customDraws;
 		// zoom in/out
@@ -376,12 +377,13 @@ namespace ImSequencer
 				}
             if (localCustomHeight > 0)
             {
-               ImVec2 rp(contentMin.x, contentMin.y + ItemHeight * i + 1 + customHeight);
-               ImRect customRect(rp + ImVec2(legendWidth + (-sequence->GetFrameMin() + firstFrameUsed) * framePixelWidth, 0),
-                  rp + ImVec2(legendWidth + (sequence->GetFrameMax() + firstFrameUsed) * framePixelWidth, localCustomHeight));
-               ImRect clippingRect(ImVec2(contentMin.x + legendWidth, rp.y), ImVec2(contentMax.x + legendWidth, rp.y + localCustomHeight));
-               ImRect legendRect(pos + ImVec2(-legendWidth, ItemHeight), pos + ImVec2(legendWidth, localCustomHeight));
-               customDraws.push_back({ i, customRect, legendRect, clippingRect });
+               ImVec2 rp(canvas_pos.x, contentMin.y + ItemHeight * i + 1 + customHeight);
+               ImRect customRect(rp + ImVec2(legendWidth - (firstFrameUsed - sequence->GetFrameMin() - 0.5f) * framePixelWidth, 0),
+                  rp + ImVec2(legendWidth + (sequence->GetFrameMax() - firstFrameUsed - 0.5f) * framePixelWidth, localCustomHeight));
+               ImRect clippingRect(rp + ImVec2(legendWidth, ItemHeight), rp + ImVec2(canvas_size.x, localCustomHeight));
+               ImRect legendRect(rp + ImVec2(0, ItemHeight), rp + ImVec2(legendWidth, localCustomHeight));
+               ImRect legendClippingRect(canvas_pos + ImVec2(0, ItemHeight), canvas_pos+ImVec2(legendWidth, localCustomHeight + ItemHeight));
+               customDraws.push_back({ i, customRect, legendRect, clippingRect, legendClippingRect });
             }
 				customHeight += localCustomHeight;
 			}
@@ -432,17 +434,20 @@ namespace ImSequencer
 			// cursor
 			if (currentFrame && firstFrame && *currentFrame >= *firstFrame && *currentFrame <= sequence->GetFrameMax())
 			{
-				float cursorOffset = contentMin.x + legendWidth + (*currentFrame - firstFrameUsed) * framePixelWidth + framePixelWidth / 2;
-				draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, 8);
+            static const float cursorWidth = 8.f;
+				float cursorOffset = contentMin.x + legendWidth + (*currentFrame - firstFrameUsed) * framePixelWidth + framePixelWidth / 2 - cursorWidth * 0.5f;
+				draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, cursorWidth);
             char tmps[512];
             sprintf(tmps, "%d", *currentFrame);
             draw_list->AddText(ImVec2(cursorOffset + 10, canvas_pos.y + 2), 0xFF2A2AFF, tmps);
 			}
          draw_list->PopClipRect();
 
-         for (auto& customDraw : customDraws)
-            sequence->CustomDraw(customDraw.index, draw_list, customDraw.customRect, customDraw.legendRect, customDraw.clippingRect);
          draw_list->PopClipRect();
+
+         for (auto& customDraw : customDraws)
+            sequence->CustomDraw(customDraw.index, draw_list, customDraw.customRect, customDraw.legendRect, customDraw.clippingRect, customDraw.legendClippingRect);
+         
 			// copy paste
 			if (sequenceOptions&SEQUENCER_COPYPASTE)
 			{

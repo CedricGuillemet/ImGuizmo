@@ -77,7 +77,7 @@ namespace ImCurveEdit
       return ret;
    }
 
-   int Edit(Delegate &delegate, const ImVec2& size, unsigned int id)
+   int Edit(Delegate &delegate, const ImVec2& size, unsigned int id, const ImRect *clippingRect)
    {
       struct EditPoint
       {
@@ -113,13 +113,18 @@ namespace ImCurveEdit
       ImGui::BeginChildFrame(id, size);
 
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
+      if (clippingRect)
+         draw_list->PushClipRect(clippingRect->Min, clippingRect->Max, true);
 
       const ImVec2 offset = ImGui::GetCursorScreenPos() + ImVec2(0.f, size.y);
       const ImVec2 ssize(size.x, -size.y);
       const ImVec2 ssizeScaled(size.x, -size.y * scaleV);
       const ImVec2 sizeOfPixel = ImVec2(1.f, 1.f) / ssizeScaled;
       const ImRect container(offset + ImVec2(0.f, ssize.y), offset + ImVec2(ssize.x, 0.f));
-      
+      const ImVec2 range = delegate.GetRange();
+      const ImVec2 min = delegate.GetMin();
+      const size_t curveCount = delegate.GetCurveCount();
+
       if (container.Contains(io.MousePos))
       {
          if (io.MouseWheel > FLT_EPSILON)
@@ -131,9 +136,10 @@ namespace ImCurveEdit
 
       draw_list->AddRectFilled(offset, offset + ssize, delegate.GetBackgroundColor());
       
+      auto pointToRange = [&](ImVec2 pt) { return (pt - min) / range; };
+      auto rangeToPoint = [&](ImVec2 pt) { return (pt * range) + min; };
+      
 
-      const size_t curveCount = delegate.GetCurveCount();
-      const ImVec2 range = delegate.GetRange();
       bool overCurveOrPoint = false;
 
       int localOverCurve = -1;
@@ -152,8 +158,8 @@ namespace ImCurveEdit
 
          for (size_t p = 0; p < ptCount - 1; p++)
          {
-            const ImVec2 p1 = pts[p] / range;
-            const ImVec2 p2 = pts[p+1] / range;
+            const ImVec2 p1 = pointToRange(pts[p]);
+            const ImVec2 p2 = pointToRange(pts[p+1]);
             for (size_t substep = 0; substep < subStepCount-1; substep++)
             {
                float t = float(substep) * step;
@@ -180,7 +186,7 @@ namespace ImCurveEdit
 
          for (size_t p = 0; p < ptCount; p++)
          {
-            const int drawState = DrawPoint(draw_list, pts[p] / range, ssizeScaled, offset, (selection.find({int(c), int(p)}) != selection.end() && movingCurve == -1));
+            const int drawState = DrawPoint(draw_list, pointToRange(pts[p]), ssizeScaled, offset, (selection.find({int(c), int(p)}) != selection.end() && movingCurve == -1));
             if (drawState && movingCurve == -1 && !selectingQuad)
             {
                overCurveOrPoint = true;
@@ -206,7 +212,7 @@ namespace ImCurveEdit
          for (auto& sel : prevSelection)
          {
             const ImVec2* pts = delegate.GetPoints(sel.curveIndex);
-            const ImVec2 p = pts[sel.pointIndex] / range + io.MouseDelta * sizeOfPixel;
+            const ImVec2 p = rangeToPoint(pointToRange(pts[sel.pointIndex]) + io.MouseDelta * sizeOfPixel);
             const int newIndex = delegate.EditPoint(sel.curveIndex, sel.pointIndex, p);
             if (newIndex != sel.pointIndex)
             {
@@ -223,7 +229,7 @@ namespace ImCurveEdit
       // add point
       if (overCurve != -1 && io.MouseDoubleClicked[0])
       {
-         const ImVec2 np = (io.MousePos - offset) / ssizeScaled;
+         const ImVec2 np = rangeToPoint((io.MousePos - offset) / ssizeScaled);
          delegate.AddPoint(overCurve, np);
       }
 
@@ -236,7 +242,7 @@ namespace ImCurveEdit
          {
             for (size_t p = 0; p < ptCount; p++)
             {
-               delegate.EditPoint(movingCurve, p, pts[p] / range + io.MouseDelta * sizeOfPixel);
+               delegate.EditPoint(movingCurve, p, rangeToPoint(pointToRange(pts[p]) + io.MouseDelta * sizeOfPixel));
             }
          }
          if (!io.MouseDown[0])
@@ -272,7 +278,7 @@ namespace ImCurveEdit
                const ImVec2* pts = delegate.GetPoints(c);
                for (size_t p = 0; p < ptCount - 1; p++)
                {
-                  const ImVec2 center = pts[p] / range * ssizeScaled + offset;
+                  const ImVec2 center = pointToRange(pts[p]) * ssizeScaled + offset;
                   if (selectionQuad.Contains(center))
                      selection.insert({int(c), int(p)});
                }
@@ -286,6 +292,8 @@ namespace ImCurveEdit
          selectingQuad = true;
          quadSelection = io.MousePos;
       }
+      if (clippingRect)
+         draw_list->PopClipRect();
 
       ImGui::EndChildFrame();
       ImGui::PopStyleVar();
