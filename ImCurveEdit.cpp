@@ -6,6 +6,25 @@
 
 namespace ImCurveEdit
 {
+   static ImVec2 operator+(const ImVec2 &a, const ImVec2 &b) {
+      return ImVec2(a.x + b.x, a.y + b.y);
+   }
+
+   static ImVec2 operator-(const ImVec2 &a, const ImVec2 &b) {
+      return ImVec2(a.x - b.x, a.y - b.y);
+   }
+
+   static ImVec2 operator*(const ImVec2 &a, const ImVec2 &b) {
+      return ImVec2(a.x * b.x, a.y * b.y);
+   }
+
+   static ImVec2 operator/(const ImVec2 &a, const ImVec2 &b) {
+      return ImVec2(a.x / b.x, a.y / b.y);
+   }
+
+   static ImVec2 operator*(const ImVec2 &a, const float b) {
+      return ImVec2(a.x * b, a.y * b);
+   }
 
    static float smoothstep(float edge0, float edge1, float x)
    {
