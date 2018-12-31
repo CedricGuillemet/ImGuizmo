@@ -15,6 +15,7 @@
 // ImGuizmo example helper functions
 //
 //
+static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 
 void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float *m16)
 {
@@ -261,7 +262,7 @@ struct RampEdit : public ImCurveEdit::Delegate
    {
       return mPts[curveIndex];
    }
-
+   virtual ImCurveEdit::CurveType GetCurveType(size_t curveIndex) const { return ImCurveEdit::CurveSmooth; }
    virtual int EditPoint(size_t curveIndex, int pointIndex, ImVec2 value)
    {
       mPts[curveIndex][pointIndex] = ImVec2(value.x, value.y);
@@ -280,10 +281,8 @@ struct RampEdit : public ImCurveEdit::Delegate
       mPts[curveIndex][mPointCount[curveIndex]++] = value;
       SortValues(curveIndex);
    }
-   virtual ImVec2 GetRange() {
-      return mMax - mMin;
-   }
-   virtual ImVec2 GetMin() { return mMin; }
+   virtual ImVec2& GetMax() { return mMax; }
+   virtual ImVec2& GetMin() { return mMin; }
    virtual unsigned int GetBackgroundColor() { return 0; }
    ImVec2 mPts[3][8];
    size_t mPointCount[3];

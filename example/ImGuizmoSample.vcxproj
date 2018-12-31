@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\ImCurveEdit.h" />
+    <ClInclude Include="..\ImGradient.h" />
     <ClInclude Include="..\ImGuizmo.h" />
     <ClInclude Include="..\ImSequencer.h" />
     <ClInclude Include="ImApp.h" />
@@ -158,10 +159,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ImCurveEdit.cpp" />
+    <ClCompile Include="..\ImGradient.cpp" />
     <ClCompile Include="..\ImGuizmo.cpp" />
     <ClCompile Include="..\ImSequencer.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
