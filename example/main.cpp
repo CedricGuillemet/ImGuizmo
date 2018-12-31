@@ -262,7 +262,7 @@ struct RampEdit : public ImCurveEdit::Delegate
    {
       return mPts[curveIndex];
    }
-
+   virtual ImCurveEdit::CurveType GetCurveType(size_t curveIndex) const { return ImCurveEdit::CurveSmooth; }
    virtual int EditPoint(size_t curveIndex, int pointIndex, ImVec2 value)
    {
       mPts[curveIndex][pointIndex] = ImVec2(value.x, value.y);
