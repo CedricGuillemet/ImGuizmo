@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 struct ImDrawList;
 struct ImRect;
 namespace ImSequencer

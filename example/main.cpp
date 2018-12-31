@@ -15,6 +15,7 @@
 // ImGuizmo example helper functions
 //
 //
+static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 
 void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float *m16)
 {

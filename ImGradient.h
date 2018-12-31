@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstddef>
 
 struct ImVec4;
 struct ImVec2;

@@ -6,23 +6,29 @@
 
 namespace ImGradient
 {
+
+   static inline ImVec2 operator*(const ImVec2& lhs, const float rhs) { return ImVec2(lhs.x*rhs, lhs.y*rhs); }
+   static inline ImVec2 operator/(const ImVec2& lhs, const float rhs) { return ImVec2(lhs.x / rhs, lhs.y / rhs); }
+   static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+   static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
+   static inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x*rhs.x, lhs.y*rhs.y); }
+   static inline ImVec2 operator/(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x / rhs.x, lhs.y / rhs.y); }
+
    static int DrawPoint(ImDrawList* draw_list, ImVec4 color, const ImVec2 size, bool editing, ImVec2 pos)
    {
       int ret = 0;
       ImGuiIO& io = ImGui::GetIO();
 
-      ImVec2 p1 = ImLerp(pos, ImVec2(pos+ImVec2(size.x-size.y, 0.f)), color.w);
-      ImVec2 p2 = ImLerp(pos+ImVec2(size.y, size.y), ImVec2(pos + size), color.w);
-      p1 += ImVec2(3, 3);
-      p2 -= ImVec2(3, 3);
+      ImVec2 p1 = ImLerp(pos, ImVec2(pos + ImVec2(size.x - size.y, 0.f)), color.w) + ImVec2(3, 3);
+      ImVec2 p2 = ImLerp(pos + ImVec2(size.y, size.y), ImVec2(pos + size), color.w) - ImVec2(3, 3);
       ImRect rc(p1, p2);
 
       color.w = 1.f;
       draw_list->AddRectFilled(p1, p2, ImColor(color));
       if (editing)
-        draw_list->AddRect(p1, p2, 0xFFFFFFFF, 2.f, 15, 2.5f);
+         draw_list->AddRect(p1, p2, 0xFFFFFFFF, 2.f, 15, 2.5f);
       else
-          draw_list->AddRect(p1, p2, 0x80FFFFFF, 2.f, 15, 1.25f);
+         draw_list->AddRect(p1, p2, 0x80FFFFFF, 2.f, 15, 1.25f);
 
       if (rc.Contains(io.MousePos))
       {
@@ -32,14 +38,14 @@ namespace ImGradient
       }
       return 0;
    }
-   
+
    bool Edit(Delegate &delegate, const ImVec2& size, int& selection)
    {
       bool ret = false;
       ImGuiIO& io = ImGui::GetIO();
-      ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0,0));
+      ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
       ImGui::BeginChildFrame(137, size);
-      
+
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
       const ImVec2 offset = ImGui::GetCursorScreenPos();
 
@@ -80,7 +86,7 @@ namespace ImGradient
       }
       ImGui::EndChildFrame();
       ImGui::PopStyleVar();
-      
+
       selection = currentSelection;
       return ret;
    }
