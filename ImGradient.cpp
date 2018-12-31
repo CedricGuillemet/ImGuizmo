@@ -13,12 +13,16 @@ namespace ImGradient
 
       ImVec2 p1 = ImLerp(pos, ImVec2(pos+ImVec2(size.x-size.y, 0.f)), color.w);
       ImVec2 p2 = ImLerp(pos+ImVec2(size.y, size.y), ImVec2(pos + size), color.w);
-
+      p1 += ImVec2(3, 3);
+      p2 -= ImVec2(3, 3);
       ImRect rc(p1, p2);
 
-	  color.w = 1.f;
+      color.w = 1.f;
       draw_list->AddRectFilled(p1, p2, ImColor(color));
-      draw_list->AddRect(p1, p2, editing?(0xFFFFFFFF- ImColor(color)):0xFFFFFFFF, 4.f);
+      if (editing)
+        draw_list->AddRect(p1, p2, 0xFFFFFFFF, 2.f, 15, 2.5f);
+      else
+          draw_list->AddRect(p1, p2, 0x80FFFFFF, 2.f, 15, 1.25f);
 
       if (rc.Contains(io.MousePos))
       {
@@ -70,7 +74,7 @@ namespace ImGradient
       ImRect rc(offset, offset + size);
       if (rc.Contains(io.MousePos) && io.MouseDoubleClicked[0])
       {
-         float t = io.MousePos.x / size.x;
+         float t = (io.MousePos.x - offset.x) / size.x;
          delegate.AddPoint(delegate.GetPoint(t));
          ret = true;
       }

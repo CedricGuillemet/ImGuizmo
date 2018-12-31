@@ -280,10 +280,8 @@ struct RampEdit : public ImCurveEdit::Delegate
       mPts[curveIndex][mPointCount[curveIndex]++] = value;
       SortValues(curveIndex);
    }
-   virtual ImVec2 GetRange() {
-      return mMax - mMin;
-   }
-   virtual ImVec2 GetMin() { return mMin; }
+   virtual ImVec2& GetMax() { return mMax; }
+   virtual ImVec2& GetMin() { return mMin; }
    virtual unsigned int GetBackgroundColor() { return 0; }
    ImVec2 mPts[3][8];
    size_t mPointCount[3];
