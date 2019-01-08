@@ -146,7 +146,7 @@ namespace ImCurveEdit
               scrollingV = true;
           }
       }
-      ImVec2 range = max - min;
+      ImVec2 range = max - min + ImVec2(1.f, 0.f);  // +1 because of inclusive last frame
       
       const ImVec2 viewSize(size.x, -size.y);
       const ImVec2 sizeOfPixel = ImVec2(1.f, 1.f) / viewSize;
