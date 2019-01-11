@@ -74,6 +74,7 @@ namespace ImSequencer
             ImRect legendClippingRect;
         };
         ImVector<CustomDraw> customDraws;
+        ImVector<CustomDraw> compactCustomDraws;
         // zoom in/out
         int frameOverCursor = 0;
         const int visibleFrameCount = (int)floorf((canvas_size.x - legendWidth) / framePixelWidth);
@@ -368,15 +369,27 @@ namespace ImSequencer
                         }
                     }
                 }
+
+                // custom draw
                 if (localCustomHeight > 0)
                 {
-                    ImVec2 rp(canvas_pos.x, contentMin.y + ItemHeight * i + 1 + customHeight);
-                    ImRect customRect(rp + ImVec2(legendWidth - (firstFrameUsed - sequence->GetFrameMin() - 0.5f) * framePixelWidth, float(ItemHeight)),
-                        rp + ImVec2(legendWidth + (sequence->GetFrameMax() - firstFrameUsed - 0.5f + 2.f) * framePixelWidth, float(localCustomHeight + ItemHeight)));
-                    ImRect clippingRect(rp + ImVec2(float(legendWidth), float(ItemHeight)), rp + ImVec2(canvas_size.x, float(localCustomHeight + ItemHeight)));
+                   ImVec2 rp(canvas_pos.x, contentMin.y + ItemHeight * i + 1 + customHeight);
+                   ImRect customRect(rp + ImVec2(legendWidth - (firstFrameUsed - sequence->GetFrameMin() - 0.5f) * framePixelWidth, float(ItemHeight)),
+                      rp + ImVec2(legendWidth + (sequence->GetFrameMax() - firstFrameUsed - 0.5f + 2.f) * framePixelWidth, float(localCustomHeight + ItemHeight)));
+                   ImRect clippingRect(rp + ImVec2(float(legendWidth), float(ItemHeight)), rp + ImVec2(canvas_size.x, float(localCustomHeight + ItemHeight)));
+
                     ImRect legendRect(rp + ImVec2(0.f, float(ItemHeight)), rp + ImVec2(float(legendWidth), float(localCustomHeight)));
                     ImRect legendClippingRect(canvas_pos + ImVec2(0.f, float(ItemHeight)), canvas_pos + ImVec2(float(legendWidth), float(localCustomHeight + ItemHeight)));
                     customDraws.push_back({ i, customRect, legendRect, clippingRect, legendClippingRect });
+                }
+                else
+                {
+                   ImVec2 rp(canvas_pos.x, contentMin.y + ItemHeight * i + customHeight);
+                   ImRect customRect(rp + ImVec2(legendWidth - (firstFrameUsed - sequence->GetFrameMin() - 0.5f) * framePixelWidth, float(0.f)),
+                      rp + ImVec2(legendWidth + (sequence->GetFrameMax() - firstFrameUsed - 0.5f + 2.f) * framePixelWidth, float(ItemHeight)));
+                   ImRect clippingRect(rp + ImVec2(float(legendWidth), float(0.f)), rp + ImVec2(canvas_size.x, float(ItemHeight)));
+
+                   compactCustomDraws.push_back({ i, customRect, ImRect(), clippingRect, ImRect() });
                 }
                 customHeight += localCustomHeight;
             }
@@ -441,6 +454,8 @@ namespace ImSequencer
 
             for (auto& customDraw : customDraws)
                 sequence->CustomDraw(customDraw.index, draw_list, customDraw.customRect, customDraw.legendRect, customDraw.clippingRect, customDraw.legendClippingRect);
+            for (auto& customDraw : compactCustomDraws)
+               sequence->CustomDrawCompact(customDraw.index, draw_list, customDraw.customRect, customDraw.clippingRect);
 
             // copy paste
             if (sequenceOptions&SEQUENCER_COPYPASTE)
@@ -511,13 +526,13 @@ namespace ImSequencer
                 if (sizingRBar)
                 {
                    if (!io.MouseDown[0])
+                   {
                       sizingRBar = false;
+                   }
                    else
                    {
                       float barNewWidth = ImMax(barWidthInPixels + io.MouseDelta.x, MinBarWidth);
                       float barRatio = barNewWidth / barWidthInPixels;
-                      //float previousFramePixelWidthTarget = framePixelWidthTarget;
-                      //float maxFramePixelWidth = (canvas_size.x - legendWidth)
                       framePixelWidthTarget = framePixelWidth = framePixelWidth / barRatio;
                       int newVisibleFrameCount = int((canvas_size.x - legendWidth) / framePixelWidthTarget);
                       int lastFrame = *firstFrame + newVisibleFrameCount;
@@ -530,7 +545,9 @@ namespace ImSequencer
                 else if (sizingLBar)
                 {
                    if (!io.MouseDown[0])
-                       sizingLBar = false;
+                   {
+                      sizingLBar = false;
+                   }
                    else
                    {
                       if (fabsf(io.MouseDelta.x) > FLT_EPSILON)
@@ -541,13 +558,15 @@ namespace ImSequencer
                          framePixelWidthTarget = framePixelWidth = framePixelWidth / barRatio;
                          int newVisibleFrameCount = int(visibleFrameCount / barRatio);
                          int newFirstFrame = *firstFrame + newVisibleFrameCount - visibleFrameCount;
-                         //*firstFrame += newVisibleFrameCount - visibleFrameCount;
                          newFirstFrame = ImClamp(newFirstFrame, sequence->GetFrameMin(), ImMax(sequence->GetFrameMax() - visibleFrameCount, sequence->GetFrameMin()));
                          if (newFirstFrame == *firstFrame)
+                         {
                             framePixelWidth = framePixelWidthTarget = previousFramePixelWidthTarget;
+                         }
                          else
+                         {
                             *firstFrame = newFirstFrame;
-
+                         }
                       }
                    }
                 }

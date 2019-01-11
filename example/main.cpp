@@ -338,7 +338,7 @@ struct MySequence : public ImSequencer::SequenceInterface
 
    virtual size_t GetCustomHeight(int index) { return myItems[index].mExpanded ? 300 : 0; }
 
-	// my datas
+   // my datas
 	MySequence() : mFrameMin(0), mFrameMax(0) {}
 	int mFrameMin, mFrameMax;
 	struct MySequenceItem
@@ -348,6 +348,7 @@ struct MySequence : public ImSequencer::SequenceInterface
       bool mExpanded;
 	};
 	std::vector<MySequenceItem> myItems;
+   RampEdit rampEdit;
 
    virtual void DoubleClick(int index) {
       if (myItems[index].mExpanded)
@@ -363,9 +364,9 @@ struct MySequence : public ImSequencer::SequenceInterface
    virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& legendRect, const ImRect& clippingRect, const ImRect& legendClippingRect)
    {
       static const char *labels[] = { "Translation", "Rotation" , "Scale" };
-      static RampEdit rampEdit;
-      rampEdit.mMax = ImVec2(mFrameMax, 1.f);
-      rampEdit.mMin = ImVec2(mFrameMin, 0.f);
+      
+      rampEdit.mMax = ImVec2(float(mFrameMax), 1.f);
+      rampEdit.mMin = ImVec2(float(mFrameMin), 0.f);
       draw_list->PushClipRect(legendClippingRect.Min, legendClippingRect.Max, true);
       for (int i = 0; i < 3; i++)
       {
@@ -379,6 +380,26 @@ struct MySequence : public ImSequencer::SequenceInterface
 
       ImGui::SetCursorScreenPos(rc.Min);
       ImCurveEdit::Edit(rampEdit, rc.Max-rc.Min, 137 + index, &clippingRect);
+   }
+
+   virtual void CustomDrawCompact(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& clippingRect)
+   {
+      rampEdit.mMax = ImVec2(float(mFrameMax), 1.f);
+      rampEdit.mMin = ImVec2(float(mFrameMin), 0.f);
+      draw_list->PushClipRect(clippingRect.Min, clippingRect.Max, true);
+      for (int i = 0; i < 3; i++)
+      {
+         for (int j = 0; j < rampEdit.mPointCount[i]; j++)
+         {
+            float p = rampEdit.mPts[i][j].x;
+            if (p < myItems[index].mFrameStart || p > myItems[index].mFrameEnd)
+               continue;
+            float r = (p - mFrameMin) / float(mFrameMax - mFrameMin);
+            float x = ImLerp(rc.Min.x, rc.Max.x, r);
+            draw_list->AddLine(ImVec2(x, rc.Min.y + 6), ImVec2(x, rc.Max.y - 4), 0xAA000000, 4.f);
+         }
+      }
+      draw_list->PopClipRect();
    }
 };
 
@@ -441,7 +462,7 @@ int main(int, char**)
 	mySequence.mFrameMin = -100;
    mySequence.mFrameMax = 1000;
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 0, 10, 30, false });
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30, false });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30, true });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 3, 12, 60, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99, false });
