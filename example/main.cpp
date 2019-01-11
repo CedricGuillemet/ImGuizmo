@@ -517,7 +517,7 @@ int main(int, char**)
 		static int selectedEntry = -1;
 		static int firstFrame = 0;
 		static bool expanded = true;
-      static int currentFrame = 120;
+      static int currentFrame = 100;
 		ImGui::SetNextWindowPos(ImVec2(10, 350));
 
 		ImGui::SetNextWindowSize(ImVec2(940, 480));

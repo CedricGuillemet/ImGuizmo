@@ -494,32 +494,92 @@ namespace ImSequencer
                 draw_list->AddRectFilled(scrollBarC, scrollBarD, (inScrollBar || MovingScrollBar) ? 0xFF606060 : 0xFF505050, 6);
 
                 float handleRadius = (scrollBarMax.y - scrollBarMin.y) / 2;
-                draw_list->AddRectFilled(scrollBarC, ImVec2(scrollBarC.x + 14, scrollBarD.y), 0xFFAAAAAA, 6);
-                draw_list->AddRectFilled(ImVec2(scrollBarD.x - 14, scrollBarC.y), scrollBarD, 0xFFAAAAAA, 6);
+                ImRect barHandleLeft(scrollBarC, ImVec2(scrollBarC.x + 14, scrollBarD.y));
+                ImRect barHandleRight(ImVec2(scrollBarD.x - 14, scrollBarC.y), scrollBarD);
 
+                bool onLeft = barHandleLeft.Contains(io.MousePos);
+                bool onRight = barHandleRight.Contains(io.MousePos);
+
+                static bool sizingRBar = false;
+                static bool sizingLBar = false;
+
+                draw_list->AddRectFilled(barHandleLeft.Min, barHandleLeft.Max, (onLeft || sizingLBar)?0xFFAAAAAA:0xFF666666, 6);
+                draw_list->AddRectFilled(barHandleRight.Min, barHandleRight.Max, (onRight || sizingRBar )?0xFFAAAAAA:0xFF666666, 6);
 
                 ImRect scrollBarThumb(scrollBarC, scrollBarD);
-                if (MovingScrollBar)
+                static const float MinBarWidth = 44.f;
+                if (sizingRBar)
                 {
-                    if (!io.MouseDown[0])
-                    {
-                        MovingScrollBar = false;
-                    }
-                    else
-                    {
-                        float framesPerPixelInBar = barWidthInPixels / (float)visibleFrameCount;
-                        *firstFrame = int((io.MousePos.x - panningViewSource.x) / framesPerPixelInBar) - panningViewFrame;
-                        *firstFrame = ImClamp(*firstFrame, sequence->GetFrameMin(), ImMax(sequence->GetFrameMax() - visibleFrameCount, sequence->GetFrameMin()));
-                    }
+                   if (!io.MouseDown[0])
+                      sizingRBar = false;
+                   else
+                   {
+                      float barNewWidth = ImMax(barWidthInPixels + io.MouseDelta.x, MinBarWidth);
+                      float barRatio = barNewWidth / barWidthInPixels;
+                      //float previousFramePixelWidthTarget = framePixelWidthTarget;
+                      //float maxFramePixelWidth = (canvas_size.x - legendWidth)
+                      framePixelWidthTarget = framePixelWidth = framePixelWidth / barRatio;
+                      int newVisibleFrameCount = int((canvas_size.x - legendWidth) / framePixelWidthTarget);
+                      int lastFrame = *firstFrame + newVisibleFrameCount;
+                      if (lastFrame > sequence->GetFrameMax())
+                      {
+                         framePixelWidthTarget = framePixelWidth = (canvas_size.x - legendWidth) / float(sequence->GetFrameMax() - *firstFrame);
+                      }
+                   }
+                }
+                else if (sizingLBar)
+                {
+                   if (!io.MouseDown[0])
+                       sizingLBar = false;
+                   else
+                   {
+                      if (fabsf(io.MouseDelta.x) > FLT_EPSILON)
+                      {
+                         float barNewWidth = ImMax(barWidthInPixels - io.MouseDelta.x, MinBarWidth);
+                         float barRatio = barNewWidth / barWidthInPixels;
+                         float previousFramePixelWidthTarget = framePixelWidthTarget;
+                         framePixelWidthTarget = framePixelWidth = framePixelWidth / barRatio;
+                         int newVisibleFrameCount = int(visibleFrameCount / barRatio);
+                         int newFirstFrame = *firstFrame + newVisibleFrameCount - visibleFrameCount;
+                         //*firstFrame += newVisibleFrameCount - visibleFrameCount;
+                         newFirstFrame = ImClamp(newFirstFrame, sequence->GetFrameMin(), ImMax(sequence->GetFrameMax() - visibleFrameCount, sequence->GetFrameMin()));
+                         if (newFirstFrame == *firstFrame)
+                            framePixelWidth = framePixelWidthTarget = previousFramePixelWidthTarget;
+                         else
+                            *firstFrame = newFirstFrame;
+
+                      }
+                   }
                 }
                 else
                 {
-                    if (scrollBarThumb.Contains(io.MousePos) && ImGui::IsMouseClicked(0) && firstFrame && !MovingCurrentFrame && movingEntry == -1)
-                    {
-                        MovingScrollBar = true;
-                        panningViewSource = io.MousePos;
-                        panningViewFrame = -*firstFrame;
-                    }
+                   if (MovingScrollBar)
+                   {
+                      if (!io.MouseDown[0])
+                      {
+                         MovingScrollBar = false;
+                      }
+                      else
+                      {
+                         float framesPerPixelInBar = barWidthInPixels / (float)visibleFrameCount;
+                         *firstFrame = int((io.MousePos.x - panningViewSource.x) / framesPerPixelInBar) - panningViewFrame;
+                         *firstFrame = ImClamp(*firstFrame, sequence->GetFrameMin(), ImMax(sequence->GetFrameMax() - visibleFrameCount, sequence->GetFrameMin()));
+                      }
+                   }
+                   else
+                   {
+                      if (scrollBarThumb.Contains(io.MousePos) && ImGui::IsMouseClicked(0) && firstFrame && !MovingCurrentFrame && movingEntry == -1)
+                      {
+                         MovingScrollBar = true;
+                         panningViewSource = io.MousePos;
+                         panningViewFrame = -*firstFrame;
+                      }
+                      if (!sizingRBar && onRight && ImGui::IsMouseClicked(0))
+                         sizingRBar = true;
+                      if (!sizingLBar && onLeft && ImGui::IsMouseClicked(0))
+                         sizingLBar = true;
+
+                   }
                 }
             }
         }
