@@ -15,6 +15,7 @@
 // ImGuizmo example helper functions
 //
 //
+static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 
 void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float *m16)
 {
@@ -261,7 +262,7 @@ struct RampEdit : public ImCurveEdit::Delegate
    {
       return mPts[curveIndex];
    }
-
+   virtual ImCurveEdit::CurveType GetCurveType(size_t curveIndex) const { return ImCurveEdit::CurveSmooth; }
    virtual int EditPoint(size_t curveIndex, int pointIndex, ImVec2 value)
    {
       mPts[curveIndex][pointIndex] = ImVec2(value.x, value.y);
@@ -280,10 +281,8 @@ struct RampEdit : public ImCurveEdit::Delegate
       mPts[curveIndex][mPointCount[curveIndex]++] = value;
       SortValues(curveIndex);
    }
-   virtual ImVec2 GetRange() {
-      return mMax - mMin;
-   }
-   virtual ImVec2 GetMin() { return mMin; }
+   virtual ImVec2& GetMax() { return mMax; }
+   virtual ImVec2& GetMin() { return mMin; }
    virtual unsigned int GetBackgroundColor() { return 0; }
    ImVec2 mPts[3][8];
    size_t mPointCount[3];
@@ -339,7 +338,7 @@ struct MySequence : public ImSequencer::SequenceInterface
 
    virtual size_t GetCustomHeight(int index) { return myItems[index].mExpanded ? 300 : 0; }
 
-	// my datas
+   // my datas
 	MySequence() : mFrameMin(0), mFrameMax(0) {}
 	int mFrameMin, mFrameMax;
 	struct MySequenceItem
@@ -349,6 +348,7 @@ struct MySequence : public ImSequencer::SequenceInterface
       bool mExpanded;
 	};
 	std::vector<MySequenceItem> myItems;
+   RampEdit rampEdit;
 
    virtual void DoubleClick(int index) {
       if (myItems[index].mExpanded)
@@ -364,9 +364,9 @@ struct MySequence : public ImSequencer::SequenceInterface
    virtual void CustomDraw(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& legendRect, const ImRect& clippingRect, const ImRect& legendClippingRect)
    {
       static const char *labels[] = { "Translation", "Rotation" , "Scale" };
-      static RampEdit rampEdit;
-      rampEdit.mMax = ImVec2(mFrameMax, 1.f);
-      rampEdit.mMin = ImVec2(mFrameMin, 0.f);
+      
+      rampEdit.mMax = ImVec2(float(mFrameMax), 1.f);
+      rampEdit.mMin = ImVec2(float(mFrameMin), 0.f);
       draw_list->PushClipRect(legendClippingRect.Min, legendClippingRect.Max, true);
       for (int i = 0; i < 3; i++)
       {
@@ -380,6 +380,26 @@ struct MySequence : public ImSequencer::SequenceInterface
 
       ImGui::SetCursorScreenPos(rc.Min);
       ImCurveEdit::Edit(rampEdit, rc.Max-rc.Min, 137 + index, &clippingRect);
+   }
+
+   virtual void CustomDrawCompact(int index, ImDrawList* draw_list, const ImRect& rc, const ImRect& clippingRect)
+   {
+      rampEdit.mMax = ImVec2(float(mFrameMax), 1.f);
+      rampEdit.mMin = ImVec2(float(mFrameMin), 0.f);
+      draw_list->PushClipRect(clippingRect.Min, clippingRect.Max, true);
+      for (int i = 0; i < 3; i++)
+      {
+         for (int j = 0; j < rampEdit.mPointCount[i]; j++)
+         {
+            float p = rampEdit.mPts[i][j].x;
+            if (p < myItems[index].mFrameStart || p > myItems[index].mFrameEnd)
+               continue;
+            float r = (p - mFrameMin) / float(mFrameMax - mFrameMin);
+            float x = ImLerp(rc.Min.x, rc.Max.x, r);
+            draw_list->AddLine(ImVec2(x, rc.Min.y + 6), ImVec2(x, rc.Max.y - 4), 0xAA000000, 4.f);
+         }
+      }
+      draw_list->PopClipRect();
    }
 };
 
@@ -442,7 +462,7 @@ int main(int, char**)
 	mySequence.mFrameMin = -100;
    mySequence.mFrameMax = 1000;
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 0, 10, 30, false });
-	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30, false });
+	mySequence.myItems.push_back(MySequence::MySequenceItem{ 1, 20, 30, true });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 3, 12, 60, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99, false });
@@ -518,7 +538,7 @@ int main(int, char**)
 		static int selectedEntry = -1;
 		static int firstFrame = 0;
 		static bool expanded = true;
-      static int currentFrame = 120;
+      static int currentFrame = 100;
 		ImGui::SetNextWindowPos(ImVec2(10, 350));
 
 		ImGui::SetNextWindowSize(ImVec2(940, 480));
