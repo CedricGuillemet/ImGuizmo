@@ -5,6 +5,10 @@
 #include <set>
 #include <vector>
 
+#if !defined(MSC_VER)
+#define _malloca(x) alloca(x)
+#endif
+
 namespace ImCurveEdit
 {
 
@@ -80,7 +84,7 @@ namespace ImCurveEdit
       {
          offsets[i] = pos * size + localOffsets[i]*4.5f + offset;
       }
-      
+
       const ImVec2 center = pos * size + offset;
       const ImRect anchor(center - ImVec2(5, 5), center + ImVec2(5, 5));
       draw_list->AddConvexPolyFilled(offsets, 4, 0xFF000000);
@@ -96,7 +100,7 @@ namespace ImCurveEdit
          draw_list->AddPolyline(offsets, 4, 0xFF80B0FF, true, 2.0f);
       else
          draw_list->AddPolyline(offsets, 4, 0xFF0080FF, true, 2.0f);
-      
+
       return ret;
    }
 
@@ -149,7 +153,7 @@ namespace ImCurveEdit
           }
       }
       ImVec2 range = max - min + ImVec2(1.f, 0.f);  // +1 because of inclusive last frame
-      
+
       const ImVec2 viewSize(size.x, -size.y);
       const ImVec2 sizeOfPixel = ImVec2(1.f, 1.f) / viewSize;
       const size_t curveCount = delegate.GetCurveCount();
@@ -164,10 +168,10 @@ namespace ImCurveEdit
       }
 
       draw_list->AddRectFilled(offset, offset + ssize, delegate.GetBackgroundColor());
-      
+
       auto pointToRange = [&](ImVec2 pt) { return (pt - min) / range; };
       auto rangeToPoint = [&](ImVec2 pt) { return (pt * range) + min; };
-      
+
       draw_list->AddLine(ImVec2(-1.f, -min.y/range.y) * viewSize + offset, ImVec2(1.f, -min.y / range.y) * viewSize + offset, 0xFF000000, 1.5f);
       bool overCurveOrPoint = false;
 
@@ -203,7 +207,7 @@ namespace ImCurveEdit
          {
             const ImVec2 p1 = pointToRange(pts[p]);
             const ImVec2 p2 = pointToRange(pts[p+1]);
-            
+
             if (curveType == CurveSmooth || curveType == CurveLinear)
             {
                 size_t subStepCount = (curveType == CurveSmooth)?20:2;
@@ -331,7 +335,7 @@ namespace ImCurveEdit
       }
 
       // move curve
-      
+
       if (movingCurve != -1)
       {
          const size_t ptCount = delegate.GetPointCount(movingCurve);
