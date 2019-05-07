@@ -5,7 +5,7 @@
 #include <set>
 #include <vector>
 
-#if !defined(MSC_VER)
+#if !defined(_MSC_VER)
 #define _malloca(x) alloca(x)
 #endif
 
