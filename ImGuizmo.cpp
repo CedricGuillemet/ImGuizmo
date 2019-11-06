@@ -2010,6 +2010,7 @@ namespace ImGuizmo
       viewInverse.Inverse(*(matrix_t*)view);
       const matrix_t& model = *(matrix_t*)matrix;
       matrix_t res = *(matrix_t*)matrix * *(matrix_t*)view * *(matrix_t*)projection;
+      matrix_t modelView = *(matrix_t*)matrix * *(matrix_t*)view;
 
       for (int iFace = 0; iFace < 6; iFace++)
       {
@@ -2042,16 +2043,35 @@ namespace ImGuizmo
          // 3D->2D
          ImVec2 faceCoordsScreen[4];
          for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
+         {
             faceCoordsScreen[iCoord] = worldToPos(faceCoords[iCoord] * 0.5f * invert, res);
+         }
 
          // back face culling
+         
+         const vec_t n = directionUnary[normalIndex] * invert;
+         vec_t viewSpaceNormal = n;
+         vec_t viewSpacePoint = n * 0.5f;
+         viewSpaceNormal.TransformVector(modelView);
+         viewSpaceNormal.Normalize();
+         viewSpacePoint.TransformPoint(modelView);
+         const vec_t viewSpaceFacePlan = BuildPlan(viewSpacePoint, viewSpaceNormal);
+
+         // back face culling
+         if (viewSpaceFacePlan.w > 0.f)
+         {
+            continue;
+         }
+         /*
          vec_t cullPos, cullNormal;
          cullPos.TransformPoint(faceCoords[0] * 0.5f * invert, model);
          cullNormal.TransformVector(directionUnary[normalIndex] * invert, model);
          float dt = Dot(Normalized(cullPos - viewInverse.v.position), Normalized(cullNormal));
          if (dt>0.f)
+         {
             continue;
-
+         }
+         */
          // draw face with lighter color
          gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, directionColor[normalIndex] | 0x808080);
       }
@@ -2130,18 +2150,22 @@ namespace ImGuizmo
                                           directionUnary[normalIndex] - directionUnary[perpXIndex] - directionUnary[perpYIndex],
                                           directionUnary[normalIndex] - directionUnary[perpXIndex] + directionUnary[perpYIndex] };
 
+            // plan local space
+            const vec_t n = directionUnary[normalIndex] * invert;
+            vec_t viewSpaceNormal = n;
+            vec_t viewSpacePoint = n * 0.5f;
+            viewSpaceNormal.TransformVector(cubeView);
+            viewSpaceNormal.Normalize();
+            viewSpacePoint.TransformPoint(cubeView);
+            const vec_t viewSpaceFacePlan = BuildPlan(viewSpacePoint, viewSpaceNormal);
+            
             // back face culling
-            const vec_t cullPos = faceCoords[0] * 0.5f * invert;
-            const vec_t cullNormal = directionUnary[normalIndex] * invert;
-            float dt = Dot(Normalized(cullPos - viewInverse.v.position), Normalized(cullNormal));
-            if (dt > 0.f)
+            if (viewSpaceFacePlan.w > 0.f)
             {
                continue;
             }
 
-            // plan local space
-            vec_t n = directionUnary[normalIndex] * invert;
-            vec_t facePlan = BuildPlan(n * 0.5f, n);
+            const vec_t facePlan = BuildPlan(n * 0.5f, n);
 
             const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, facePlan);
             vec_t posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len - (n * 0.5f);
