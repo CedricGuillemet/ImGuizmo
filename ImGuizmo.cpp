@@ -2218,16 +2218,24 @@ namespace ImGuizmo
 
                         if (fabsf(Dot(interpolationDir, referenceUp)) > 1.0f - 0.01f)
                         {
-                           interpolationUp = Cross(interpolationDir, viewInverse.v.right);
+                           vec_t right = viewInverse.v.right;
+                           if (fabsf(right.x) > fabsf(right.z))
+                           {
+                              right.z = 0.f;
+                           }
+                           else
+                           {
+                              right.x = 0.f;
+                           }
+                           right.Normalize();
+                           interpolationUp = Cross(interpolationDir, right);
                            interpolationUp.Normalize();
-
                         }
                         else
                         {
                            interpolationUp = referenceUp;
                         }
                         interpolationFrames = 40;
-                        //interpolationMatrix.RotationAxis(rotationAxis, angle / float(interpolationFrames));
                         isClicking = false;
                      }
                      if (io.MouseDown[0] && !isDraging)
@@ -2241,9 +2249,7 @@ namespace ImGuizmo
       }
       if (interpolationFrames)
       {
-         //matrix_t interpole;
          interpolationFrames --;
-         //interpole = interpolationMatrix * *(matrix_t*)view;
          vec_t newDir = viewInverse.v.dir;
          newDir.Lerp(interpolationDir, 0.2f);
          newDir.Normalize();
@@ -2270,7 +2276,7 @@ namespace ImGuizmo
 
       if (isDraging)
       {
-         matrix_t rx, ry, roll;
+         /*matrix_t rx, ry, roll;
          
          rx.RotationAxis(referenceUp, -io.MouseDelta.x * 0.01f);
          vec_t newDir = viewInverse.v.dir;
@@ -2301,6 +2307,31 @@ namespace ImGuizmo
 
          vec_t newEye = camTarget + newDirPost * length;
          LookAt(&newEye.x, &camTarget.x, &newUpPost.x, view);
+         */
+         matrix_t rx, ry, roll;
+
+         rx.RotationAxis(referenceUp, -io.MouseDelta.x * 0.01f);
+         ry.RotationAxis(viewInverse.v.right, -io.MouseDelta.y * 0.01f);
+
+         roll = rx * ry;
+
+         vec_t newDir = viewInverse.v.dir;
+         newDir.TransformVector(roll);
+         newDir.Normalize();
+
+         // clamp
+         vec_t planDir = Cross(viewInverse.v.right, referenceUp);
+         planDir.y = 0.f;
+         planDir.Normalize();
+         float dt = Dot(planDir, newDir);
+         if (dt < 0.0f)
+         {
+            newDir += planDir * dt;
+            newDir.Normalize();
+         }
+
+         vec_t newEye = camTarget + newDir * length;
+         LookAt(&newEye.x, &camTarget.x, &referenceUp.x, view);
       }
    }
 };
