@@ -24,7 +24,8 @@
 // SOFTWARE.
 //
 // -------------------------------------------------------------------------------------------
-// History : 
+// History :
+// 2019/11/03 View gizmo
 // 2016/09/11 Behind camera culling. Scaling Delta matrix not multiplied by source matrix scales. local/world rotation and translation fixed. Display message is incorrect (X: ... Y:...) in local mode.
 // 2016/09/09 Hatched negative axis. Snapping. Documentation update.
 // 2016/09/04 Axis switch and translation plan autohiding. Scale transform stability improved
@@ -170,4 +171,10 @@ namespace ImGuizmo
 	};
 
 	IMGUI_API void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
+   //
+   // Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en
+   // It seems to be a defensive patent in the US. I don't think it will bring troubles using it as
+   // other software are using the same mechanics. But just in case, you are now warned!
+   //
+   IMGUI_API void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
 };

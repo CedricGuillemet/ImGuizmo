@@ -270,7 +270,7 @@ struct RampEdit : public ImCurveEdit::Delegate
       for (size_t i = 0; i < GetPointCount(curveIndex); i++)
       {
          if (mPts[curveIndex][i].x == value.x)
-            return i;
+            return (int)i;
       }
       return pointIndex;
    }
@@ -425,7 +425,6 @@ inline void rotationY(const float angle, float *m16)
 	m16[14] = 0.f;
 	m16[15] = 1.0f;
 }
-
 	
 int main(int, char**)
 {
@@ -472,10 +471,11 @@ int main(int, char**)
 	float fov = 27.f;
 	float viewWidth = 10.f; // for orthographic
 	float camYAngle = 165.f / 180.f * 3.14159f;
-	float camXAngle = 52.f / 180.f * 3.14159f;
+	float camXAngle = 0.f / 180.f * 3.14159f;
 	float camDistance = 8.f;
 	rotationY(0.f, objectMatrix);
 
+   bool firstFrame = true;
 	
 	// Main loop
 	while (!imApp.Done())
@@ -494,27 +494,17 @@ int main(int, char**)
 		}
 		ImGuizmo::SetOrthographic(!isPerspective);
 
-		float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
-		float at[] = { 0.f, 0.f, 0.f };
-		float up[] = { 0.f, 1.f, 0.f };
-		LookAt(eye, at, up, cameraView);
 		ImGuizmo::BeginFrame();
 
-
-		//static float ng = 0.f;
-		//ng += 0.01f;
-		//ng = 1.f;
-		//rotationY(ng, objectMatrix);
-		//objectMatrix[12] = 5.f;
-		// debug
-		ImGuizmo::DrawCube(cameraView, cameraProjection, objectMatrix);
-		ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 10.f);
+      ImGui::SetNextWindowPos(ImVec2(1024, 100));
+      ImGui::SetNextWindowSize(ImVec2(256, 256));
 
 		// create a window and insert the inspector
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
 		ImGui::SetNextWindowSize(ImVec2(320, 340));
 		ImGui::Begin("Editor");
 		ImGui::Text("Camera");
+      bool viewDirty = false;
 		if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Orthographic", !isPerspective)) isPerspective = false;
@@ -526,9 +516,21 @@ int main(int, char**)
 		{
 			ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
 		}
-		ImGui::SliderAngle("Camera X", &camXAngle, 0.f, 179.f);
-		ImGui::SliderAngle("Camera Y", &camYAngle);
-		ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
+      viewDirty |= ImGui::SliderAngle("Camera X", &camXAngle, 0.f, 179.f);
+      viewDirty |= ImGui::SliderAngle("Camera Y", &camYAngle);
+      viewDirty |= ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
+
+      if (viewDirty || firstFrame)
+      {
+         float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance + 2.f, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
+         float at[] = { 2.f, 0.f, 0.f };
+         float up[] = { 0.f, 1.f, 0.f };
+         LookAt(eye, at, up, cameraView);
+         firstFrame = false;
+      }
+      ImGuizmo::DrawCube(cameraView, cameraProjection, objectMatrix);
+      ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 10.f);
+
 		ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
 		ImGui::Separator();
 		EditTransform(cameraView, cameraProjection, objectMatrix);
@@ -561,6 +563,8 @@ int main(int, char**)
 		}
 
 		ImGui::End();
+
+      ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(io.DisplaySize.x - 128, 0), ImVec2(128, 128), 0x10101010);
       
 		// render everything
 		glClearColor(0.45f, 0.4f, 0.4f, 1.f);
