@@ -1,7 +1,7 @@
 ### ImViewGizmo
 Manipulate view orientation with 1 single line of code
 
-![Image of ImViewGizmo](https://imgur.com/kXv3cMg)
+![Image of ImViewGizmo](https://imgur.com/kXv3cMg.gif)
 
 ### ImGuizmo
 
