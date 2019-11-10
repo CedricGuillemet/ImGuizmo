@@ -2276,38 +2276,6 @@ namespace ImGuizmo
 
       if (isDraging)
       {
-         /*matrix_t rx, ry, roll;
-         
-         rx.RotationAxis(referenceUp, -io.MouseDelta.x * 0.01f);
-         vec_t newDir = viewInverse.v.dir;
-         newDir.TransformVector(rx);
-         newDir.Normalize();
-
-         vec_t newUp = referenceUp;
-         newUp.TransformVector(rx);
-         newUp.Normalize();
-
-         vec_t right = Cross(referenceUp, newDir);
-         right.Normalize();
-         ry.RotationAxis(right, -io.MouseDelta.y * 0.01f);
-
-         vec_t newDirPost = newDir;
-         newDirPost.TransformVector(ry);
-         newDirPost.Normalize();
-
-         vec_t newUpPost = newUp;
-         newUpPost.TransformVector(ry);
-         newUpPost.Normalize();
-
-         if (fabsf(Dot(newDirPost, referenceUp)) > 1.f - 0.01f)
-         {
-            newDirPost = newDir;
-            newUpPost = newUp;
-         }
-
-         vec_t newEye = camTarget + newDirPost * length;
-         LookAt(&newEye.x, &camTarget.x, &newUpPost.x, view);
-         */
          matrix_t rx, ry, roll;
 
          rx.RotationAxis(referenceUp, -io.MouseDelta.x * 0.01f);
@@ -2336,10 +2304,3 @@ namespace ImGuizmo
    }
 };
 
-/*
-- rolling induced
-- interpolation from one side to the opposite - > nul vector/gimbal lock
-- can't rotate cube when watching up side -> need to rotate on the hemisphere source
-
-
-*/
