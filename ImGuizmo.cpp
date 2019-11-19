@@ -826,11 +826,11 @@ namespace ImGuizmo
       const ImU32 flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBringToFrontOnFocus;
       ImGui::SetNextWindowSize(io.DisplaySize);
       ImGui::SetNextWindowPos(ImVec2(0, 0));
-      
+
       ImGui::PushStyleColor(ImGuiCol_WindowBg, 0);
       ImGui::PushStyleColor(ImGuiCol_Border, 0);
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-     
+
       ImGui::Begin("gizmo", NULL, flags);
       gContext.mDrawList = ImGui::GetWindowDrawList();
       ImGui::End();
@@ -2048,7 +2048,7 @@ namespace ImGuizmo
          }
 
          // back face culling
-         
+
          const vec_t n = directionUnary[normalIndex] * invert;
          vec_t viewSpaceNormal = n;
          vec_t viewSpacePoint = n * 0.5f;
@@ -2110,11 +2110,12 @@ namespace ImGuizmo
       matrix_t cubeProjection, cubeView;
       float fov = acosf(distance / ( sqrtf(distance * distance + 3.f))) * RAD2DEG;
       Perspective(fov / sqrtf(2.f), size.x / size.y, 0.01f, 1000.f, cubeProjection.m16);
-      
+
       vec_t dir = makeVect(viewInverse.m[2][0], viewInverse.m[2][1], viewInverse.m[2][2]);
       vec_t up = makeVect(viewInverse.m[1][0], viewInverse.m[1][1], viewInverse.m[1][2]);
       vec_t eye = dir * distance;
-      LookAt(&eye.x, &makeVect(0.f, 0.f).x, &up.x, cubeView.m16);
+      vec_t zero = makeVect(0.f, 0.f);
+      LookAt(&eye.x, &zero.x, &up.x, cubeView.m16);
 
       // set context
       gContext.mViewMat = cubeView;
@@ -2158,7 +2159,7 @@ namespace ImGuizmo
             viewSpaceNormal.Normalize();
             viewSpacePoint.TransformPoint(cubeView);
             const vec_t viewSpaceFacePlan = BuildPlan(viewSpacePoint, viewSpaceNormal);
-            
+
             // back face culling
             if (viewSpaceFacePlan.w > 0.f)
             {
