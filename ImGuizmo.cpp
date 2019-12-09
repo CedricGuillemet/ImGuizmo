@@ -824,10 +824,10 @@ namespace ImGuizmo
       ImGuiIO& io = ImGui::GetIO();
 
       const ImU32 flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBringToFrontOnFocus;
-      
+    
 #ifdef IMGUI_HAS_VIEWPORT
       ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
-	   ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
+      ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
 #else
       ImGui::SetNextWindowSize(io.DisplaySize);
       ImGui::SetNextWindowPos(ImVec2(0, 0));
