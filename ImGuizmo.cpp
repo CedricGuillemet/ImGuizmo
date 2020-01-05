@@ -1802,16 +1802,27 @@ namespace ImGuizmo
 
          // compute matrix & delta
          matrix_t deltaMatrixScale;
-         deltaMatrixScale.Scale(gContext.mScale * gContext.mScaleValueOrigin);
-
-         matrix_t res = deltaMatrixScale * gContext.mModel;
-         *(matrix_t*)matrix = res;
-
-         if (deltaMatrix)
+         if (gContext.mMode == LOCAL)
          {
-            deltaMatrixScale.Scale(gContext.mScale);
-            memcpy(deltaMatrix, deltaMatrixScale.m16, sizeof(float) * 16);
+             deltaMatrixScale.Scale(gContext.mScale * gContext.mScaleValueOrigin);
+             *(matrix_t*)matrix = deltaMatrixScale * gContext.mModel;
          }
+         else
+         {
+             matrix_t scale_mat;
+             scale_mat.Scale(gContext.mScaleValueOrigin);
+             matrix_t rot_mat = gContext.mModelSource;
+             rot_mat.OrthoNormalize();
+             rot_mat.v.position.Set(0.f);
+             deltaMatrixScale.Scale(gContext.mScale);
+             *(matrix_t*)matrix = scale_mat * rot_mat * deltaMatrixScale;
+             ((matrix_t*)matrix)->v.position = gContext.mModelSource.v.position;
+         }
+        if (deltaMatrix)
+        {
+            deltaMatrixScale.Scale(gContext.mScale);
+            *(matrix_t*)deltaMatrix = gContext.mModelInverse * deltaMatrixScale * gContext.mModel;
+        }
 
          if (!io.MouseDown[0])
             gContext.mbUsing = false;
@@ -1882,8 +1893,7 @@ namespace ImGuizmo
 
          matrix_t scaleOrigin;
          scaleOrigin.Scale(gContext.mModelScaleOrigin);
-
-         if (applyRotationLocaly)
+		 if (gContext.mMode == LOCAL)
          {
             *(matrix_t*)matrix = scaleOrigin * deltaRotation * gContext.mModel;
          }
