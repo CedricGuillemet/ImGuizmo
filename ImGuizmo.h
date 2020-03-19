@@ -177,4 +177,6 @@ namespace ImGuizmo
    // other software are using the same mechanics. But just in case, you are now warned!
    //
    IMGUI_API void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
+   
+   IMGUI_API void SetID(int id);
 };

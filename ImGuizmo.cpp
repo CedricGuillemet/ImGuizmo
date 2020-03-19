@@ -661,6 +661,9 @@ namespace ImGuizmo
      float mDisplayRatio = 1.f;
 
      bool mIsOrthographic = false;
+     
+     int actualID = -1;
+     int editingID = -1;
    };
 
    static Context gContext;
@@ -961,7 +964,7 @@ namespace ImGuizmo
       dirPlaneX = directionUnary[(axisIndex + 1) % 3];
       dirPlaneY = directionUnary[(axisIndex + 2) % 3];
 
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          // when using, use stored factors so the gizmo doesn't flip when we translate
          belowAxisLimit = gContext.mBelowAxisLimit[axisIndex];
@@ -1085,7 +1088,7 @@ namespace ImGuizmo
       }
       drawList->AddCircle(worldToPos(gContext.mModel.v.position, gContext.mViewProjection), gContext.mRadiusSquareCenter, colors[0], 64, 3.f);
 
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          ImVec2 circlePos[halfCircleSegmentCount +1];
 
@@ -1132,7 +1135,7 @@ namespace ImGuizmo
       // draw
       vec_t scaleDisplay = { 1.f, 1.f, 1.f, 1.f };
 
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
          scaleDisplay = gContext.mScale;
 
       for (unsigned int i = 0; i < 3; i++)
@@ -1148,7 +1151,7 @@ namespace ImGuizmo
             ImVec2 worldDirSSpaceNoScale = worldToPos(dirAxis * gContext.mScreenFactor, gContext.mMVP);
             ImVec2 worldDirSSpace = worldToPos((dirAxis * scaleDisplay[i]) * gContext.mScreenFactor, gContext.mMVP);
 
-            if (gContext.mbUsing)
+            if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
             {
                drawList->AddLine(baseSSpace, worldDirSSpaceNoScale, 0xFF404040, 3.f);
                drawList->AddCircleFilled(worldDirSSpaceNoScale, 6.f, 0xFF404040);
@@ -1165,7 +1168,7 @@ namespace ImGuizmo
       // draw screen cirle
       drawList->AddCircleFilled(gContext.mScreenSquareCenter, 6.f, colors[0], 32);
 
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          //ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
          ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
@@ -1246,7 +1249,7 @@ namespace ImGuizmo
 
       drawList->AddCircleFilled(gContext.mScreenSquareCenter, 6.f, colors[0], 32);
 
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          ImVec2 sourcePosOnScreen = worldToPos(gContext.mMatrixOrigin, gContext.mViewProjection);
          ImVec2 destinationPosOnScreen = worldToPos(gContext.mModel.v.position, gContext.mViewProjection);
@@ -1428,6 +1431,7 @@ namespace ImGuizmo
                    gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
 
                    gContext.mbUsingBounds = true;
+                   gContext.editingID = gContext.actualID;
                    gContext.mBoundsMatrix = gContext.mModelSource;
                }
                // small anchor on middle of segment
@@ -1446,11 +1450,12 @@ namespace ImGuizmo
                    gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
 
                    gContext.mbUsingBounds = true;
+                   gContext.editingID = gContext.actualID;
                    gContext.mBoundsMatrix = gContext.mModelSource;
                }
            }
 
-           if (gContext.mbUsingBounds)
+           if (gContext.mbUsingBounds && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
            {
                matrix_t scale;
                scale.SetToIdentity();
@@ -1507,9 +1512,10 @@ namespace ImGuizmo
                drawList->AddText(ImVec2(destinationPosOnScreen.x + 14, destinationPosOnScreen.y + 14), 0xFFFFFFFF, tmps);
             }
 
-           if (!io.MouseDown[0])
+           if (!io.MouseDown[0]){
                gContext.mbUsingBounds = false;
-
+               gContext.editingID = -1;
+           }
            if( gContext.mbUsingBounds )
                break;
        }
@@ -1639,7 +1645,7 @@ namespace ImGuizmo
       bool applyRotationLocaly = gContext.mMode == LOCAL || type == MOVE_SCREEN;
 
       // move
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          ImGui::CaptureMouseFromApp();
          const float len = fabsf(IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan)); // near plan
@@ -1709,6 +1715,7 @@ namespace ImGuizmo
        if (CanActivate() && type != NONE)
        {
           gContext.mbUsing = true;
+          gContext.editingID = gContext.actualID;
           gContext.mCurrentOperation = type;
           vec_t movePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir,
              gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir,
@@ -1747,6 +1754,7 @@ namespace ImGuizmo
          if (CanActivate() && type != NONE)
          {
             gContext.mbUsing = true;
+            gContext.editingID = gContext.actualID;
             gContext.mCurrentOperation = type;
             const vec_t movePlanNormal[] = { gContext.mModel.v.up, gContext.mModel.v.dir, gContext.mModel.v.right, gContext.mModel.v.dir, gContext.mModel.v.up, gContext.mModel.v.right, -gContext.mCameraDir };
             // pickup plan
@@ -1762,7 +1770,7 @@ namespace ImGuizmo
          }
       }
       // scale
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          ImGui::CaptureMouseFromApp();
          const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
@@ -1842,6 +1850,7 @@ namespace ImGuizmo
          if (CanActivate() && type != NONE)
          {
             gContext.mbUsing = true;
+            gContext.editingID = gContext.actualID;
             gContext.mCurrentOperation = type;
             const vec_t rotatePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir, -gContext.mCameraDir };
             // pickup plan
@@ -1862,7 +1871,7 @@ namespace ImGuizmo
       }
 
       // rotation
-      if (gContext.mbUsing)
+      if (gContext.mbUsing && (gContext.actualID==-1 || gContext.actualID==gContext.editingID))
       {
          ImGui::CaptureMouseFromApp();
          gContext.mRotationAngle = ComputeAngleOnPlan();
@@ -1901,9 +1910,10 @@ namespace ImGuizmo
             *(matrix_t*)deltaMatrix = gContext.mModelInverse * deltaRotation * gContext.mModel;
          }
 
-         if (!io.MouseDown[0])
+         if (!io.MouseDown[0]){
             gContext.mbUsing = false;
-
+            gContext.editingID = -1;
+         }
          type = gContext.mCurrentOperation;
       }
    }
@@ -1951,8 +1961,12 @@ namespace ImGuizmo
       mat.v.position.Set(translation[0], translation[1], translation[2], 1.f);
    }
 
+   void SetID(int id){ gContext.actualID = id;}
+   
    void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
    {
+      //if (gContext.actual_matrix != matrix && gContext.actual_matrix != NULL)
+        //  return;
       ComputeContext(view, projection, matrix, mode);
 
       // set delta to identity
