@@ -26,6 +26,10 @@
 #endif
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
+#if !defined(_MSC_VER)
+#define _malloca(x) alloca(x)
+#endif
+#include <malloc.h>
 
 // includes patches for multiview from
 // https://github.com/CedricGuillemet/ImGuizmo/issues/15
@@ -2110,81 +2114,6 @@ namespace ImGuizmo
       }
    }
 
-   void DrawCube(const float* view, const float* projection, const float* matrix)
-   {
-      matrix_t viewInverse;
-      viewInverse.Inverse(*(matrix_t*)view);
-      const matrix_t& model = *(matrix_t*)matrix;
-      matrix_t res = *(matrix_t*)matrix * *(matrix_t*)view * *(matrix_t*)projection;
-      matrix_t modelView = *(matrix_t*)matrix * *(matrix_t*)view;
-
-      for (int iFace = 0; iFace < 6; iFace++)
-      {
-         const int normalIndex = (iFace % 3);
-         const int perpXIndex = (normalIndex + 1) % 3;
-         const int perpYIndex = (normalIndex + 2) % 3;
-         const float invert = (iFace > 2) ? -1.f : 1.f;
-
-         const vec_t faceCoords[4] = { directionUnary[normalIndex] + directionUnary[perpXIndex] + directionUnary[perpYIndex],
-            directionUnary[normalIndex] + directionUnary[perpXIndex] - directionUnary[perpYIndex],
-            directionUnary[normalIndex] - directionUnary[perpXIndex] - directionUnary[perpYIndex],
-            directionUnary[normalIndex] - directionUnary[perpXIndex] + directionUnary[perpYIndex],
-         };
-
-         // clipping
-         bool skipFace = false;
-         for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
-         {
-            vec_t camSpacePosition;
-            camSpacePosition.TransformPoint(faceCoords[iCoord] * 0.5f * invert, gContext.mMVP);
-            if (camSpacePosition.z < 0.001f)
-            {
-               skipFace = true;
-               break;
-            }
-         }
-         if (skipFace)
-         {
-            continue;
-         }
-
-         // 3D->2D
-         ImVec2 faceCoordsScreen[4];
-         for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
-         {
-            faceCoordsScreen[iCoord] = worldToPos(faceCoords[iCoord] * 0.5f * invert, res);
-         }
-
-         // back face culling
-
-         const vec_t n = directionUnary[normalIndex] * invert;
-         vec_t viewSpaceNormal = n;
-         vec_t viewSpacePoint = n * 0.5f;
-         viewSpaceNormal.TransformVector(modelView);
-         viewSpaceNormal.Normalize();
-         viewSpacePoint.TransformPoint(modelView);
-         const vec_t viewSpaceFacePlan = BuildPlan(viewSpacePoint, viewSpaceNormal);
-
-         // back face culling
-         if (viewSpaceFacePlan.w > 0.f)
-         {
-            continue;
-         }
-         /*
-         vec_t cullPos, cullNormal;
-         cullPos.TransformPoint(faceCoords[0] * 0.5f * invert, model);
-         cullNormal.TransformVector(directionUnary[normalIndex] * invert, model);
-         float dt = Dot(Normalized(cullPos - viewInverse.v.position), Normalized(cullNormal));
-         if (dt>0.f)
-         {
-            continue;
-         }
-         */
-         // draw face with lighter color
-         gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, directionColor[normalIndex] | 0x808080);
-      }
-   }
-
    ///////////////////////////////////////////////////////////////////////////////////////////////////
    void ComputeFrustumPlanes(vec_t* frustum, const float* clip)
    {
@@ -2221,6 +2150,118 @@ namespace ImGuizmo
       for (int i = 0; i < 6; i++)
       {
          frustum[i].Normalize();
+      }
+   }
+
+   void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount)
+   {
+      matrix_t viewInverse;
+      viewInverse.Inverse(*(matrix_t*)view);
+      
+      struct CubeFace
+      {
+         float z;
+         ImVec2 faceCoordsScreen[4];
+         ImU32 color;
+      };
+      CubeFace* faces = (CubeFace*)_malloca(sizeof(CubeFace) * matrixCount * 6);
+
+      if (!faces)
+      {
+         return;
+      }
+
+      vec_t frustum[6];
+      matrix_t viewProjection = *(matrix_t*)view * *(matrix_t*)projection;
+      ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+      int cubeFaceCount = 0;
+      for (int cube = 0; cube < matrixCount; cube++)
+      {
+         const float* matrix = &matrices[cube * 16];
+
+         const matrix_t& model = *(matrix_t*)matrix;
+         matrix_t res = *(matrix_t*)matrix * *(matrix_t*)view * *(matrix_t*)projection;
+         matrix_t modelView = *(matrix_t*)matrix * *(matrix_t*)view;
+
+         for (int iFace = 0; iFace < 6; iFace++)
+         {
+            const int normalIndex = (iFace % 3);
+            const int perpXIndex = (normalIndex + 1) % 3;
+            const int perpYIndex = (normalIndex + 2) % 3;
+            const float invert = (iFace > 2) ? -1.f : 1.f;
+
+            const vec_t faceCoords[4] = { directionUnary[normalIndex] + directionUnary[perpXIndex] + directionUnary[perpYIndex],
+               directionUnary[normalIndex] + directionUnary[perpXIndex] - directionUnary[perpYIndex],
+               directionUnary[normalIndex] - directionUnary[perpXIndex] - directionUnary[perpYIndex],
+               directionUnary[normalIndex] - directionUnary[perpXIndex] + directionUnary[perpYIndex],
+            };
+
+            // clipping
+            /*
+            bool skipFace = false;
+            for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
+            {
+               vec_t camSpacePosition;
+               camSpacePosition.TransformPoint(faceCoords[iCoord] * 0.5f * invert, res);
+               if (camSpacePosition.z < 0.001f)
+               {
+                  skipFace = true;
+                  break;
+               }
+            }
+            if (skipFace)
+            {
+               continue;
+            }
+            */
+            vec_t centerPosition, centerPositionVP;
+            centerPosition.TransformPoint(directionUnary[normalIndex] * 0.5f * invert, *(matrix_t*)matrix);
+            centerPositionVP.TransformPoint(directionUnary[normalIndex] * 0.5f * invert, res);
+
+            bool inFrustum = true;
+            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            {
+               float dist = DistanceToPlane(centerPosition, frustum[iFrustum]);
+               if (dist < 0.f)
+               {
+                  inFrustum = false;
+                  break;
+               }
+            }
+
+            if (!inFrustum)
+            {
+               continue;
+            }
+            CubeFace& cubeFace = faces[cubeFaceCount];
+
+            // 3D->2D
+            //ImVec2 faceCoordsScreen[4];
+            for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
+            {
+               cubeFace.faceCoordsScreen[iCoord] = worldToPos(faceCoords[iCoord] * 0.5f * invert, res);
+            }
+            cubeFace.color = directionColor[normalIndex] | 0x808080;
+            
+            cubeFace.z = centerPositionVP.z / centerPositionVP.w;
+            cubeFaceCount++;
+         }
+      }
+      qsort(faces, cubeFaceCount, sizeof(CubeFace), [](void const* _a, void const* _b){
+            CubeFace* a = (CubeFace*)_a;
+            CubeFace* b = (CubeFace*)_b;
+            if (a->z < b->z)
+            {
+               return 1;
+            }
+            return -1;
+         });
+      // draw face with lighter color
+      for (int iFace = 0; iFace < cubeFaceCount; iFace++)
+      {
+         const CubeFace& cubeFace = faces[iFace];
+         gContext.mDrawList->AddConvexPolyFilled(cubeFace.faceCoordsScreen, 4, cubeFace.color);
       }
    }
 
@@ -2267,7 +2308,7 @@ namespace ImGuizmo
             if (visible)
             {
                ImU32 col = 0xFF808080;
-               col = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 0xFF606060 : col;
+               col = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 0xFF909090 : col;
                col = (fabsf(f) < FLT_EPSILON) ? 0xFF404040 : col;
 
                float thickness = 1.f;

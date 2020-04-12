@@ -509,7 +509,7 @@ int main(int, char**)
 		else
 		{
 			float viewHeight = viewWidth*io.DisplaySize.y / io.DisplaySize.x;
-			OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, -viewWidth, viewWidth, cameraProjection);
+			OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, 1000.f, -1000.f, cameraProjection);
 		}
 		ImGuizmo::SetOrthographic(!isPerspective);
 
@@ -549,12 +549,11 @@ int main(int, char**)
 
       ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
       ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
-
+      ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
       ImGui::Separator();
       for (int matId = 0; matId < gizmoCount; matId++)
       {
          ImGuizmo::SetID(matId);
-         //ImGuizmo::DrawCube(cameraView, cameraProjection, objectMatrix[matId]);
 		   
 		   EditTransform(cameraView, cameraProjection, objectMatrix[matId], lastUsing == matId);
          if (ImGuizmo::IsUsing())
@@ -562,6 +561,7 @@ int main(int, char**)
             lastUsing = matId;
          }
       }
+      
       ImGui::End();
 
 		// let's create the sequencer
