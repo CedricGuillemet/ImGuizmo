@@ -149,7 +149,7 @@ namespace ImGuizmo
 	IMGUI_API void SetOrthographic(bool isOrthographic);
 
 	// Render a cube with face color corresponding to face normal. Usefull for debug/tests
-	IMGUI_API void DrawCube(const float *view, const float *projection, const float *matrix);
+	IMGUI_API void DrawCubes(const float *view, const float *projection, const float *matrices, int matrixCount);
 	IMGUI_API void DrawGrid(const float *view, const float *projection, const float *matrix, const float gridSize);
 
 	// call it when you want a gizmo
@@ -177,4 +177,6 @@ namespace ImGuizmo
    // other software are using the same mechanics. But just in case, you are now warned!
    //
    IMGUI_API void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
+   
+   IMGUI_API void SetID(int id);
 };
