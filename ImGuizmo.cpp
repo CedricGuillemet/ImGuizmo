@@ -731,7 +731,7 @@ namespace ImGuizmo
       rayOrigin.Transform(makeVect(mox, moy, 0.f, 1.f), mViewProjInverse);
       rayOrigin *= 1.f / rayOrigin.w;
       vec_t rayEnd;
-      rayEnd.Transform(makeVect(mox, moy, 1.f, 1.f), mViewProjInverse);
+      rayEnd.Transform(makeVect(mox, moy, 1.f - FLT_EPSILON, 1.f), mViewProjInverse);
       rayEnd *= 1.f / rayEnd.w;
       rayDir = Normalized(rayEnd - rayOrigin);
    }

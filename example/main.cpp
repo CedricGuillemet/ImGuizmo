@@ -486,7 +486,7 @@ int main(int, char**)
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99, false });
 	
 	// Camera projection
-	bool isPerspective = false;
+	bool isPerspective = true;
 	float fov = 27.f;
 	float viewWidth = 10.f; // for orthographic
 	float camYAngle = 165.f / 180.f * 3.14159f;
@@ -512,7 +512,6 @@ int main(int, char**)
 			OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, 1000.f, -1000.f, cameraProjection);
 		}
 		ImGuizmo::SetOrthographic(!isPerspective);
-
 		ImGuizmo::BeginFrame();
 
       ImGui::SetNextWindowPos(ImVec2(1024, 100));
@@ -540,8 +539,8 @@ int main(int, char**)
 
       if (viewDirty || firstFrame)
       {
-         float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance + 2.f, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
-         float at[] = { 2.f, 0.f, 0.f };
+         float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
+         float at[] = { 0.f, 0.f, 0.f };
          float up[] = { 0.f, 1.f, 0.f };
          LookAt(eye, at, up, cameraView);
          firstFrame = false;
