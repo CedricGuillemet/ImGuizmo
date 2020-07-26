@@ -881,6 +881,15 @@ namespace ImGuizmo
       return (GetMoveType(NULL) != NONE) || GetRotateType() != NONE || GetScaleType() != NONE || IsUsing();
    }
 
+   bool IsOver(OPERATION op) {
+      switch (op) {
+      case SCALE:       return GetScaleType()      != NONE || IsUsing();
+      case ROTATE:      return GetRotateType()     != NONE || IsUsing();
+      case TRANSLATE:   return GetMoveType(NULL)   != NONE || IsUsing();
+      }
+      return false;
+   }
+
    void Enable(bool enable)
    {
       gContext.mbEnable = enable;
