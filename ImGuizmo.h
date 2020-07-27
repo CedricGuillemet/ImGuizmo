@@ -179,4 +179,7 @@ namespace ImGuizmo
    IMGUI_API void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
    
    IMGUI_API void SetID(int id);
+   
+   // return true if the cursor is over the operation's gizmo
+   IMGUI_API bool IsOver(OPERATION op);
 };
