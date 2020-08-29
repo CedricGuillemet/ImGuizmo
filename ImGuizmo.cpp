@@ -26,7 +26,7 @@
 #endif
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
-#if !defined(_MSC_VER)
+#if !defined(_WIN32) 
 #define _malloca(x) alloca(x)
 #endif
 #include <malloc.h>
