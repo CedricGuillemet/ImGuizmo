@@ -425,7 +425,7 @@ namespace ImSequencer
                         l = r;
                     if (movingPart & 2 && r < l)
                         r = l;
-                    movingPos += int(diffFrame * framePixelWidth);
+                    movingPos = cx;
                 }
                 if (!io.MouseDown[0])
                 {
