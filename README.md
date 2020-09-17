@@ -1,3 +1,8 @@
+### ImViewGizmo
+Manipulate view orientation with 1 single line of code
+
+![Image of ImViewGizmo](http://i.imgur.com/7UVcyDd.gif)
+
 ### ImGuizmo
 
 ImGizmo is a small (.h and .cpp) library built ontop of Dear ImGui that allow you to manipulate(Rotate & translate at the moment) 4x4 float matrices. No other dependancies. Coded with Immediate Mode (IM) philosophy in mind.
@@ -10,6 +15,11 @@ Built against DearImgui 1.53WIP
 
 There is now a sample for Win32/OpenGL ! With a binary in bin directory.
 ![Image of Sample](https://i.imgur.com/nXlzyqD.png)
+
+### ImSequencer
+A WIP little sequencer used to edit frame start/end for different events in a timeline.
+![Image of Rotation](http://i.imgur.com/BeyNwCn.png)
+Check the sample for the documentation. More to come...
 
 ### API doc
 
