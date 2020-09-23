@@ -114,7 +114,8 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 namespace ImGuizmo
 {
 	// call inside your own window and before Manipulate() in order to draw gizmo to that window.
-	IMGUI_API void SetDrawlist();
+	// Or pass a specific ImDrawList to draw to (e.g. ImGui::GetForegroundDrawList()).
+	IMGUI_API void SetDrawlist(ImDrawList* drawlist = nullptr);
 
 	// call BeginFrame right after ImGui_XXXX_NewFrame();
 	IMGUI_API void BeginFrame();
