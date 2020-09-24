@@ -29,7 +29,7 @@
 #if !defined(_WIN32) 
 #define _malloca(x) alloca(x)
 #endif
-#include <malloc.h>
+#include <stdlib.h>
 
 // includes patches for multiview from
 // https://github.com/CedricGuillemet/ImGuizmo/issues/15
