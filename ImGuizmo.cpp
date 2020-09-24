@@ -28,8 +28,9 @@
 #include "ImGuizmo.h"
 #if !defined(_WIN32) 
 #define _malloca(x) alloca(x)
+#else
+#include <malloc.h>
 #endif
-#include <stdlib.h>
 
 // includes patches for multiview from
 // https://github.com/CedricGuillemet/ImGuizmo/issues/15
