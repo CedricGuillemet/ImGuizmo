@@ -183,4 +183,5 @@ namespace ImGuizmo
    
    // return true if the cursor is over the operation's gizmo
    IMGUI_API bool IsOver(OPERATION op);
+	IMGUI_API void SetGizmoSizeClipSpace(float value);
 };
