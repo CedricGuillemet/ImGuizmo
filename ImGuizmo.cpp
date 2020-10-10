@@ -675,6 +675,7 @@ namespace ImGuizmo
 
       int mActualID = -1;
       int mEditingID = -1;
+      OPERATION mOperation = OPERATION(-1);
    };
 
    static Context gContext;
@@ -882,7 +883,9 @@ namespace ImGuizmo
 
    bool IsOver()
    {
-      return (GetMoveType(NULL) != NONE) || GetRotateType() != NONE || GetScaleType() != NONE || IsUsing();
+      return (gContext.mOperation == TRANSLATE && GetMoveType(NULL) != NONE) ||
+         (gContext.mOperation == ROTATE && GetRotateType() != NONE) ||
+         (gContext.mOperation == SCALE && GetScaleType() != NONE) || IsUsing();
    }
 
    bool IsOver(OPERATION op) {
@@ -2131,6 +2134,7 @@ namespace ImGuizmo
          HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation);
       }
 
+      gContext.mOperation = operation;
       if (!gContext.mbUsingBounds)
       {
          switch (operation)
@@ -2373,6 +2377,10 @@ namespace ImGuizmo
       static int interpolationFrames = 0;
       const vec_t referenceUp = makeVect(0.f, 1.f, 0.f);
 
+      matrix_t svgView, svgProjection;
+      svgView = gContext.mViewMat;
+      svgProjection = gContext.mProjectionMat;
+
       ImGuiIO& io = ImGui::GetIO();
       gContext.mDrawList->AddRectFilled(position, position + size, backgroundColor);
       matrix_t viewInverse;
@@ -2577,6 +2585,9 @@ namespace ImGuizmo
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &referenceUp.x, view);
       }
+
+      // restore view/projection because it was used to compute ray
+      ComputeContext(svgView.m16, svgProjection.m16, gContext.mModelSource.m16, gContext.mMode);
    }
 };
 
