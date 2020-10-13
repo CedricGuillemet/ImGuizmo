@@ -841,7 +841,7 @@ namespace ImGuizmo
       gContext.mDisplayRatio = width / height;
    }
 
-   IMGUI_API void SetOrthographic(bool isOrthographic)
+   void SetOrthographic(bool isOrthographic)
    {
       gContext.mIsOrthographic = isOrthographic;
    }
