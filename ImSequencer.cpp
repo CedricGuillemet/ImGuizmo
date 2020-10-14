@@ -80,7 +80,6 @@ namespace ImSequencer
         ImVector<CustomDraw> customDraws;
         ImVector<CustomDraw> compactCustomDraws;
         // zoom in/out
-        int frameOverCursor = 0;
         const int visibleFrameCount = (int)floorf((canvas_size.x - legendWidth) / framePixelWidth);
         const float barWidthRatio = ImMin(visibleFrameCount / (float)frameCount, 1.f);
         const float barWidthInPixels = barWidthRatio * (canvas_size.x - legendWidth);
@@ -426,7 +425,7 @@ namespace ImSequencer
                         l = r;
                     if (movingPart & 2 && r < l)
                         r = l;
-                    movingPos += int(diffFrame * framePixelWidth);
+                    movingPos = cx;
                 }
                 if (!io.MouseDown[0])
                 {
@@ -605,50 +604,45 @@ namespace ImSequencer
                    }
                 }
             }
+
+            if (regionRect.Contains(io.MousePos))
+            {
+                bool overCustomDraw = false;
+                for (auto&custom : customDraws)
+                {
+                    if (custom.customRect.Contains(io.MousePos))
+                    {
+                        overCustomDraw = true;
+                    }
+                }
+                if (overCustomDraw)
+                {
+                }
+                else
+                {
+#if 0
+                    int frameOverCursor = (int)((io.MousePos.x - topRect.Min.x) / framePixelWidth) + firstFrameUsed;
+                    if (io.MouseWheel < -FLT_EPSILON)
+                    {
+                        framePixelWidthTarget *= 0.9f;
+                        framePixelWidth *= 0.9f;
+                        int newFrameOverCursor = (int)((io.MousePos.x - topRect.Min.x) / framePixelWidth) + firstFrameUsed;
+                        *firstFrame += frameOverCursor - newFrameOverCursor;
+                    }
+
+                    if (io.MouseWheel > FLT_EPSILON)
+                    {
+                        framePixelWidthTarget *= 1.1f;
+                        framePixelWidth *= 1.1f;
+                        int newFrameOverCursor = (int)((io.MousePos.x - topRect.Min.x) / framePixelWidth) + firstFrameUsed;
+                        *firstFrame += frameOverCursor - newFrameOverCursor;
+                    }
+#endif
+                }
+            }
         }
 
         ImGui::EndGroup();
-
-        if (regionRect.Contains(io.MousePos))
-        {
-            bool overCustomDraw = false;
-            for (auto&custom : customDraws)
-            {
-                if (custom.customRect.Contains(io.MousePos))
-                {
-                    overCustomDraw = true;
-                }
-            }
-            if (overCustomDraw)
-            {
-            }
-            else
-            {
-#if 0
-                frameOverCursor = *firstFrame + (int)(visibleFrameCount * ((io.MousePos.x - (float)legendWidth - canvas_pos.x) / (canvas_size.x - legendWidth)));
-                //frameOverCursor = max(min(*firstFrame - visibleFrameCount / 2, frameCount - visibleFrameCount), 0);
-
-                /**firstFrame -= frameOverCursor;
-                *firstFrame *= framePixelWidthTarget / framePixelWidth;
-                *firstFrame += frameOverCursor;*/
-                if (io.MouseWheel < -FLT_EPSILON)
-                {
-                    *firstFrame -= frameOverCursor;
-                    *firstFrame = int(*firstFrame * 1.1f);
-                    framePixelWidthTarget *= 0.9f;
-                    *firstFrame += frameOverCursor;
-                }
-
-                if (io.MouseWheel > FLT_EPSILON)
-                {
-                    *firstFrame -= frameOverCursor;
-                    *firstFrame = int(*firstFrame * 0.9f);
-                    framePixelWidthTarget *= 1.1f;
-                    *firstFrame += frameOverCursor;
-                }
-#endif
-            }
-        }
 
         if (expanded)
         {
