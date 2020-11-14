@@ -15,5 +15,5 @@ namespace ImGradient
       virtual void AddPoint(ImVec4 value) = 0;
    };
 
-   bool Edit(Delegate &delegate, const ImVec2& size, int& selection);
+   bool Edit(Delegate& delegate, const ImVec2& size, int& selection);
 }
