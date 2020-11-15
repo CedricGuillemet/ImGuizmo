@@ -21,8 +21,8 @@ extern "C" {
 #ifndef GLX_get_proc_address
 #define GLX_get_proc_address 1
 
-	typedef void(*__GLXextFuncPtr)(void);
-	extern __GLXextFuncPtr glXGetProcAddress(const GLubyte *);
+   typedef void(*__GLXextFuncPtr)(void);
+   extern __GLXextFuncPtr glXGetProcAddress(const GLubyte*);
 
 #endif /* GLX_get_proc_address */
 
@@ -37,18 +37,18 @@ extern "C" {
 #include "fmod.hpp"
 #endif
 
-//	typedef long int ptrdiff_t;
-	typedef ptrdiff_t GLsizeiptr;
-	typedef char GLchar;
-	typedef ptrdiff_t GLintptr;
-	typedef unsigned int GLenum;
-	typedef int GLsizei;
-	typedef unsigned int GLuint;
-	typedef int GLint;
-	typedef void GLvoid;
-	typedef unsigned char GLboolean;
-	typedef unsigned int GLbitfield;
-	typedef float GLfloat;
+//    typedef long int ptrdiff_t;
+typedef ptrdiff_t GLsizeiptr;
+typedef char GLchar;
+typedef ptrdiff_t GLintptr;
+typedef unsigned int GLenum;
+typedef int GLsizei;
+typedef unsigned int GLuint;
+typedef int GLint;
+typedef void GLvoid;
+typedef unsigned char GLboolean;
+typedef unsigned int GLbitfield;
+typedef float GLfloat;
 
 #if!defined(APIENTRY)
 #if defined(__MINGW32__) || defined(__CYGWIN__)
@@ -61,17 +61,17 @@ extern "C" {
 #endif
 
 
-	/*************************************************************/
+/*************************************************************/
 
 #ifndef GL_VERSION_1_1
-	/* AttribMask */
+    /* AttribMask */
 #define GL_DEPTH_BUFFER_BIT               0x00000100
 #define GL_STENCIL_BUFFER_BIT             0x00000400
 #define GL_COLOR_BUFFER_BIT               0x00004000
-	/* Boolean */
+    /* Boolean */
 #define GL_FALSE                          0
 #define GL_TRUE                           1
-	/* BeginMode */
+    /* BeginMode */
 #define GL_POINTS                         0x0000
 #define GL_LINES                          0x0001
 #define GL_LINE_LOOP                      0x0002
@@ -80,7 +80,7 @@ extern "C" {
 #define GL_TRIANGLE_STRIP                 0x0005
 #define GL_TRIANGLE_FAN                   0x0006
 #define GL_QUADS                          0x0007
-	/* AlphaFunction */
+    /* AlphaFunction */
 #define GL_NEVER                          0x0200
 #define GL_LESS                           0x0201
 #define GL_EQUAL                          0x0202
@@ -89,7 +89,7 @@ extern "C" {
 #define GL_NOTEQUAL                       0x0205
 #define GL_GEQUAL                         0x0206
 #define GL_ALWAYS                         0x0207
-	/* BlendingFactorDest */
+    /* BlendingFactorDest */
 #define GL_ZERO                           0
 #define GL_ONE                            1
 #define GL_SRC_COLOR                      0x0300
@@ -98,11 +98,11 @@ extern "C" {
 #define GL_ONE_MINUS_SRC_ALPHA            0x0303
 #define GL_DST_ALPHA                      0x0304
 #define GL_ONE_MINUS_DST_ALPHA            0x0305
-	/* BlendingFactorSrc */
+    /* BlendingFactorSrc */
 #define GL_DST_COLOR                      0x0306
 #define GL_ONE_MINUS_DST_COLOR            0x0307
 #define GL_SRC_ALPHA_SATURATE             0x0308
-	/* DrawBufferMode */
+    /* DrawBufferMode */
 #define GL_NONE                           0
 #define GL_FRONT_LEFT                     0x0400
 #define GL_FRONT_RIGHT                    0x0401
@@ -113,16 +113,16 @@ extern "C" {
 #define GL_LEFT                           0x0406
 #define GL_RIGHT                          0x0407
 #define GL_FRONT_AND_BACK                 0x0408
-	/* ErrorCode */
+    /* ErrorCode */
 #define GL_NO_ERROR                       0
 #define GL_INVALID_ENUM                   0x0500
 #define GL_INVALID_VALUE                  0x0501
 #define GL_INVALID_OPERATION              0x0502
 #define GL_OUT_OF_MEMORY                  0x0505
-	/* FrontFaceDirection */
+    /* FrontFaceDirection */
 #define GL_CW                             0x0900
 #define GL_CCW                            0x0901
-	/* GetPName */
+    /* GetPName */
 #define GL_POINT_SIZE                     0x0B11
 #define GL_POINT_SIZE_RANGE               0x0B12
 #define GL_POINT_SIZE_GRANULARITY         0x0B13
@@ -190,7 +190,7 @@ extern "C" {
 #define GL_POLYGON_OFFSET_FACTOR          0x8038
 #define GL_TEXTURE_BINDING_1D             0x8068
 #define GL_TEXTURE_BINDING_2D             0x8069
-	/* GetTextureParameter */
+    /* GetTextureParameter */
 #define GL_TEXTURE_WIDTH                  0x1000
 #define GL_TEXTURE_HEIGHT                 0x1001
 #define GL_TEXTURE_INTERNAL_FORMAT        0x1003
@@ -199,11 +199,11 @@ extern "C" {
 #define GL_TEXTURE_GREEN_SIZE             0x805D
 #define GL_TEXTURE_BLUE_SIZE              0x805E
 #define GL_TEXTURE_ALPHA_SIZE             0x805F
-	/* HintMode */
+    /* HintMode */
 #define GL_DONT_CARE                      0x1100
 #define GL_FASTEST                        0x1101
 #define GL_NICEST                         0x1102
-	/* DataType */
+    /* DataType */
 #define GL_BYTE                           0x1400
 #define GL_UNSIGNED_BYTE                  0x1401
 #define GL_SHORT                          0x1402
@@ -212,10 +212,10 @@ extern "C" {
 #define GL_UNSIGNED_INT                   0x1405
 #define GL_FLOAT                          0x1406
 #define GL_DOUBLE                         0x140A
-	/* ErrorCode */
+    /* ErrorCode */
 #define GL_STACK_OVERFLOW                 0x0503
 #define GL_STACK_UNDERFLOW                0x0504
-	/* LogicOp */
+    /* LogicOp */
 #define GL_CLEAR                          0x1500
 #define GL_AND                            0x1501
 #define GL_AND_REVERSE                    0x1502
@@ -232,13 +232,13 @@ extern "C" {
 #define GL_OR_INVERTED                    0x150D
 #define GL_NAND                           0x150E
 #define GL_SET                            0x150F
-	/* MatrixMode (for gl3.h, FBO attachment type) */
+    /* MatrixMode (for gl3.h, FBO attachment type) */
 #define GL_TEXTURE                        0x1702
-	/* PixelCopyType */
+    /* PixelCopyType */
 #define GL_COLOR                          0x1800
 #define GL_DEPTH                          0x1801
 #define GL_STENCIL                        0x1802
-	/* PixelFormat */
+    /* PixelFormat */
 #define GL_STENCIL_INDEX                  0x1901
 #define GL_DEPTH_COMPONENT                0x1902
 #define GL_RED                            0x1903
@@ -247,39 +247,39 @@ extern "C" {
 #define GL_ALPHA                          0x1906
 #define GL_RGB                            0x1907
 #define GL_RGBA                           0x1908
-	/* PolygonMode */
+    /* PolygonMode */
 #define GL_POINT                          0x1B00
 #define GL_LINE                           0x1B01
 #define GL_FILL                           0x1B02
-	/* StencilOp */
+    /* StencilOp */
 #define GL_KEEP                           0x1E00
 #define GL_REPLACE                        0x1E01
 #define GL_INCR                           0x1E02
 #define GL_DECR                           0x1E03
-	/* StringName */
+    /* StringName */
 #define GL_VENDOR                         0x1F00
 #define GL_RENDERER                       0x1F01
 #define GL_VERSION                        0x1F02
 #define GL_EXTENSIONS                     0x1F03
-	/* TextureMagFilter */
+    /* TextureMagFilter */
 #define GL_NEAREST                        0x2600
 #define GL_LINEAR                         0x2601
-	/* TextureMinFilter */
+    /* TextureMinFilter */
 #define GL_NEAREST_MIPMAP_NEAREST         0x2700
 #define GL_LINEAR_MIPMAP_NEAREST          0x2701
 #define GL_NEAREST_MIPMAP_LINEAR          0x2702
 #define GL_LINEAR_MIPMAP_LINEAR           0x2703
-	/* TextureParameterName */
+    /* TextureParameterName */
 #define GL_TEXTURE_MAG_FILTER             0x2800
 #define GL_TEXTURE_MIN_FILTER             0x2801
 #define GL_TEXTURE_WRAP_S                 0x2802
 #define GL_TEXTURE_WRAP_T                 0x2803
-	/* TextureTarget */
+    /* TextureTarget */
 #define GL_PROXY_TEXTURE_1D               0x8063
 #define GL_PROXY_TEXTURE_2D               0x8064
-	/* TextureWrapMode */
+    /* TextureWrapMode */
 #define GL_REPEAT                         0x2901
-	/* PixelInternalFormat */
+    /* PixelInternalFormat */
 #define GL_R3_G3_B2                       0x2A10
 #define GL_RGB4                           0x804F
 #define GL_RGB5                           0x8050
@@ -664,130 +664,130 @@ extern "C" {
 #define GL_BUFFER_ACCESS_FLAGS            0x911F
 #define GL_BUFFER_MAP_LENGTH              0x9120
 #define GL_BUFFER_MAP_OFFSET              0x9121
-	/* Reuse tokens from ARB_depth_buffer_float */
-	/* reuse GL_DEPTH_COMPONENT32F */
-	/* reuse GL_DEPTH32F_STENCIL8 */
-	/* reuse GL_FLOAT_32_UNSIGNED_INT_24_8_REV */
-	/* Reuse tokens from ARB_framebuffer_object */
-	/* reuse GL_INVALID_FRAMEBUFFER_OPERATION */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE */
-	/* reuse GL_FRAMEBUFFER_DEFAULT */
-	/* reuse GL_FRAMEBUFFER_UNDEFINED */
-	/* reuse GL_DEPTH_STENCIL_ATTACHMENT */
-	/* reuse GL_INDEX */
-	/* reuse GL_MAX_RENDERBUFFER_SIZE */
-	/* reuse GL_DEPTH_STENCIL */
-	/* reuse GL_UNSIGNED_INT_24_8 */
-	/* reuse GL_DEPTH24_STENCIL8 */
-	/* reuse GL_TEXTURE_STENCIL_SIZE */
-	/* reuse GL_TEXTURE_RED_TYPE */
-	/* reuse GL_TEXTURE_GREEN_TYPE */
-	/* reuse GL_TEXTURE_BLUE_TYPE */
-	/* reuse GL_TEXTURE_ALPHA_TYPE */
-	/* reuse GL_TEXTURE_DEPTH_TYPE */
-	/* reuse GL_UNSIGNED_NORMALIZED */
-	/* reuse GL_FRAMEBUFFER_BINDING */
-	/* reuse GL_DRAW_FRAMEBUFFER_BINDING */
-	/* reuse GL_RENDERBUFFER_BINDING */
-	/* reuse GL_READ_FRAMEBUFFER */
-	/* reuse GL_DRAW_FRAMEBUFFER */
-	/* reuse GL_READ_FRAMEBUFFER_BINDING */
-	/* reuse GL_RENDERBUFFER_SAMPLES */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER */
-	/* reuse GL_FRAMEBUFFER_COMPLETE */
-	/* reuse GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT */
-	/* reuse GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT */
-	/* reuse GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER */
-	/* reuse GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER */
-	/* reuse GL_FRAMEBUFFER_UNSUPPORTED */
-	/* reuse GL_MAX_COLOR_ATTACHMENTS */
-	/* reuse GL_COLOR_ATTACHMENT0 */
-	/* reuse GL_COLOR_ATTACHMENT1 */
-	/* reuse GL_COLOR_ATTACHMENT2 */
-	/* reuse GL_COLOR_ATTACHMENT3 */
-	/* reuse GL_COLOR_ATTACHMENT4 */
-	/* reuse GL_COLOR_ATTACHMENT5 */
-	/* reuse GL_COLOR_ATTACHMENT6 */
-	/* reuse GL_COLOR_ATTACHMENT7 */
-	/* reuse GL_COLOR_ATTACHMENT8 */
-	/* reuse GL_COLOR_ATTACHMENT9 */
-	/* reuse GL_COLOR_ATTACHMENT10 */
-	/* reuse GL_COLOR_ATTACHMENT11 */
-	/* reuse GL_COLOR_ATTACHMENT12 */
-	/* reuse GL_COLOR_ATTACHMENT13 */
-	/* reuse GL_COLOR_ATTACHMENT14 */
-	/* reuse GL_COLOR_ATTACHMENT15 */
-	/* reuse GL_DEPTH_ATTACHMENT */
-	/* reuse GL_STENCIL_ATTACHMENT */
-	/* reuse GL_FRAMEBUFFER */
-	/* reuse GL_RENDERBUFFER */
-	/* reuse GL_RENDERBUFFER_WIDTH */
-	/* reuse GL_RENDERBUFFER_HEIGHT */
-	/* reuse GL_RENDERBUFFER_INTERNAL_FORMAT */
-	/* reuse GL_STENCIL_INDEX1 */
-	/* reuse GL_STENCIL_INDEX4 */
-	/* reuse GL_STENCIL_INDEX8 */
-	/* reuse GL_STENCIL_INDEX16 */
-	/* reuse GL_RENDERBUFFER_RED_SIZE */
-	/* reuse GL_RENDERBUFFER_GREEN_SIZE */
-	/* reuse GL_RENDERBUFFER_BLUE_SIZE */
-	/* reuse GL_RENDERBUFFER_ALPHA_SIZE */
-	/* reuse GL_RENDERBUFFER_DEPTH_SIZE */
-	/* reuse GL_RENDERBUFFER_STENCIL_SIZE */
-	/* reuse GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE */
-	/* reuse GL_MAX_SAMPLES */
-	/* Reuse tokens from ARB_framebuffer_sRGB */
-	/* reuse GL_FRAMEBUFFER_SRGB */
-	/* Reuse tokens from ARB_half_float_vertex */
-	/* reuse GL_HALF_FLOAT */
-	/* Reuse tokens from ARB_map_buffer_range */
-	/* reuse GL_MAP_READ_BIT */
-	/* reuse GL_MAP_WRITE_BIT */
-	/* reuse GL_MAP_INVALIDATE_RANGE_BIT */
-	/* reuse GL_MAP_INVALIDATE_BUFFER_BIT */
-	/* reuse GL_MAP_FLUSH_EXPLICIT_BIT */
-	/* reuse GL_MAP_UNSYNCHRONIZED_BIT */
-	/* Reuse tokens from ARB_texture_compression_rgtc */
-	/* reuse GL_COMPRESSED_RED_RGTC1 */
-	/* reuse GL_COMPRESSED_SIGNED_RED_RGTC1 */
-	/* reuse GL_COMPRESSED_RG_RGTC2 */
-	/* reuse GL_COMPRESSED_SIGNED_RG_RGTC2 */
-	/* Reuse tokens from ARB_texture_rg */
-	/* reuse GL_RG */
-	/* reuse GL_RG_INTEGER */
-	/* reuse GL_R8 */
-	/* reuse GL_R16 */
-	/* reuse GL_RG8 */
-	/* reuse GL_RG16 */
-	/* reuse GL_R16F */
-	/* reuse GL_R32F */
-	/* reuse GL_RG16F */
-	/* reuse GL_RG32F */
-	/* reuse GL_R8I */
-	/* reuse GL_R8UI */
-	/* reuse GL_R16I */
-	/* reuse GL_R16UI */
-	/* reuse GL_R32I */
-	/* reuse GL_R32UI */
-	/* reuse GL_RG8I */
-	/* reuse GL_RG8UI */
-	/* reuse GL_RG16I */
-	/* reuse GL_RG16UI */
-	/* reuse GL_RG32I */
-	/* reuse GL_RG32UI */
-	/* Reuse tokens from ARB_vertex_array_object */
-	/* reuse GL_VERTEX_ARRAY_BINDING */
+    /* Reuse tokens from ARB_depth_buffer_float */
+    /* reuse GL_DEPTH_COMPONENT32F */
+    /* reuse GL_DEPTH32F_STENCIL8 */
+    /* reuse GL_FLOAT_32_UNSIGNED_INT_24_8_REV */
+    /* Reuse tokens from ARB_framebuffer_object */
+    /* reuse GL_INVALID_FRAMEBUFFER_OPERATION */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE */
+    /* reuse GL_FRAMEBUFFER_DEFAULT */
+    /* reuse GL_FRAMEBUFFER_UNDEFINED */
+    /* reuse GL_DEPTH_STENCIL_ATTACHMENT */
+    /* reuse GL_INDEX */
+    /* reuse GL_MAX_RENDERBUFFER_SIZE */
+    /* reuse GL_DEPTH_STENCIL */
+    /* reuse GL_UNSIGNED_INT_24_8 */
+    /* reuse GL_DEPTH24_STENCIL8 */
+    /* reuse GL_TEXTURE_STENCIL_SIZE */
+    /* reuse GL_TEXTURE_RED_TYPE */
+    /* reuse GL_TEXTURE_GREEN_TYPE */
+    /* reuse GL_TEXTURE_BLUE_TYPE */
+    /* reuse GL_TEXTURE_ALPHA_TYPE */
+    /* reuse GL_TEXTURE_DEPTH_TYPE */
+    /* reuse GL_UNSIGNED_NORMALIZED */
+    /* reuse GL_FRAMEBUFFER_BINDING */
+    /* reuse GL_DRAW_FRAMEBUFFER_BINDING */
+    /* reuse GL_RENDERBUFFER_BINDING */
+    /* reuse GL_READ_FRAMEBUFFER */
+    /* reuse GL_DRAW_FRAMEBUFFER */
+    /* reuse GL_READ_FRAMEBUFFER_BINDING */
+    /* reuse GL_RENDERBUFFER_SAMPLES */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER */
+    /* reuse GL_FRAMEBUFFER_COMPLETE */
+    /* reuse GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT */
+    /* reuse GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT */
+    /* reuse GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER */
+    /* reuse GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER */
+    /* reuse GL_FRAMEBUFFER_UNSUPPORTED */
+    /* reuse GL_MAX_COLOR_ATTACHMENTS */
+    /* reuse GL_COLOR_ATTACHMENT0 */
+    /* reuse GL_COLOR_ATTACHMENT1 */
+    /* reuse GL_COLOR_ATTACHMENT2 */
+    /* reuse GL_COLOR_ATTACHMENT3 */
+    /* reuse GL_COLOR_ATTACHMENT4 */
+    /* reuse GL_COLOR_ATTACHMENT5 */
+    /* reuse GL_COLOR_ATTACHMENT6 */
+    /* reuse GL_COLOR_ATTACHMENT7 */
+    /* reuse GL_COLOR_ATTACHMENT8 */
+    /* reuse GL_COLOR_ATTACHMENT9 */
+    /* reuse GL_COLOR_ATTACHMENT10 */
+    /* reuse GL_COLOR_ATTACHMENT11 */
+    /* reuse GL_COLOR_ATTACHMENT12 */
+    /* reuse GL_COLOR_ATTACHMENT13 */
+    /* reuse GL_COLOR_ATTACHMENT14 */
+    /* reuse GL_COLOR_ATTACHMENT15 */
+    /* reuse GL_DEPTH_ATTACHMENT */
+    /* reuse GL_STENCIL_ATTACHMENT */
+    /* reuse GL_FRAMEBUFFER */
+    /* reuse GL_RENDERBUFFER */
+    /* reuse GL_RENDERBUFFER_WIDTH */
+    /* reuse GL_RENDERBUFFER_HEIGHT */
+    /* reuse GL_RENDERBUFFER_INTERNAL_FORMAT */
+    /* reuse GL_STENCIL_INDEX1 */
+    /* reuse GL_STENCIL_INDEX4 */
+    /* reuse GL_STENCIL_INDEX8 */
+    /* reuse GL_STENCIL_INDEX16 */
+    /* reuse GL_RENDERBUFFER_RED_SIZE */
+    /* reuse GL_RENDERBUFFER_GREEN_SIZE */
+    /* reuse GL_RENDERBUFFER_BLUE_SIZE */
+    /* reuse GL_RENDERBUFFER_ALPHA_SIZE */
+    /* reuse GL_RENDERBUFFER_DEPTH_SIZE */
+    /* reuse GL_RENDERBUFFER_STENCIL_SIZE */
+    /* reuse GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE */
+    /* reuse GL_MAX_SAMPLES */
+    /* Reuse tokens from ARB_framebuffer_sRGB */
+    /* reuse GL_FRAMEBUFFER_SRGB */
+    /* Reuse tokens from ARB_half_float_vertex */
+    /* reuse GL_HALF_FLOAT */
+    /* Reuse tokens from ARB_map_buffer_range */
+    /* reuse GL_MAP_READ_BIT */
+    /* reuse GL_MAP_WRITE_BIT */
+    /* reuse GL_MAP_INVALIDATE_RANGE_BIT */
+    /* reuse GL_MAP_INVALIDATE_BUFFER_BIT */
+    /* reuse GL_MAP_FLUSH_EXPLICIT_BIT */
+    /* reuse GL_MAP_UNSYNCHRONIZED_BIT */
+    /* Reuse tokens from ARB_texture_compression_rgtc */
+    /* reuse GL_COMPRESSED_RED_RGTC1 */
+    /* reuse GL_COMPRESSED_SIGNED_RED_RGTC1 */
+    /* reuse GL_COMPRESSED_RG_RGTC2 */
+    /* reuse GL_COMPRESSED_SIGNED_RG_RGTC2 */
+    /* Reuse tokens from ARB_texture_rg */
+    /* reuse GL_RG */
+    /* reuse GL_RG_INTEGER */
+    /* reuse GL_R8 */
+    /* reuse GL_R16 */
+    /* reuse GL_RG8 */
+    /* reuse GL_RG16 */
+    /* reuse GL_R16F */
+    /* reuse GL_R32F */
+    /* reuse GL_RG16F */
+    /* reuse GL_RG32F */
+    /* reuse GL_R8I */
+    /* reuse GL_R8UI */
+    /* reuse GL_R16I */
+    /* reuse GL_R16UI */
+    /* reuse GL_R32I */
+    /* reuse GL_R32UI */
+    /* reuse GL_RG8I */
+    /* reuse GL_RG8UI */
+    /* reuse GL_RG16I */
+    /* reuse GL_RG16UI */
+    /* reuse GL_RG32I */
+    /* reuse GL_RG32UI */
+    /* Reuse tokens from ARB_vertex_array_object */
+    /* reuse GL_VERTEX_ARRAY_BINDING */
 #endif
 
 #ifndef GL_VERSION_3_1
@@ -821,41 +821,41 @@ extern "C" {
 #define GL_SIGNED_NORMALIZED              0x8F9C
 #define GL_PRIMITIVE_RESTART              0x8F9D
 #define GL_PRIMITIVE_RESTART_INDEX        0x8F9E
-	/* Reuse tokens from ARB_copy_buffer */
-	/* reuse GL_COPY_READ_BUFFER */
-	/* reuse GL_COPY_WRITE_BUFFER */
-	/* Reuse tokens from ARB_draw_instanced (none) */
-	/* Reuse tokens from ARB_uniform_buffer_object */
-	/* reuse GL_UNIFORM_BUFFER */
-	/* reuse GL_UNIFORM_BUFFER_BINDING */
-	/* reuse GL_UNIFORM_BUFFER_START */
-	/* reuse GL_UNIFORM_BUFFER_SIZE */
-	/* reuse GL_MAX_VERTEX_UNIFORM_BLOCKS */
-	/* reuse GL_MAX_FRAGMENT_UNIFORM_BLOCKS */
-	/* reuse GL_MAX_COMBINED_UNIFORM_BLOCKS */
-	/* reuse GL_MAX_UNIFORM_BUFFER_BINDINGS */
-	/* reuse GL_MAX_UNIFORM_BLOCK_SIZE */
-	/* reuse GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS */
-	/* reuse GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS */
-	/* reuse GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT */
-	/* reuse GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH */
-	/* reuse GL_ACTIVE_UNIFORM_BLOCKS */
-	/* reuse GL_UNIFORM_TYPE */
-	/* reuse GL_UNIFORM_SIZE */
-	/* reuse GL_UNIFORM_NAME_LENGTH */
-	/* reuse GL_UNIFORM_BLOCK_INDEX */
-	/* reuse GL_UNIFORM_OFFSET */
-	/* reuse GL_UNIFORM_ARRAY_STRIDE */
-	/* reuse GL_UNIFORM_MATRIX_STRIDE */
-	/* reuse GL_UNIFORM_IS_ROW_MAJOR */
-	/* reuse GL_UNIFORM_BLOCK_BINDING */
-	/* reuse GL_UNIFORM_BLOCK_DATA_SIZE */
-	/* reuse GL_UNIFORM_BLOCK_NAME_LENGTH */
-	/* reuse GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS */
-	/* reuse GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES */
-	/* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER */
-	/* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER */
-	/* reuse GL_INVALID_INDEX */
+    /* Reuse tokens from ARB_copy_buffer */
+    /* reuse GL_COPY_READ_BUFFER */
+    /* reuse GL_COPY_WRITE_BUFFER */
+    /* Reuse tokens from ARB_draw_instanced (none) */
+    /* Reuse tokens from ARB_uniform_buffer_object */
+    /* reuse GL_UNIFORM_BUFFER */
+    /* reuse GL_UNIFORM_BUFFER_BINDING */
+    /* reuse GL_UNIFORM_BUFFER_START */
+    /* reuse GL_UNIFORM_BUFFER_SIZE */
+    /* reuse GL_MAX_VERTEX_UNIFORM_BLOCKS */
+    /* reuse GL_MAX_FRAGMENT_UNIFORM_BLOCKS */
+    /* reuse GL_MAX_COMBINED_UNIFORM_BLOCKS */
+    /* reuse GL_MAX_UNIFORM_BUFFER_BINDINGS */
+    /* reuse GL_MAX_UNIFORM_BLOCK_SIZE */
+    /* reuse GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS */
+    /* reuse GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS */
+    /* reuse GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT */
+    /* reuse GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH */
+    /* reuse GL_ACTIVE_UNIFORM_BLOCKS */
+    /* reuse GL_UNIFORM_TYPE */
+    /* reuse GL_UNIFORM_SIZE */
+    /* reuse GL_UNIFORM_NAME_LENGTH */
+    /* reuse GL_UNIFORM_BLOCK_INDEX */
+    /* reuse GL_UNIFORM_OFFSET */
+    /* reuse GL_UNIFORM_ARRAY_STRIDE */
+    /* reuse GL_UNIFORM_MATRIX_STRIDE */
+    /* reuse GL_UNIFORM_IS_ROW_MAJOR */
+    /* reuse GL_UNIFORM_BLOCK_BINDING */
+    /* reuse GL_UNIFORM_BLOCK_DATA_SIZE */
+    /* reuse GL_UNIFORM_BLOCK_NAME_LENGTH */
+    /* reuse GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS */
+    /* reuse GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES */
+    /* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER */
+    /* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER */
+    /* reuse GL_INVALID_INDEX */
 #endif
 
 #ifndef GL_VERSION_3_2
@@ -881,87 +881,87 @@ extern "C" {
 #define GL_MAX_GEOMETRY_OUTPUT_COMPONENTS 0x9124
 #define GL_MAX_FRAGMENT_INPUT_COMPONENTS  0x9125
 #define GL_CONTEXT_PROFILE_MASK           0x9126
-	/* reuse GL_MAX_VARYING_COMPONENTS */
-	/* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER */
-	/* Reuse tokens from ARB_depth_clamp */
-	/* reuse GL_DEPTH_CLAMP */
-	/* Reuse tokens from ARB_draw_elements_base_vertex (none) */
-	/* Reuse tokens from ARB_fragment_coord_conventions (none) */
-	/* Reuse tokens from ARB_provoking_vertex */
-	/* reuse GL_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION */
-	/* reuse GL_FIRST_VERTEX_CONVENTION */
-	/* reuse GL_LAST_VERTEX_CONVENTION */
-	/* reuse GL_PROVOKING_VERTEX */
-	/* Reuse tokens from ARB_seamless_cube_map */
-	/* reuse GL_TEXTURE_CUBE_MAP_SEAMLESS */
-	/* Reuse tokens from ARB_sync */
-	/* reuse GL_MAX_SERVER_WAIT_TIMEOUT */
-	/* reuse GL_OBJECT_TYPE */
-	/* reuse GL_SYNC_CONDITION */
-	/* reuse GL_SYNC_STATUS */
-	/* reuse GL_SYNC_FLAGS */
-	/* reuse GL_SYNC_FENCE */
-	/* reuse GL_SYNC_GPU_COMMANDS_COMPLETE */
-	/* reuse GL_UNSIGNALED */
-	/* reuse GL_SIGNALED */
-	/* reuse GL_ALREADY_SIGNALED */
-	/* reuse GL_TIMEOUT_EXPIRED */
-	/* reuse GL_CONDITION_SATISFIED */
-	/* reuse GL_WAIT_FAILED */
-	/* reuse GL_TIMEOUT_IGNORED */
-	/* reuse GL_SYNC_FLUSH_COMMANDS_BIT */
-	/* reuse GL_TIMEOUT_IGNORED */
-	/* Reuse tokens from ARB_texture_multisample */
-	/* reuse GL_SAMPLE_POSITION */
-	/* reuse GL_SAMPLE_MASK */
-	/* reuse GL_SAMPLE_MASK_VALUE */
-	/* reuse GL_MAX_SAMPLE_MASK_WORDS */
-	/* reuse GL_TEXTURE_2D_MULTISAMPLE */
-	/* reuse GL_PROXY_TEXTURE_2D_MULTISAMPLE */
-	/* reuse GL_TEXTURE_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_PROXY_TEXTURE_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_TEXTURE_BINDING_2D_MULTISAMPLE */
-	/* reuse GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_TEXTURE_SAMPLES */
-	/* reuse GL_TEXTURE_FIXED_SAMPLE_LOCATIONS */
-	/* reuse GL_SAMPLER_2D_MULTISAMPLE */
-	/* reuse GL_INT_SAMPLER_2D_MULTISAMPLE */
-	/* reuse GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE */
-	/* reuse GL_SAMPLER_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_MAX_COLOR_TEXTURE_SAMPLES */
-	/* reuse GL_MAX_DEPTH_TEXTURE_SAMPLES */
-	/* reuse GL_MAX_INTEGER_SAMPLES */
-	/* Don't need to reuse tokens from ARB_vertex_array_bgra since they're already in 1.2 core */
+    /* reuse GL_MAX_VARYING_COMPONENTS */
+    /* reuse GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER */
+    /* Reuse tokens from ARB_depth_clamp */
+    /* reuse GL_DEPTH_CLAMP */
+    /* Reuse tokens from ARB_draw_elements_base_vertex (none) */
+    /* Reuse tokens from ARB_fragment_coord_conventions (none) */
+    /* Reuse tokens from ARB_provoking_vertex */
+    /* reuse GL_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION */
+    /* reuse GL_FIRST_VERTEX_CONVENTION */
+    /* reuse GL_LAST_VERTEX_CONVENTION */
+    /* reuse GL_PROVOKING_VERTEX */
+    /* Reuse tokens from ARB_seamless_cube_map */
+    /* reuse GL_TEXTURE_CUBE_MAP_SEAMLESS */
+    /* Reuse tokens from ARB_sync */
+    /* reuse GL_MAX_SERVER_WAIT_TIMEOUT */
+    /* reuse GL_OBJECT_TYPE */
+    /* reuse GL_SYNC_CONDITION */
+    /* reuse GL_SYNC_STATUS */
+    /* reuse GL_SYNC_FLAGS */
+    /* reuse GL_SYNC_FENCE */
+    /* reuse GL_SYNC_GPU_COMMANDS_COMPLETE */
+    /* reuse GL_UNSIGNALED */
+    /* reuse GL_SIGNALED */
+    /* reuse GL_ALREADY_SIGNALED */
+    /* reuse GL_TIMEOUT_EXPIRED */
+    /* reuse GL_CONDITION_SATISFIED */
+    /* reuse GL_WAIT_FAILED */
+    /* reuse GL_TIMEOUT_IGNORED */
+    /* reuse GL_SYNC_FLUSH_COMMANDS_BIT */
+    /* reuse GL_TIMEOUT_IGNORED */
+    /* Reuse tokens from ARB_texture_multisample */
+    /* reuse GL_SAMPLE_POSITION */
+    /* reuse GL_SAMPLE_MASK */
+    /* reuse GL_SAMPLE_MASK_VALUE */
+    /* reuse GL_MAX_SAMPLE_MASK_WORDS */
+    /* reuse GL_TEXTURE_2D_MULTISAMPLE */
+    /* reuse GL_PROXY_TEXTURE_2D_MULTISAMPLE */
+    /* reuse GL_TEXTURE_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_PROXY_TEXTURE_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_TEXTURE_BINDING_2D_MULTISAMPLE */
+    /* reuse GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_TEXTURE_SAMPLES */
+    /* reuse GL_TEXTURE_FIXED_SAMPLE_LOCATIONS */
+    /* reuse GL_SAMPLER_2D_MULTISAMPLE */
+    /* reuse GL_INT_SAMPLER_2D_MULTISAMPLE */
+    /* reuse GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE */
+    /* reuse GL_SAMPLER_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_MAX_COLOR_TEXTURE_SAMPLES */
+    /* reuse GL_MAX_DEPTH_TEXTURE_SAMPLES */
+    /* reuse GL_MAX_INTEGER_SAMPLES */
+    /* Don't need to reuse tokens from ARB_vertex_array_bgra since they're already in 1.2 core */
 #endif
 
 #ifndef GL_VERSION_3_3
 #define GL_VERTEX_ATTRIB_ARRAY_DIVISOR    0x88FE
-	/* Reuse tokens from ARB_blend_func_extended */
-	/* reuse GL_SRC1_COLOR */
-	/* reuse GL_ONE_MINUS_SRC1_COLOR */
-	/* reuse GL_ONE_MINUS_SRC1_ALPHA */
-	/* reuse GL_MAX_DUAL_SOURCE_DRAW_BUFFERS */
-	/* Reuse tokens from ARB_explicit_attrib_location (none) */
-	/* Reuse tokens from ARB_occlusion_query2 */
-	/* reuse GL_ANY_SAMPLES_PASSED */
-	/* Reuse tokens from ARB_sampler_objects */
-	/* reuse GL_SAMPLER_BINDING */
-	/* Reuse tokens from ARB_shader_bit_encoding (none) */
-	/* Reuse tokens from ARB_texture_rgb10_a2ui */
-	/* reuse GL_RGB10_A2UI */
-	/* Reuse tokens from ARB_texture_swizzle */
-	/* reuse GL_TEXTURE_SWIZZLE_R */
-	/* reuse GL_TEXTURE_SWIZZLE_G */
-	/* reuse GL_TEXTURE_SWIZZLE_B */
-	/* reuse GL_TEXTURE_SWIZZLE_A */
-	/* reuse GL_TEXTURE_SWIZZLE_RGBA */
-	/* Reuse tokens from ARB_timer_query */
-	/* reuse GL_TIME_ELAPSED */
-	/* reuse GL_TIMESTAMP */
-	/* Reuse tokens from ARB_vertex_type_2_10_10_10_rev */
-	/* reuse GL_INT_2_10_10_10_REV */
+    /* Reuse tokens from ARB_blend_func_extended */
+    /* reuse GL_SRC1_COLOR */
+    /* reuse GL_ONE_MINUS_SRC1_COLOR */
+    /* reuse GL_ONE_MINUS_SRC1_ALPHA */
+    /* reuse GL_MAX_DUAL_SOURCE_DRAW_BUFFERS */
+    /* Reuse tokens from ARB_explicit_attrib_location (none) */
+    /* Reuse tokens from ARB_occlusion_query2 */
+    /* reuse GL_ANY_SAMPLES_PASSED */
+    /* Reuse tokens from ARB_sampler_objects */
+    /* reuse GL_SAMPLER_BINDING */
+    /* Reuse tokens from ARB_shader_bit_encoding (none) */
+    /* Reuse tokens from ARB_texture_rgb10_a2ui */
+    /* reuse GL_RGB10_A2UI */
+    /* Reuse tokens from ARB_texture_swizzle */
+    /* reuse GL_TEXTURE_SWIZZLE_R */
+    /* reuse GL_TEXTURE_SWIZZLE_G */
+    /* reuse GL_TEXTURE_SWIZZLE_B */
+    /* reuse GL_TEXTURE_SWIZZLE_A */
+    /* reuse GL_TEXTURE_SWIZZLE_RGBA */
+    /* Reuse tokens from ARB_timer_query */
+    /* reuse GL_TIME_ELAPSED */
+    /* reuse GL_TIMESTAMP */
+    /* Reuse tokens from ARB_vertex_type_2_10_10_10_rev */
+    /* reuse GL_INT_2_10_10_10_REV */
 #endif
 
 #ifndef GL_VERSION_4_0
@@ -976,529 +976,529 @@ extern "C" {
 #define GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW  0x900D
 #define GL_INT_SAMPLER_CUBE_MAP_ARRAY     0x900E
 #define GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY 0x900F
-	/* Reuse tokens from ARB_texture_query_lod (none) */
-	/* Reuse tokens from ARB_draw_buffers_blend (none) */
-	/* Reuse tokens from ARB_draw_indirect */
-	/* reuse GL_DRAW_INDIRECT_BUFFER */
-	/* reuse GL_DRAW_INDIRECT_BUFFER_BINDING */
-	/* Reuse tokens from ARB_gpu_shader5 */
-	/* reuse GL_GEOMETRY_SHADER_INVOCATIONS */
-	/* reuse GL_MAX_GEOMETRY_SHADER_INVOCATIONS */
-	/* reuse GL_MIN_FRAGMENT_INTERPOLATION_OFFSET */
-	/* reuse GL_MAX_FRAGMENT_INTERPOLATION_OFFSET */
-	/* reuse GL_FRAGMENT_INTERPOLATION_OFFSET_BITS */
-	/* reuse GL_MAX_VERTEX_STREAMS */
-	/* Reuse tokens from ARB_gpu_shader_fp64 */
-	/* reuse GL_DOUBLE_VEC2 */
-	/* reuse GL_DOUBLE_VEC3 */
-	/* reuse GL_DOUBLE_VEC4 */
-	/* reuse GL_DOUBLE_MAT2 */
-	/* reuse GL_DOUBLE_MAT3 */
-	/* reuse GL_DOUBLE_MAT4 */
-	/* reuse GL_DOUBLE_MAT2x3 */
-	/* reuse GL_DOUBLE_MAT2x4 */
-	/* reuse GL_DOUBLE_MAT3x2 */
-	/* reuse GL_DOUBLE_MAT3x4 */
-	/* reuse GL_DOUBLE_MAT4x2 */
-	/* reuse GL_DOUBLE_MAT4x3 */
-	/* Reuse tokens from ARB_shader_subroutine */
-	/* reuse GL_ACTIVE_SUBROUTINES */
-	/* reuse GL_ACTIVE_SUBROUTINE_UNIFORMS */
-	/* reuse GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS */
-	/* reuse GL_ACTIVE_SUBROUTINE_MAX_LENGTH */
-	/* reuse GL_ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH */
-	/* reuse GL_MAX_SUBROUTINES */
-	/* reuse GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS */
-	/* reuse GL_NUM_COMPATIBLE_SUBROUTINES */
-	/* reuse GL_COMPATIBLE_SUBROUTINES */
-	/* Reuse tokens from ARB_tessellation_shader */
-	/* reuse GL_PATCHES */
-	/* reuse GL_PATCH_VERTICES */
-	/* reuse GL_PATCH_DEFAULT_INNER_LEVEL */
-	/* reuse GL_PATCH_DEFAULT_OUTER_LEVEL */
-	/* reuse GL_TESS_CONTROL_OUTPUT_VERTICES */
-	/* reuse GL_TESS_GEN_MODE */
-	/* reuse GL_TESS_GEN_SPACING */
-	/* reuse GL_TESS_GEN_VERTEX_ORDER */
-	/* reuse GL_TESS_GEN_POINT_MODE */
-	/* reuse GL_ISOLINES */
-	/* reuse GL_FRACTIONAL_ODD */
-	/* reuse GL_FRACTIONAL_EVEN */
-	/* reuse GL_MAX_PATCH_VERTICES */
-	/* reuse GL_MAX_TESS_GEN_LEVEL */
-	/* reuse GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS */
-	/* reuse GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS */
-	/* reuse GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS */
-	/* reuse GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS */
-	/* reuse GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS */
-	/* reuse GL_MAX_TESS_PATCH_COMPONENTS */
-	/* reuse GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS */
-	/* reuse GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS */
-	/* reuse GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS */
-	/* reuse GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS */
-	/* reuse GL_MAX_TESS_CONTROL_INPUT_COMPONENTS */
-	/* reuse GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS */
-	/* reuse GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS */
-	/* reuse GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS */
-	/* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_CONTROL_SHADER */
-	/* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_EVALUATION_SHADER */
-	/* reuse GL_TESS_EVALUATION_SHADER */
-	/* reuse GL_TESS_CONTROL_SHADER */
-	/* Reuse tokens from ARB_texture_buffer_object_rgb32 (none) */
-	/* Reuse tokens from ARB_transform_feedback2 */
-	/* reuse GL_TRANSFORM_FEEDBACK */
-	/* reuse GL_TRANSFORM_FEEDBACK_BUFFER_PAUSED */
-	/* reuse GL_TRANSFORM_FEEDBACK_BUFFER_ACTIVE */
-	/* reuse GL_TRANSFORM_FEEDBACK_BINDING */
-	/* Reuse tokens from ARB_transform_feedback3 */
-	/* reuse GL_MAX_TRANSFORM_FEEDBACK_BUFFERS */
-	/* reuse GL_MAX_VERTEX_STREAMS */
+    /* Reuse tokens from ARB_texture_query_lod (none) */
+    /* Reuse tokens from ARB_draw_buffers_blend (none) */
+    /* Reuse tokens from ARB_draw_indirect */
+    /* reuse GL_DRAW_INDIRECT_BUFFER */
+    /* reuse GL_DRAW_INDIRECT_BUFFER_BINDING */
+    /* Reuse tokens from ARB_gpu_shader5 */
+    /* reuse GL_GEOMETRY_SHADER_INVOCATIONS */
+    /* reuse GL_MAX_GEOMETRY_SHADER_INVOCATIONS */
+    /* reuse GL_MIN_FRAGMENT_INTERPOLATION_OFFSET */
+    /* reuse GL_MAX_FRAGMENT_INTERPOLATION_OFFSET */
+    /* reuse GL_FRAGMENT_INTERPOLATION_OFFSET_BITS */
+    /* reuse GL_MAX_VERTEX_STREAMS */
+    /* Reuse tokens from ARB_gpu_shader_fp64 */
+    /* reuse GL_DOUBLE_VEC2 */
+    /* reuse GL_DOUBLE_VEC3 */
+    /* reuse GL_DOUBLE_VEC4 */
+    /* reuse GL_DOUBLE_MAT2 */
+    /* reuse GL_DOUBLE_MAT3 */
+    /* reuse GL_DOUBLE_MAT4 */
+    /* reuse GL_DOUBLE_MAT2x3 */
+    /* reuse GL_DOUBLE_MAT2x4 */
+    /* reuse GL_DOUBLE_MAT3x2 */
+    /* reuse GL_DOUBLE_MAT3x4 */
+    /* reuse GL_DOUBLE_MAT4x2 */
+    /* reuse GL_DOUBLE_MAT4x3 */
+    /* Reuse tokens from ARB_shader_subroutine */
+    /* reuse GL_ACTIVE_SUBROUTINES */
+    /* reuse GL_ACTIVE_SUBROUTINE_UNIFORMS */
+    /* reuse GL_ACTIVE_SUBROUTINE_UNIFORM_LOCATIONS */
+    /* reuse GL_ACTIVE_SUBROUTINE_MAX_LENGTH */
+    /* reuse GL_ACTIVE_SUBROUTINE_UNIFORM_MAX_LENGTH */
+    /* reuse GL_MAX_SUBROUTINES */
+    /* reuse GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS */
+    /* reuse GL_NUM_COMPATIBLE_SUBROUTINES */
+    /* reuse GL_COMPATIBLE_SUBROUTINES */
+    /* Reuse tokens from ARB_tessellation_shader */
+    /* reuse GL_PATCHES */
+    /* reuse GL_PATCH_VERTICES */
+    /* reuse GL_PATCH_DEFAULT_INNER_LEVEL */
+    /* reuse GL_PATCH_DEFAULT_OUTER_LEVEL */
+    /* reuse GL_TESS_CONTROL_OUTPUT_VERTICES */
+    /* reuse GL_TESS_GEN_MODE */
+    /* reuse GL_TESS_GEN_SPACING */
+    /* reuse GL_TESS_GEN_VERTEX_ORDER */
+    /* reuse GL_TESS_GEN_POINT_MODE */
+    /* reuse GL_ISOLINES */
+    /* reuse GL_FRACTIONAL_ODD */
+    /* reuse GL_FRACTIONAL_EVEN */
+    /* reuse GL_MAX_PATCH_VERTICES */
+    /* reuse GL_MAX_TESS_GEN_LEVEL */
+    /* reuse GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS */
+    /* reuse GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS */
+    /* reuse GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS */
+    /* reuse GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS */
+    /* reuse GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS */
+    /* reuse GL_MAX_TESS_PATCH_COMPONENTS */
+    /* reuse GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS */
+    /* reuse GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS */
+    /* reuse GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS */
+    /* reuse GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS */
+    /* reuse GL_MAX_TESS_CONTROL_INPUT_COMPONENTS */
+    /* reuse GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS */
+    /* reuse GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS */
+    /* reuse GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS */
+    /* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_CONTROL_SHADER */
+    /* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_EVALUATION_SHADER */
+    /* reuse GL_TESS_EVALUATION_SHADER */
+    /* reuse GL_TESS_CONTROL_SHADER */
+    /* Reuse tokens from ARB_texture_buffer_object_rgb32 (none) */
+    /* Reuse tokens from ARB_transform_feedback2 */
+    /* reuse GL_TRANSFORM_FEEDBACK */
+    /* reuse GL_TRANSFORM_FEEDBACK_BUFFER_PAUSED */
+    /* reuse GL_TRANSFORM_FEEDBACK_BUFFER_ACTIVE */
+    /* reuse GL_TRANSFORM_FEEDBACK_BINDING */
+    /* Reuse tokens from ARB_transform_feedback3 */
+    /* reuse GL_MAX_TRANSFORM_FEEDBACK_BUFFERS */
+    /* reuse GL_MAX_VERTEX_STREAMS */
 #endif
 
 #ifndef GL_VERSION_4_1
-	/* Reuse tokens from ARB_ES2_compatibility */
-	/* reuse GL_FIXED */
-	/* reuse GL_IMPLEMENTATION_COLOR_READ_TYPE */
-	/* reuse GL_IMPLEMENTATION_COLOR_READ_FORMAT */
-	/* reuse GL_LOW_FLOAT */
-	/* reuse GL_MEDIUM_FLOAT */
-	/* reuse GL_HIGH_FLOAT */
-	/* reuse GL_LOW_INT */
-	/* reuse GL_MEDIUM_INT */
-	/* reuse GL_HIGH_INT */
-	/* reuse GL_SHADER_COMPILER */
-	/* reuse GL_SHADER_BINARY_FORMATS */
-	/* reuse GL_NUM_SHADER_BINARY_FORMATS */
-	/* reuse GL_MAX_VERTEX_UNIFORM_VECTORS */
-	/* reuse GL_MAX_VARYING_VECTORS */
-	/* reuse GL_MAX_FRAGMENT_UNIFORM_VECTORS */
-	/* reuse GL_RGB565 */
-	/* Reuse tokens from ARB_get_program_binary */
-	/* reuse GL_PROGRAM_BINARY_RETRIEVABLE_HINT */
-	/* reuse GL_PROGRAM_BINARY_LENGTH */
-	/* reuse GL_NUM_PROGRAM_BINARY_FORMATS */
-	/* reuse GL_PROGRAM_BINARY_FORMATS */
-	/* Reuse tokens from ARB_separate_shader_objects */
-	/* reuse GL_VERTEX_SHADER_BIT */
-	/* reuse GL_FRAGMENT_SHADER_BIT */
-	/* reuse GL_GEOMETRY_SHADER_BIT */
-	/* reuse GL_TESS_CONTROL_SHADER_BIT */
-	/* reuse GL_TESS_EVALUATION_SHADER_BIT */
-	/* reuse GL_ALL_SHADER_BITS */
-	/* reuse GL_PROGRAM_SEPARABLE */
-	/* reuse GL_ACTIVE_PROGRAM */
-	/* reuse GL_PROGRAM_PIPELINE_BINDING */
-	/* Reuse tokens from ARB_shader_precision (none) */
-	/* Reuse tokens from ARB_vertex_attrib_64bit - all are in GL 3.0 and 4.0 already */
-	/* Reuse tokens from ARB_viewport_array - some are in GL 1.1 and ARB_provoking_vertex already */
-	/* reuse GL_MAX_VIEWPORTS */
-	/* reuse GL_VIEWPORT_SUBPIXEL_BITS */
-	/* reuse GL_VIEWPORT_BOUNDS_RANGE */
-	/* reuse GL_LAYER_PROVOKING_VERTEX */
-	/* reuse GL_VIEWPORT_INDEX_PROVOKING_VERTEX */
-	/* reuse GL_UNDEFINED_VERTEX */
+    /* Reuse tokens from ARB_ES2_compatibility */
+    /* reuse GL_FIXED */
+    /* reuse GL_IMPLEMENTATION_COLOR_READ_TYPE */
+    /* reuse GL_IMPLEMENTATION_COLOR_READ_FORMAT */
+    /* reuse GL_LOW_FLOAT */
+    /* reuse GL_MEDIUM_FLOAT */
+    /* reuse GL_HIGH_FLOAT */
+    /* reuse GL_LOW_INT */
+    /* reuse GL_MEDIUM_INT */
+    /* reuse GL_HIGH_INT */
+    /* reuse GL_SHADER_COMPILER */
+    /* reuse GL_SHADER_BINARY_FORMATS */
+    /* reuse GL_NUM_SHADER_BINARY_FORMATS */
+    /* reuse GL_MAX_VERTEX_UNIFORM_VECTORS */
+    /* reuse GL_MAX_VARYING_VECTORS */
+    /* reuse GL_MAX_FRAGMENT_UNIFORM_VECTORS */
+    /* reuse GL_RGB565 */
+    /* Reuse tokens from ARB_get_program_binary */
+    /* reuse GL_PROGRAM_BINARY_RETRIEVABLE_HINT */
+    /* reuse GL_PROGRAM_BINARY_LENGTH */
+    /* reuse GL_NUM_PROGRAM_BINARY_FORMATS */
+    /* reuse GL_PROGRAM_BINARY_FORMATS */
+    /* Reuse tokens from ARB_separate_shader_objects */
+    /* reuse GL_VERTEX_SHADER_BIT */
+    /* reuse GL_FRAGMENT_SHADER_BIT */
+    /* reuse GL_GEOMETRY_SHADER_BIT */
+    /* reuse GL_TESS_CONTROL_SHADER_BIT */
+    /* reuse GL_TESS_EVALUATION_SHADER_BIT */
+    /* reuse GL_ALL_SHADER_BITS */
+    /* reuse GL_PROGRAM_SEPARABLE */
+    /* reuse GL_ACTIVE_PROGRAM */
+    /* reuse GL_PROGRAM_PIPELINE_BINDING */
+    /* Reuse tokens from ARB_shader_precision (none) */
+    /* Reuse tokens from ARB_vertex_attrib_64bit - all are in GL 3.0 and 4.0 already */
+    /* Reuse tokens from ARB_viewport_array - some are in GL 1.1 and ARB_provoking_vertex already */
+    /* reuse GL_MAX_VIEWPORTS */
+    /* reuse GL_VIEWPORT_SUBPIXEL_BITS */
+    /* reuse GL_VIEWPORT_BOUNDS_RANGE */
+    /* reuse GL_LAYER_PROVOKING_VERTEX */
+    /* reuse GL_VIEWPORT_INDEX_PROVOKING_VERTEX */
+    /* reuse GL_UNDEFINED_VERTEX */
 #endif
 
 #ifndef GL_VERSION_4_2
-	/* Reuse tokens from ARB_base_instance (none) */
-	/* Reuse tokens from ARB_shading_language_420pack (none) */
-	/* Reuse tokens from ARB_transform_feedback_instanced (none) */
-	/* Reuse tokens from ARB_compressed_texture_pixel_storage */
-	/* reuse GL_UNPACK_COMPRESSED_BLOCK_WIDTH */
-	/* reuse GL_UNPACK_COMPRESSED_BLOCK_HEIGHT */
-	/* reuse GL_UNPACK_COMPRESSED_BLOCK_DEPTH */
-	/* reuse GL_UNPACK_COMPRESSED_BLOCK_SIZE */
-	/* reuse GL_PACK_COMPRESSED_BLOCK_WIDTH */
-	/* reuse GL_PACK_COMPRESSED_BLOCK_HEIGHT */
-	/* reuse GL_PACK_COMPRESSED_BLOCK_DEPTH */
-	/* reuse GL_PACK_COMPRESSED_BLOCK_SIZE */
-	/* Reuse tokens from ARB_conservative_depth (none) */
-	/* Reuse tokens from ARB_internalformat_query */
-	/* reuse GL_NUM_SAMPLE_COUNTS */
-	/* Reuse tokens from ARB_map_buffer_alignment */
-	/* reuse GL_MIN_MAP_BUFFER_ALIGNMENT */
-	/* Reuse tokens from ARB_shader_atomic_counters */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_BINDING */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_START */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_SIZE */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER */
-	/* reuse GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_VERTEX_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_GEOMETRY_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_FRAGMENT_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_COMBINED_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE */
-	/* reuse GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS */
-	/* reuse GL_ACTIVE_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX */
-	/* reuse GL_UNSIGNED_INT_ATOMIC_COUNTER */
-	/* Reuse tokens from ARB_shader_image_load_store */
-	/* reuse GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT */
-	/* reuse GL_ELEMENT_ARRAY_BARRIER_BIT */
-	/* reuse GL_UNIFORM_BARRIER_BIT */
-	/* reuse GL_TEXTURE_FETCH_BARRIER_BIT */
-	/* reuse GL_SHADER_IMAGE_ACCESS_BARRIER_BIT */
-	/* reuse GL_COMMAND_BARRIER_BIT */
-	/* reuse GL_PIXEL_BUFFER_BARRIER_BIT */
-	/* reuse GL_TEXTURE_UPDATE_BARRIER_BIT */
-	/* reuse GL_BUFFER_UPDATE_BARRIER_BIT */
-	/* reuse GL_FRAMEBUFFER_BARRIER_BIT */
-	/* reuse GL_TRANSFORM_FEEDBACK_BARRIER_BIT */
-	/* reuse GL_ATOMIC_COUNTER_BARRIER_BIT */
-	/* reuse GL_ALL_BARRIER_BITS */
-	/* reuse GL_MAX_IMAGE_UNITS */
-	/* reuse GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS */
-	/* reuse GL_IMAGE_BINDING_NAME */
-	/* reuse GL_IMAGE_BINDING_LEVEL */
-	/* reuse GL_IMAGE_BINDING_LAYERED */
-	/* reuse GL_IMAGE_BINDING_LAYER */
-	/* reuse GL_IMAGE_BINDING_ACCESS */
-	/* reuse GL_IMAGE_1D */
-	/* reuse GL_IMAGE_2D */
-	/* reuse GL_IMAGE_3D */
-	/* reuse GL_IMAGE_2D_RECT */
-	/* reuse GL_IMAGE_CUBE */
-	/* reuse GL_IMAGE_BUFFER */
-	/* reuse GL_IMAGE_1D_ARRAY */
-	/* reuse GL_IMAGE_2D_ARRAY */
-	/* reuse GL_IMAGE_CUBE_MAP_ARRAY */
-	/* reuse GL_IMAGE_2D_MULTISAMPLE */
-	/* reuse GL_IMAGE_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_INT_IMAGE_1D */
-	/* reuse GL_INT_IMAGE_2D */
-	/* reuse GL_INT_IMAGE_3D */
-	/* reuse GL_INT_IMAGE_2D_RECT */
-	/* reuse GL_INT_IMAGE_CUBE */
-	/* reuse GL_INT_IMAGE_BUFFER */
-	/* reuse GL_INT_IMAGE_1D_ARRAY */
-	/* reuse GL_INT_IMAGE_2D_ARRAY */
-	/* reuse GL_INT_IMAGE_CUBE_MAP_ARRAY */
-	/* reuse GL_INT_IMAGE_2D_MULTISAMPLE */
-	/* reuse GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_UNSIGNED_INT_IMAGE_1D */
-	/* reuse GL_UNSIGNED_INT_IMAGE_2D */
-	/* reuse GL_UNSIGNED_INT_IMAGE_3D */
-	/* reuse GL_UNSIGNED_INT_IMAGE_2D_RECT */
-	/* reuse GL_UNSIGNED_INT_IMAGE_CUBE */
-	/* reuse GL_UNSIGNED_INT_IMAGE_BUFFER */
-	/* reuse GL_UNSIGNED_INT_IMAGE_1D_ARRAY */
-	/* reuse GL_UNSIGNED_INT_IMAGE_2D_ARRAY */
-	/* reuse GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY */
-	/* reuse GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE */
-	/* reuse GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_MAX_IMAGE_SAMPLES */
-	/* reuse GL_IMAGE_BINDING_FORMAT */
-	/* reuse GL_IMAGE_FORMAT_COMPATIBILITY_TYPE */
-	/* reuse GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE */
-	/* reuse GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS */
-	/* reuse GL_MAX_VERTEX_IMAGE_UNIFORMS */
-	/* reuse GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS */
-	/* reuse GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS */
-	/* reuse GL_MAX_GEOMETRY_IMAGE_UNIFORMS */
-	/* reuse GL_MAX_FRAGMENT_IMAGE_UNIFORMS */
-	/* reuse GL_MAX_COMBINED_IMAGE_UNIFORMS */
-	/* Reuse tokens from ARB_shading_language_packing (none) */
-	/* Reuse tokens from ARB_texture_storage */
-	/* reuse GL_TEXTURE_IMMUTABLE_FORMAT */
+    /* Reuse tokens from ARB_base_instance (none) */
+    /* Reuse tokens from ARB_shading_language_420pack (none) */
+    /* Reuse tokens from ARB_transform_feedback_instanced (none) */
+    /* Reuse tokens from ARB_compressed_texture_pixel_storage */
+    /* reuse GL_UNPACK_COMPRESSED_BLOCK_WIDTH */
+    /* reuse GL_UNPACK_COMPRESSED_BLOCK_HEIGHT */
+    /* reuse GL_UNPACK_COMPRESSED_BLOCK_DEPTH */
+    /* reuse GL_UNPACK_COMPRESSED_BLOCK_SIZE */
+    /* reuse GL_PACK_COMPRESSED_BLOCK_WIDTH */
+    /* reuse GL_PACK_COMPRESSED_BLOCK_HEIGHT */
+    /* reuse GL_PACK_COMPRESSED_BLOCK_DEPTH */
+    /* reuse GL_PACK_COMPRESSED_BLOCK_SIZE */
+    /* Reuse tokens from ARB_conservative_depth (none) */
+    /* Reuse tokens from ARB_internalformat_query */
+    /* reuse GL_NUM_SAMPLE_COUNTS */
+    /* Reuse tokens from ARB_map_buffer_alignment */
+    /* reuse GL_MIN_MAP_BUFFER_ALIGNMENT */
+    /* Reuse tokens from ARB_shader_atomic_counters */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_BINDING */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_START */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_SIZE */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER */
+    /* reuse GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_VERTEX_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_GEOMETRY_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_FRAGMENT_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_COMBINED_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE */
+    /* reuse GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS */
+    /* reuse GL_ACTIVE_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX */
+    /* reuse GL_UNSIGNED_INT_ATOMIC_COUNTER */
+    /* Reuse tokens from ARB_shader_image_load_store */
+    /* reuse GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT */
+    /* reuse GL_ELEMENT_ARRAY_BARRIER_BIT */
+    /* reuse GL_UNIFORM_BARRIER_BIT */
+    /* reuse GL_TEXTURE_FETCH_BARRIER_BIT */
+    /* reuse GL_SHADER_IMAGE_ACCESS_BARRIER_BIT */
+    /* reuse GL_COMMAND_BARRIER_BIT */
+    /* reuse GL_PIXEL_BUFFER_BARRIER_BIT */
+    /* reuse GL_TEXTURE_UPDATE_BARRIER_BIT */
+    /* reuse GL_BUFFER_UPDATE_BARRIER_BIT */
+    /* reuse GL_FRAMEBUFFER_BARRIER_BIT */
+    /* reuse GL_TRANSFORM_FEEDBACK_BARRIER_BIT */
+    /* reuse GL_ATOMIC_COUNTER_BARRIER_BIT */
+    /* reuse GL_ALL_BARRIER_BITS */
+    /* reuse GL_MAX_IMAGE_UNITS */
+    /* reuse GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS */
+    /* reuse GL_IMAGE_BINDING_NAME */
+    /* reuse GL_IMAGE_BINDING_LEVEL */
+    /* reuse GL_IMAGE_BINDING_LAYERED */
+    /* reuse GL_IMAGE_BINDING_LAYER */
+    /* reuse GL_IMAGE_BINDING_ACCESS */
+    /* reuse GL_IMAGE_1D */
+    /* reuse GL_IMAGE_2D */
+    /* reuse GL_IMAGE_3D */
+    /* reuse GL_IMAGE_2D_RECT */
+    /* reuse GL_IMAGE_CUBE */
+    /* reuse GL_IMAGE_BUFFER */
+    /* reuse GL_IMAGE_1D_ARRAY */
+    /* reuse GL_IMAGE_2D_ARRAY */
+    /* reuse GL_IMAGE_CUBE_MAP_ARRAY */
+    /* reuse GL_IMAGE_2D_MULTISAMPLE */
+    /* reuse GL_IMAGE_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_INT_IMAGE_1D */
+    /* reuse GL_INT_IMAGE_2D */
+    /* reuse GL_INT_IMAGE_3D */
+    /* reuse GL_INT_IMAGE_2D_RECT */
+    /* reuse GL_INT_IMAGE_CUBE */
+    /* reuse GL_INT_IMAGE_BUFFER */
+    /* reuse GL_INT_IMAGE_1D_ARRAY */
+    /* reuse GL_INT_IMAGE_2D_ARRAY */
+    /* reuse GL_INT_IMAGE_CUBE_MAP_ARRAY */
+    /* reuse GL_INT_IMAGE_2D_MULTISAMPLE */
+    /* reuse GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_UNSIGNED_INT_IMAGE_1D */
+    /* reuse GL_UNSIGNED_INT_IMAGE_2D */
+    /* reuse GL_UNSIGNED_INT_IMAGE_3D */
+    /* reuse GL_UNSIGNED_INT_IMAGE_2D_RECT */
+    /* reuse GL_UNSIGNED_INT_IMAGE_CUBE */
+    /* reuse GL_UNSIGNED_INT_IMAGE_BUFFER */
+    /* reuse GL_UNSIGNED_INT_IMAGE_1D_ARRAY */
+    /* reuse GL_UNSIGNED_INT_IMAGE_2D_ARRAY */
+    /* reuse GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY */
+    /* reuse GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE */
+    /* reuse GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_MAX_IMAGE_SAMPLES */
+    /* reuse GL_IMAGE_BINDING_FORMAT */
+    /* reuse GL_IMAGE_FORMAT_COMPATIBILITY_TYPE */
+    /* reuse GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE */
+    /* reuse GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS */
+    /* reuse GL_MAX_VERTEX_IMAGE_UNIFORMS */
+    /* reuse GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS */
+    /* reuse GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS */
+    /* reuse GL_MAX_GEOMETRY_IMAGE_UNIFORMS */
+    /* reuse GL_MAX_FRAGMENT_IMAGE_UNIFORMS */
+    /* reuse GL_MAX_COMBINED_IMAGE_UNIFORMS */
+    /* Reuse tokens from ARB_shading_language_packing (none) */
+    /* Reuse tokens from ARB_texture_storage */
+    /* reuse GL_TEXTURE_IMMUTABLE_FORMAT */
 #endif
 
 #ifndef GL_VERSION_4_3
 #define GL_NUM_SHADING_LANGUAGE_VERSIONS  0x82E9
 #define GL_VERTEX_ATTRIB_ARRAY_LONG       0x874E
-	/* Reuse tokens from ARB_arrays_of_arrays (none, GLSL only) */
-	/* Reuse tokens from ARB_fragment_layer_viewport (none, GLSL only) */
-	/* Reuse tokens from ARB_shader_image_size (none, GLSL only) */
-	/* Reuse tokens from ARB_ES3_compatibility */
-	/* reuse GL_COMPRESSED_RGB8_ETC2 */
-	/* reuse GL_COMPRESSED_SRGB8_ETC2 */
-	/* reuse GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 */
-	/* reuse GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 */
-	/* reuse GL_COMPRESSED_RGBA8_ETC2_EAC */
-	/* reuse GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC */
-	/* reuse GL_COMPRESSED_R11_EAC */
-	/* reuse GL_COMPRESSED_SIGNED_R11_EAC */
-	/* reuse GL_COMPRESSED_RG11_EAC */
-	/* reuse GL_COMPRESSED_SIGNED_RG11_EAC */
-	/* reuse GL_PRIMITIVE_RESTART_FIXED_INDEX */
-	/* reuse GL_ANY_SAMPLES_PASSED_CONSERVATIVE */
-	/* reuse GL_MAX_ELEMENT_INDEX */
-	/* Reuse tokens from ARB_clear_buffer_object (none) */
-	/* Reuse tokens from ARB_compute_shader */
-	/* reuse GL_COMPUTE_SHADER */
-	/* reuse GL_MAX_COMPUTE_UNIFORM_BLOCKS */
-	/* reuse GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS */
-	/* reuse GL_MAX_COMPUTE_IMAGE_UNIFORMS */
-	/* reuse GL_MAX_COMPUTE_SHARED_MEMORY_SIZE */
-	/* reuse GL_MAX_COMPUTE_UNIFORM_COMPONENTS */
-	/* reuse GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS */
-	/* reuse GL_MAX_COMPUTE_ATOMIC_COUNTERS */
-	/* reuse GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS */
-	/* reuse GL_MAX_COMPUTE_LOCAL_INVOCATIONS */
-	/* reuse GL_MAX_COMPUTE_WORK_GROUP_COUNT */
-	/* reuse GL_MAX_COMPUTE_WORK_GROUP_SIZE */
-	/* reuse GL_COMPUTE_LOCAL_WORK_SIZE */
-	/* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER */
-	/* reuse GL_DISPATCH_INDIRECT_BUFFER */
-	/* reuse GL_DISPATCH_INDIRECT_BUFFER_BINDING */
-	/* Reuse tokens from ARB_copy_image (none) */
-	/* Reuse tokens from KHR_debug */
-	/* reuse GL_DEBUG_OUTPUT_SYNCHRONOUS */
-	/* reuse GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH */
-	/* reuse GL_DEBUG_CALLBACK_FUNCTION */
-	/* reuse GL_DEBUG_CALLBACK_USER_PARAM */
-	/* reuse GL_DEBUG_SOURCE_API */
-	/* reuse GL_DEBUG_SOURCE_WINDOW_SYSTEM */
-	/* reuse GL_DEBUG_SOURCE_SHADER_COMPILER */
-	/* reuse GL_DEBUG_SOURCE_THIRD_PARTY */
-	/* reuse GL_DEBUG_SOURCE_APPLICATION */
-	/* reuse GL_DEBUG_SOURCE_OTHER */
-	/* reuse GL_DEBUG_TYPE_ERROR */
-	/* reuse GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR */
-	/* reuse GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR */
-	/* reuse GL_DEBUG_TYPE_PORTABILITY */
-	/* reuse GL_DEBUG_TYPE_PERFORMANCE */
-	/* reuse GL_DEBUG_TYPE_OTHER */
-	/* reuse GL_MAX_DEBUG_MESSAGE_LENGTH */
-	/* reuse GL_MAX_DEBUG_LOGGED_MESSAGES */
-	/* reuse GL_DEBUG_LOGGED_MESSAGES */
-	/* reuse GL_DEBUG_SEVERITY_HIGH */
-	/* reuse GL_DEBUG_SEVERITY_MEDIUM */
-	/* reuse GL_DEBUG_SEVERITY_LOW */
-	/* reuse GL_DEBUG_TYPE_MARKER */
-	/* reuse GL_DEBUG_TYPE_PUSH_GROUP */
-	/* reuse GL_DEBUG_TYPE_POP_GROUP */
-	/* reuse GL_DEBUG_SEVERITY_NOTIFICATION */
-	/* reuse GL_MAX_DEBUG_GROUP_STACK_DEPTH */
-	/* reuse GL_DEBUG_GROUP_STACK_DEPTH */
-	/* reuse GL_BUFFER */
-	/* reuse GL_SHADER */
-	/* reuse GL_PROGRAM */
-	/* reuse GL_QUERY */
-	/* reuse GL_PROGRAM_PIPELINE */
-	/* reuse GL_SAMPLER */
-	/* reuse GL_DISPLAY_LIST */
-	/* reuse GL_MAX_LABEL_LENGTH */
-	/* reuse GL_DEBUG_OUTPUT */
-	/* reuse GL_CONTEXT_FLAG_DEBUG_BIT */
-	/* reuse GL_STACK_UNDERFLOW */
-	/* reuse GL_STACK_OVERFLOW */
-	/* Reuse tokens from ARB_explicit_uniform_location */
-	/* reuse GL_MAX_UNIFORM_LOCATIONS */
-	/* Reuse tokens from ARB_framebuffer_no_attachments */
-	/* reuse GL_FRAMEBUFFER_DEFAULT_WIDTH */
-	/* reuse GL_FRAMEBUFFER_DEFAULT_HEIGHT */
-	/* reuse GL_FRAMEBUFFER_DEFAULT_LAYERS */
-	/* reuse GL_FRAMEBUFFER_DEFAULT_SAMPLES */
-	/* reuse GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS */
-	/* reuse GL_MAX_FRAMEBUFFER_WIDTH */
-	/* reuse GL_MAX_FRAMEBUFFER_HEIGHT */
-	/* reuse GL_MAX_FRAMEBUFFER_LAYERS */
-	/* reuse GL_MAX_FRAMEBUFFER_SAMPLES */
-	/* Reuse tokens from ARB_internalformat_query2 */
-	/* reuse GL_INTERNALFORMAT_SUPPORTED */
-	/* reuse GL_INTERNALFORMAT_PREFERRED */
-	/* reuse GL_INTERNALFORMAT_RED_SIZE */
-	/* reuse GL_INTERNALFORMAT_GREEN_SIZE */
-	/* reuse GL_INTERNALFORMAT_BLUE_SIZE */
-	/* reuse GL_INTERNALFORMAT_ALPHA_SIZE */
-	/* reuse GL_INTERNALFORMAT_DEPTH_SIZE */
-	/* reuse GL_INTERNALFORMAT_STENCIL_SIZE */
-	/* reuse GL_INTERNALFORMAT_SHARED_SIZE */
-	/* reuse GL_INTERNALFORMAT_RED_TYPE */
-	/* reuse GL_INTERNALFORMAT_GREEN_TYPE */
-	/* reuse GL_INTERNALFORMAT_BLUE_TYPE */
-	/* reuse GL_INTERNALFORMAT_ALPHA_TYPE */
-	/* reuse GL_INTERNALFORMAT_DEPTH_TYPE */
-	/* reuse GL_INTERNALFORMAT_STENCIL_TYPE */
-	/* reuse GL_MAX_WIDTH */
-	/* reuse GL_MAX_HEIGHT */
-	/* reuse GL_MAX_DEPTH */
-	/* reuse GL_MAX_LAYERS */
-	/* reuse GL_MAX_COMBINED_DIMENSIONS */
-	/* reuse GL_COLOR_COMPONENTS */
-	/* reuse GL_DEPTH_COMPONENTS */
-	/* reuse GL_STENCIL_COMPONENTS */
-	/* reuse GL_COLOR_RENDERABLE */
-	/* reuse GL_DEPTH_RENDERABLE */
-	/* reuse GL_STENCIL_RENDERABLE */
-	/* reuse GL_FRAMEBUFFER_RENDERABLE */
-	/* reuse GL_FRAMEBUFFER_RENDERABLE_LAYERED */
-	/* reuse GL_FRAMEBUFFER_BLEND */
-	/* reuse GL_READ_PIXELS */
-	/* reuse GL_READ_PIXELS_FORMAT */
-	/* reuse GL_READ_PIXELS_TYPE */
-	/* reuse GL_TEXTURE_IMAGE_FORMAT */
-	/* reuse GL_TEXTURE_IMAGE_TYPE */
-	/* reuse GL_GET_TEXTURE_IMAGE_FORMAT */
-	/* reuse GL_GET_TEXTURE_IMAGE_TYPE */
-	/* reuse GL_MIPMAP */
-	/* reuse GL_MANUAL_GENERATE_MIPMAP */
-	/* reuse GL_AUTO_GENERATE_MIPMAP */
-	/* reuse GL_COLOR_ENCODING */
-	/* reuse GL_SRGB_READ */
-	/* reuse GL_SRGB_WRITE */
-	/* reuse GL_FILTER */
-	/* reuse GL_VERTEX_TEXTURE */
-	/* reuse GL_TESS_CONTROL_TEXTURE */
-	/* reuse GL_TESS_EVALUATION_TEXTURE */
-	/* reuse GL_GEOMETRY_TEXTURE */
-	/* reuse GL_FRAGMENT_TEXTURE */
-	/* reuse GL_COMPUTE_TEXTURE */
-	/* reuse GL_TEXTURE_SHADOW */
-	/* reuse GL_TEXTURE_GATHER */
-	/* reuse GL_TEXTURE_GATHER_SHADOW */
-	/* reuse GL_SHADER_IMAGE_LOAD */
-	/* reuse GL_SHADER_IMAGE_STORE */
-	/* reuse GL_SHADER_IMAGE_ATOMIC */
-	/* reuse GL_IMAGE_TEXEL_SIZE */
-	/* reuse GL_IMAGE_COMPATIBILITY_CLASS */
-	/* reuse GL_IMAGE_PIXEL_FORMAT */
-	/* reuse GL_IMAGE_PIXEL_TYPE */
-	/* reuse GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST */
-	/* reuse GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST */
-	/* reuse GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE */
-	/* reuse GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE */
-	/* reuse GL_TEXTURE_COMPRESSED_BLOCK_WIDTH */
-	/* reuse GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT */
-	/* reuse GL_TEXTURE_COMPRESSED_BLOCK_SIZE */
-	/* reuse GL_CLEAR_BUFFER */
-	/* reuse GL_TEXTURE_VIEW */
-	/* reuse GL_VIEW_COMPATIBILITY_CLASS */
-	/* reuse GL_FULL_SUPPORT */
-	/* reuse GL_CAVEAT_SUPPORT */
-	/* reuse GL_IMAGE_CLASS_4_X_32 */
-	/* reuse GL_IMAGE_CLASS_2_X_32 */
-	/* reuse GL_IMAGE_CLASS_1_X_32 */
-	/* reuse GL_IMAGE_CLASS_4_X_16 */
-	/* reuse GL_IMAGE_CLASS_2_X_16 */
-	/* reuse GL_IMAGE_CLASS_1_X_16 */
-	/* reuse GL_IMAGE_CLASS_4_X_8 */
-	/* reuse GL_IMAGE_CLASS_2_X_8 */
-	/* reuse GL_IMAGE_CLASS_1_X_8 */
-	/* reuse GL_IMAGE_CLASS_11_11_10 */
-	/* reuse GL_IMAGE_CLASS_10_10_10_2 */
-	/* reuse GL_VIEW_CLASS_128_BITS */
-	/* reuse GL_VIEW_CLASS_96_BITS */
-	/* reuse GL_VIEW_CLASS_64_BITS */
-	/* reuse GL_VIEW_CLASS_48_BITS */
-	/* reuse GL_VIEW_CLASS_32_BITS */
-	/* reuse GL_VIEW_CLASS_24_BITS */
-	/* reuse GL_VIEW_CLASS_16_BITS */
-	/* reuse GL_VIEW_CLASS_8_BITS */
-	/* reuse GL_VIEW_CLASS_S3TC_DXT1_RGB */
-	/* reuse GL_VIEW_CLASS_S3TC_DXT1_RGBA */
-	/* reuse GL_VIEW_CLASS_S3TC_DXT3_RGBA */
-	/* reuse GL_VIEW_CLASS_S3TC_DXT5_RGBA */
-	/* reuse GL_VIEW_CLASS_RGTC1_RED */
-	/* reuse GL_VIEW_CLASS_RGTC2_RG */
-	/* reuse GL_VIEW_CLASS_BPTC_UNORM */
-	/* reuse GL_VIEW_CLASS_BPTC_FLOAT */
-	/* Reuse tokens from ARB_invalidate_subdata (none) */
-	/* Reuse tokens from ARB_multi_draw_indirect (none) */
-	/* Reuse tokens from ARB_program_interface_query */
-	/* reuse GL_UNIFORM */
-	/* reuse GL_UNIFORM_BLOCK */
-	/* reuse GL_PROGRAM_INPUT */
-	/* reuse GL_PROGRAM_OUTPUT */
-	/* reuse GL_BUFFER_VARIABLE */
-	/* reuse GL_SHADER_STORAGE_BLOCK */
-	/* reuse GL_VERTEX_SUBROUTINE */
-	/* reuse GL_TESS_CONTROL_SUBROUTINE */
-	/* reuse GL_TESS_EVALUATION_SUBROUTINE */
-	/* reuse GL_GEOMETRY_SUBROUTINE */
-	/* reuse GL_FRAGMENT_SUBROUTINE */
-	/* reuse GL_COMPUTE_SUBROUTINE */
-	/* reuse GL_VERTEX_SUBROUTINE_UNIFORM */
-	/* reuse GL_TESS_CONTROL_SUBROUTINE_UNIFORM */
-	/* reuse GL_TESS_EVALUATION_SUBROUTINE_UNIFORM */
-	/* reuse GL_GEOMETRY_SUBROUTINE_UNIFORM */
-	/* reuse GL_FRAGMENT_SUBROUTINE_UNIFORM */
-	/* reuse GL_COMPUTE_SUBROUTINE_UNIFORM */
-	/* reuse GL_TRANSFORM_FEEDBACK_VARYING */
-	/* reuse GL_ACTIVE_RESOURCES */
-	/* reuse GL_MAX_NAME_LENGTH */
-	/* reuse GL_MAX_NUM_ACTIVE_VARIABLES */
-	/* reuse GL_MAX_NUM_COMPATIBLE_SUBROUTINES */
-	/* reuse GL_NAME_LENGTH */
-	/* reuse GL_TYPE */
-	/* reuse GL_ARRAY_SIZE */
-	/* reuse GL_OFFSET */
-	/* reuse GL_BLOCK_INDEX */
-	/* reuse GL_ARRAY_STRIDE */
-	/* reuse GL_MATRIX_STRIDE */
-	/* reuse GL_IS_ROW_MAJOR */
-	/* reuse GL_ATOMIC_COUNTER_BUFFER_INDEX */
-	/* reuse GL_BUFFER_BINDING */
-	/* reuse GL_BUFFER_DATA_SIZE */
-	/* reuse GL_NUM_ACTIVE_VARIABLES */
-	/* reuse GL_ACTIVE_VARIABLES */
-	/* reuse GL_REFERENCED_BY_VERTEX_SHADER */
-	/* reuse GL_REFERENCED_BY_TESS_CONTROL_SHADER */
-	/* reuse GL_REFERENCED_BY_TESS_EVALUATION_SHADER */
-	/* reuse GL_REFERENCED_BY_GEOMETRY_SHADER */
-	/* reuse GL_REFERENCED_BY_FRAGMENT_SHADER */
-	/* reuse GL_REFERENCED_BY_COMPUTE_SHADER */
-	/* reuse GL_TOP_LEVEL_ARRAY_SIZE */
-	/* reuse GL_TOP_LEVEL_ARRAY_STRIDE */
-	/* reuse GL_LOCATION */
-	/* reuse GL_LOCATION_INDEX */
-	/* reuse GL_IS_PER_PATCH */
-	/* Reuse tokens from ARB_robust_buffer_access_behavior (none) */
-	/* Reuse tokens from ARB_shader_storage_buffer_object */
-	/* reuse GL_SHADER_STORAGE_BUFFER */
-	/* reuse GL_SHADER_STORAGE_BUFFER_BINDING */
-	/* reuse GL_SHADER_STORAGE_BUFFER_START */
-	/* reuse GL_SHADER_STORAGE_BUFFER_SIZE */
-	/* reuse GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS */
-	/* reuse GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS */
-	/* reuse GL_MAX_SHADER_STORAGE_BLOCK_SIZE */
-	/* reuse GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT */
-	/* reuse GL_SHADER_STORAGE_BARRIER_BIT */
-	/* reuse GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES */
-	/* Reuse tokens from ARB_stencil_texturing */
-	/* reuse GL_DEPTH_STENCIL_TEXTURE_MODE */
-	/* Reuse tokens from ARB_texture_buffer_range */
-	/* reuse GL_TEXTURE_BUFFER_OFFSET */
-	/* reuse GL_TEXTURE_BUFFER_SIZE */
-	/* reuse GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT */
-	/* Reuse tokens from ARB_texture_query_levels (none) */
-	/* Reuse tokens from ARB_texture_storage_multisample (none) */
-	/* Reuse tokens from ARB_texture_view */
-	/* reuse GL_TEXTURE_VIEW_MIN_LEVEL */
-	/* reuse GL_TEXTURE_VIEW_NUM_LEVELS */
-	/* reuse GL_TEXTURE_VIEW_MIN_LAYER */
-	/* reuse GL_TEXTURE_VIEW_NUM_LAYERS */
-	/* reuse GL_TEXTURE_IMMUTABLE_LEVELS */
-	/* Reuse tokens from ARB_vertex_attrib_binding */
-	/* reuse GL_VERTEX_ATTRIB_BINDING */
-	/* reuse GL_VERTEX_ATTRIB_RELATIVE_OFFSET */
-	/* reuse GL_VERTEX_BINDING_DIVISOR */
-	/* reuse GL_VERTEX_BINDING_OFFSET */
-	/* reuse GL_VERTEX_BINDING_STRIDE */
-	/* reuse GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET */
-	/* reuse GL_MAX_VERTEX_ATTRIB_BINDINGS */
+    /* Reuse tokens from ARB_arrays_of_arrays (none, GLSL only) */
+    /* Reuse tokens from ARB_fragment_layer_viewport (none, GLSL only) */
+    /* Reuse tokens from ARB_shader_image_size (none, GLSL only) */
+    /* Reuse tokens from ARB_ES3_compatibility */
+    /* reuse GL_COMPRESSED_RGB8_ETC2 */
+    /* reuse GL_COMPRESSED_SRGB8_ETC2 */
+    /* reuse GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 */
+    /* reuse GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 */
+    /* reuse GL_COMPRESSED_RGBA8_ETC2_EAC */
+    /* reuse GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC */
+    /* reuse GL_COMPRESSED_R11_EAC */
+    /* reuse GL_COMPRESSED_SIGNED_R11_EAC */
+    /* reuse GL_COMPRESSED_RG11_EAC */
+    /* reuse GL_COMPRESSED_SIGNED_RG11_EAC */
+    /* reuse GL_PRIMITIVE_RESTART_FIXED_INDEX */
+    /* reuse GL_ANY_SAMPLES_PASSED_CONSERVATIVE */
+    /* reuse GL_MAX_ELEMENT_INDEX */
+    /* Reuse tokens from ARB_clear_buffer_object (none) */
+    /* Reuse tokens from ARB_compute_shader */
+    /* reuse GL_COMPUTE_SHADER */
+    /* reuse GL_MAX_COMPUTE_UNIFORM_BLOCKS */
+    /* reuse GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS */
+    /* reuse GL_MAX_COMPUTE_IMAGE_UNIFORMS */
+    /* reuse GL_MAX_COMPUTE_SHARED_MEMORY_SIZE */
+    /* reuse GL_MAX_COMPUTE_UNIFORM_COMPONENTS */
+    /* reuse GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS */
+    /* reuse GL_MAX_COMPUTE_ATOMIC_COUNTERS */
+    /* reuse GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS */
+    /* reuse GL_MAX_COMPUTE_LOCAL_INVOCATIONS */
+    /* reuse GL_MAX_COMPUTE_WORK_GROUP_COUNT */
+    /* reuse GL_MAX_COMPUTE_WORK_GROUP_SIZE */
+    /* reuse GL_COMPUTE_LOCAL_WORK_SIZE */
+    /* reuse GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER */
+    /* reuse GL_DISPATCH_INDIRECT_BUFFER */
+    /* reuse GL_DISPATCH_INDIRECT_BUFFER_BINDING */
+    /* Reuse tokens from ARB_copy_image (none) */
+    /* Reuse tokens from KHR_debug */
+    /* reuse GL_DEBUG_OUTPUT_SYNCHRONOUS */
+    /* reuse GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH */
+    /* reuse GL_DEBUG_CALLBACK_FUNCTION */
+    /* reuse GL_DEBUG_CALLBACK_USER_PARAM */
+    /* reuse GL_DEBUG_SOURCE_API */
+    /* reuse GL_DEBUG_SOURCE_WINDOW_SYSTEM */
+    /* reuse GL_DEBUG_SOURCE_SHADER_COMPILER */
+    /* reuse GL_DEBUG_SOURCE_THIRD_PARTY */
+    /* reuse GL_DEBUG_SOURCE_APPLICATION */
+    /* reuse GL_DEBUG_SOURCE_OTHER */
+    /* reuse GL_DEBUG_TYPE_ERROR */
+    /* reuse GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR */
+    /* reuse GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR */
+    /* reuse GL_DEBUG_TYPE_PORTABILITY */
+    /* reuse GL_DEBUG_TYPE_PERFORMANCE */
+    /* reuse GL_DEBUG_TYPE_OTHER */
+    /* reuse GL_MAX_DEBUG_MESSAGE_LENGTH */
+    /* reuse GL_MAX_DEBUG_LOGGED_MESSAGES */
+    /* reuse GL_DEBUG_LOGGED_MESSAGES */
+    /* reuse GL_DEBUG_SEVERITY_HIGH */
+    /* reuse GL_DEBUG_SEVERITY_MEDIUM */
+    /* reuse GL_DEBUG_SEVERITY_LOW */
+    /* reuse GL_DEBUG_TYPE_MARKER */
+    /* reuse GL_DEBUG_TYPE_PUSH_GROUP */
+    /* reuse GL_DEBUG_TYPE_POP_GROUP */
+    /* reuse GL_DEBUG_SEVERITY_NOTIFICATION */
+    /* reuse GL_MAX_DEBUG_GROUP_STACK_DEPTH */
+    /* reuse GL_DEBUG_GROUP_STACK_DEPTH */
+    /* reuse GL_BUFFER */
+    /* reuse GL_SHADER */
+    /* reuse GL_PROGRAM */
+    /* reuse GL_QUERY */
+    /* reuse GL_PROGRAM_PIPELINE */
+    /* reuse GL_SAMPLER */
+    /* reuse GL_DISPLAY_LIST */
+    /* reuse GL_MAX_LABEL_LENGTH */
+    /* reuse GL_DEBUG_OUTPUT */
+    /* reuse GL_CONTEXT_FLAG_DEBUG_BIT */
+    /* reuse GL_STACK_UNDERFLOW */
+    /* reuse GL_STACK_OVERFLOW */
+    /* Reuse tokens from ARB_explicit_uniform_location */
+    /* reuse GL_MAX_UNIFORM_LOCATIONS */
+    /* Reuse tokens from ARB_framebuffer_no_attachments */
+    /* reuse GL_FRAMEBUFFER_DEFAULT_WIDTH */
+    /* reuse GL_FRAMEBUFFER_DEFAULT_HEIGHT */
+    /* reuse GL_FRAMEBUFFER_DEFAULT_LAYERS */
+    /* reuse GL_FRAMEBUFFER_DEFAULT_SAMPLES */
+    /* reuse GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS */
+    /* reuse GL_MAX_FRAMEBUFFER_WIDTH */
+    /* reuse GL_MAX_FRAMEBUFFER_HEIGHT */
+    /* reuse GL_MAX_FRAMEBUFFER_LAYERS */
+    /* reuse GL_MAX_FRAMEBUFFER_SAMPLES */
+    /* Reuse tokens from ARB_internalformat_query2 */
+    /* reuse GL_INTERNALFORMAT_SUPPORTED */
+    /* reuse GL_INTERNALFORMAT_PREFERRED */
+    /* reuse GL_INTERNALFORMAT_RED_SIZE */
+    /* reuse GL_INTERNALFORMAT_GREEN_SIZE */
+    /* reuse GL_INTERNALFORMAT_BLUE_SIZE */
+    /* reuse GL_INTERNALFORMAT_ALPHA_SIZE */
+    /* reuse GL_INTERNALFORMAT_DEPTH_SIZE */
+    /* reuse GL_INTERNALFORMAT_STENCIL_SIZE */
+    /* reuse GL_INTERNALFORMAT_SHARED_SIZE */
+    /* reuse GL_INTERNALFORMAT_RED_TYPE */
+    /* reuse GL_INTERNALFORMAT_GREEN_TYPE */
+    /* reuse GL_INTERNALFORMAT_BLUE_TYPE */
+    /* reuse GL_INTERNALFORMAT_ALPHA_TYPE */
+    /* reuse GL_INTERNALFORMAT_DEPTH_TYPE */
+    /* reuse GL_INTERNALFORMAT_STENCIL_TYPE */
+    /* reuse GL_MAX_WIDTH */
+    /* reuse GL_MAX_HEIGHT */
+    /* reuse GL_MAX_DEPTH */
+    /* reuse GL_MAX_LAYERS */
+    /* reuse GL_MAX_COMBINED_DIMENSIONS */
+    /* reuse GL_COLOR_COMPONENTS */
+    /* reuse GL_DEPTH_COMPONENTS */
+    /* reuse GL_STENCIL_COMPONENTS */
+    /* reuse GL_COLOR_RENDERABLE */
+    /* reuse GL_DEPTH_RENDERABLE */
+    /* reuse GL_STENCIL_RENDERABLE */
+    /* reuse GL_FRAMEBUFFER_RENDERABLE */
+    /* reuse GL_FRAMEBUFFER_RENDERABLE_LAYERED */
+    /* reuse GL_FRAMEBUFFER_BLEND */
+    /* reuse GL_READ_PIXELS */
+    /* reuse GL_READ_PIXELS_FORMAT */
+    /* reuse GL_READ_PIXELS_TYPE */
+    /* reuse GL_TEXTURE_IMAGE_FORMAT */
+    /* reuse GL_TEXTURE_IMAGE_TYPE */
+    /* reuse GL_GET_TEXTURE_IMAGE_FORMAT */
+    /* reuse GL_GET_TEXTURE_IMAGE_TYPE */
+    /* reuse GL_MIPMAP */
+    /* reuse GL_MANUAL_GENERATE_MIPMAP */
+    /* reuse GL_AUTO_GENERATE_MIPMAP */
+    /* reuse GL_COLOR_ENCODING */
+    /* reuse GL_SRGB_READ */
+    /* reuse GL_SRGB_WRITE */
+    /* reuse GL_FILTER */
+    /* reuse GL_VERTEX_TEXTURE */
+    /* reuse GL_TESS_CONTROL_TEXTURE */
+    /* reuse GL_TESS_EVALUATION_TEXTURE */
+    /* reuse GL_GEOMETRY_TEXTURE */
+    /* reuse GL_FRAGMENT_TEXTURE */
+    /* reuse GL_COMPUTE_TEXTURE */
+    /* reuse GL_TEXTURE_SHADOW */
+    /* reuse GL_TEXTURE_GATHER */
+    /* reuse GL_TEXTURE_GATHER_SHADOW */
+    /* reuse GL_SHADER_IMAGE_LOAD */
+    /* reuse GL_SHADER_IMAGE_STORE */
+    /* reuse GL_SHADER_IMAGE_ATOMIC */
+    /* reuse GL_IMAGE_TEXEL_SIZE */
+    /* reuse GL_IMAGE_COMPATIBILITY_CLASS */
+    /* reuse GL_IMAGE_PIXEL_FORMAT */
+    /* reuse GL_IMAGE_PIXEL_TYPE */
+    /* reuse GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST */
+    /* reuse GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST */
+    /* reuse GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE */
+    /* reuse GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE */
+    /* reuse GL_TEXTURE_COMPRESSED_BLOCK_WIDTH */
+    /* reuse GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT */
+    /* reuse GL_TEXTURE_COMPRESSED_BLOCK_SIZE */
+    /* reuse GL_CLEAR_BUFFER */
+    /* reuse GL_TEXTURE_VIEW */
+    /* reuse GL_VIEW_COMPATIBILITY_CLASS */
+    /* reuse GL_FULL_SUPPORT */
+    /* reuse GL_CAVEAT_SUPPORT */
+    /* reuse GL_IMAGE_CLASS_4_X_32 */
+    /* reuse GL_IMAGE_CLASS_2_X_32 */
+    /* reuse GL_IMAGE_CLASS_1_X_32 */
+    /* reuse GL_IMAGE_CLASS_4_X_16 */
+    /* reuse GL_IMAGE_CLASS_2_X_16 */
+    /* reuse GL_IMAGE_CLASS_1_X_16 */
+    /* reuse GL_IMAGE_CLASS_4_X_8 */
+    /* reuse GL_IMAGE_CLASS_2_X_8 */
+    /* reuse GL_IMAGE_CLASS_1_X_8 */
+    /* reuse GL_IMAGE_CLASS_11_11_10 */
+    /* reuse GL_IMAGE_CLASS_10_10_10_2 */
+    /* reuse GL_VIEW_CLASS_128_BITS */
+    /* reuse GL_VIEW_CLASS_96_BITS */
+    /* reuse GL_VIEW_CLASS_64_BITS */
+    /* reuse GL_VIEW_CLASS_48_BITS */
+    /* reuse GL_VIEW_CLASS_32_BITS */
+    /* reuse GL_VIEW_CLASS_24_BITS */
+    /* reuse GL_VIEW_CLASS_16_BITS */
+    /* reuse GL_VIEW_CLASS_8_BITS */
+    /* reuse GL_VIEW_CLASS_S3TC_DXT1_RGB */
+    /* reuse GL_VIEW_CLASS_S3TC_DXT1_RGBA */
+    /* reuse GL_VIEW_CLASS_S3TC_DXT3_RGBA */
+    /* reuse GL_VIEW_CLASS_S3TC_DXT5_RGBA */
+    /* reuse GL_VIEW_CLASS_RGTC1_RED */
+    /* reuse GL_VIEW_CLASS_RGTC2_RG */
+    /* reuse GL_VIEW_CLASS_BPTC_UNORM */
+    /* reuse GL_VIEW_CLASS_BPTC_FLOAT */
+    /* Reuse tokens from ARB_invalidate_subdata (none) */
+    /* Reuse tokens from ARB_multi_draw_indirect (none) */
+    /* Reuse tokens from ARB_program_interface_query */
+    /* reuse GL_UNIFORM */
+    /* reuse GL_UNIFORM_BLOCK */
+    /* reuse GL_PROGRAM_INPUT */
+    /* reuse GL_PROGRAM_OUTPUT */
+    /* reuse GL_BUFFER_VARIABLE */
+    /* reuse GL_SHADER_STORAGE_BLOCK */
+    /* reuse GL_VERTEX_SUBROUTINE */
+    /* reuse GL_TESS_CONTROL_SUBROUTINE */
+    /* reuse GL_TESS_EVALUATION_SUBROUTINE */
+    /* reuse GL_GEOMETRY_SUBROUTINE */
+    /* reuse GL_FRAGMENT_SUBROUTINE */
+    /* reuse GL_COMPUTE_SUBROUTINE */
+    /* reuse GL_VERTEX_SUBROUTINE_UNIFORM */
+    /* reuse GL_TESS_CONTROL_SUBROUTINE_UNIFORM */
+    /* reuse GL_TESS_EVALUATION_SUBROUTINE_UNIFORM */
+    /* reuse GL_GEOMETRY_SUBROUTINE_UNIFORM */
+    /* reuse GL_FRAGMENT_SUBROUTINE_UNIFORM */
+    /* reuse GL_COMPUTE_SUBROUTINE_UNIFORM */
+    /* reuse GL_TRANSFORM_FEEDBACK_VARYING */
+    /* reuse GL_ACTIVE_RESOURCES */
+    /* reuse GL_MAX_NAME_LENGTH */
+    /* reuse GL_MAX_NUM_ACTIVE_VARIABLES */
+    /* reuse GL_MAX_NUM_COMPATIBLE_SUBROUTINES */
+    /* reuse GL_NAME_LENGTH */
+    /* reuse GL_TYPE */
+    /* reuse GL_ARRAY_SIZE */
+    /* reuse GL_OFFSET */
+    /* reuse GL_BLOCK_INDEX */
+    /* reuse GL_ARRAY_STRIDE */
+    /* reuse GL_MATRIX_STRIDE */
+    /* reuse GL_IS_ROW_MAJOR */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER_INDEX */
+    /* reuse GL_BUFFER_BINDING */
+    /* reuse GL_BUFFER_DATA_SIZE */
+    /* reuse GL_NUM_ACTIVE_VARIABLES */
+    /* reuse GL_ACTIVE_VARIABLES */
+    /* reuse GL_REFERENCED_BY_VERTEX_SHADER */
+    /* reuse GL_REFERENCED_BY_TESS_CONTROL_SHADER */
+    /* reuse GL_REFERENCED_BY_TESS_EVALUATION_SHADER */
+    /* reuse GL_REFERENCED_BY_GEOMETRY_SHADER */
+    /* reuse GL_REFERENCED_BY_FRAGMENT_SHADER */
+    /* reuse GL_REFERENCED_BY_COMPUTE_SHADER */
+    /* reuse GL_TOP_LEVEL_ARRAY_SIZE */
+    /* reuse GL_TOP_LEVEL_ARRAY_STRIDE */
+    /* reuse GL_LOCATION */
+    /* reuse GL_LOCATION_INDEX */
+    /* reuse GL_IS_PER_PATCH */
+    /* Reuse tokens from ARB_robust_buffer_access_behavior (none) */
+    /* Reuse tokens from ARB_shader_storage_buffer_object */
+    /* reuse GL_SHADER_STORAGE_BUFFER */
+    /* reuse GL_SHADER_STORAGE_BUFFER_BINDING */
+    /* reuse GL_SHADER_STORAGE_BUFFER_START */
+    /* reuse GL_SHADER_STORAGE_BUFFER_SIZE */
+    /* reuse GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS */
+    /* reuse GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS */
+    /* reuse GL_MAX_SHADER_STORAGE_BLOCK_SIZE */
+    /* reuse GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT */
+    /* reuse GL_SHADER_STORAGE_BARRIER_BIT */
+    /* reuse GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES */
+    /* Reuse tokens from ARB_stencil_texturing */
+    /* reuse GL_DEPTH_STENCIL_TEXTURE_MODE */
+    /* Reuse tokens from ARB_texture_buffer_range */
+    /* reuse GL_TEXTURE_BUFFER_OFFSET */
+    /* reuse GL_TEXTURE_BUFFER_SIZE */
+    /* reuse GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT */
+    /* Reuse tokens from ARB_texture_query_levels (none) */
+    /* Reuse tokens from ARB_texture_storage_multisample (none) */
+    /* Reuse tokens from ARB_texture_view */
+    /* reuse GL_TEXTURE_VIEW_MIN_LEVEL */
+    /* reuse GL_TEXTURE_VIEW_NUM_LEVELS */
+    /* reuse GL_TEXTURE_VIEW_MIN_LAYER */
+    /* reuse GL_TEXTURE_VIEW_NUM_LAYERS */
+    /* reuse GL_TEXTURE_IMMUTABLE_LEVELS */
+    /* Reuse tokens from ARB_vertex_attrib_binding */
+    /* reuse GL_VERTEX_ATTRIB_BINDING */
+    /* reuse GL_VERTEX_ATTRIB_RELATIVE_OFFSET */
+    /* reuse GL_VERTEX_BINDING_DIVISOR */
+    /* reuse GL_VERTEX_BINDING_OFFSET */
+    /* reuse GL_VERTEX_BINDING_STRIDE */
+    /* reuse GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET */
+    /* reuse GL_MAX_VERTEX_ATTRIB_BINDINGS */
 #endif
 
 #ifndef GL_ARB_depth_buffer_float
@@ -1747,7 +1747,7 @@ extern "C" {
 #endif
 
 #ifndef GL_ARB_vertex_array_bgra
-	/* reuse GL_BGRA */
+    /* reuse GL_BGRA */
 #endif
 
 #ifndef GL_ARB_draw_buffers_blend
@@ -1792,7 +1792,7 @@ extern "C" {
 
 #ifndef GL_ARB_blend_func_extended
 #define GL_SRC1_COLOR                     0x88F9
-	/* reuse GL_SRC1_ALPHA */
+    /* reuse GL_SRC1_ALPHA */
 #define GL_ONE_MINUS_SRC1_COLOR           0x88FA
 #define GL_ONE_MINUS_SRC1_ALPHA           0x88FB
 #define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS   0x88FC
@@ -1830,7 +1830,7 @@ extern "C" {
 #endif
 
 #ifndef GL_ARB_vertex_type_2_10_10_10_rev
-	/* reuse GL_UNSIGNED_INT_2_10_10_10_REV */
+    /* reuse GL_UNSIGNED_INT_2_10_10_10_REV */
 #define GL_INT_2_10_10_10_REV             0x8D9F
 #endif
 
@@ -1845,11 +1845,11 @@ extern "C" {
 #define GL_MIN_FRAGMENT_INTERPOLATION_OFFSET 0x8E5B
 #define GL_MAX_FRAGMENT_INTERPOLATION_OFFSET 0x8E5C
 #define GL_FRAGMENT_INTERPOLATION_OFFSET_BITS 0x8E5D
-	/* reuse GL_MAX_VERTEX_STREAMS */
+    /* reuse GL_MAX_VERTEX_STREAMS */
 #endif
 
 #ifndef GL_ARB_gpu_shader_fp64
-	/* reuse GL_DOUBLE */
+    /* reuse GL_DOUBLE */
 #define GL_DOUBLE_VEC2                    0x8FFC
 #define GL_DOUBLE_VEC3                    0x8FFD
 #define GL_DOUBLE_VEC4                    0x8FFE
@@ -1874,8 +1874,8 @@ extern "C" {
 #define GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS 0x8DE8
 #define GL_NUM_COMPATIBLE_SUBROUTINES     0x8E4A
 #define GL_COMPATIBLE_SUBROUTINES         0x8E4B
-	/* reuse GL_UNIFORM_SIZE */
-	/* reuse GL_UNIFORM_NAME_LENGTH */
+    /* reuse GL_UNIFORM_SIZE */
+    /* reuse GL_UNIFORM_NAME_LENGTH */
 #endif
 
 #ifndef GL_ARB_tessellation_shader
@@ -1888,14 +1888,14 @@ extern "C" {
 #define GL_TESS_GEN_SPACING               0x8E77
 #define GL_TESS_GEN_VERTEX_ORDER          0x8E78
 #define GL_TESS_GEN_POINT_MODE            0x8E79
-	/* reuse GL_TRIANGLES */
-	/* reuse GL_QUADS */
+    /* reuse GL_TRIANGLES */
+    /* reuse GL_QUADS */
 #define GL_ISOLINES                       0x8E7A
-	/* reuse GL_EQUAL */
+    /* reuse GL_EQUAL */
 #define GL_FRACTIONAL_ODD                 0x8E7B
 #define GL_FRACTIONAL_EVEN                0x8E7C
-	/* reuse GL_CCW */
-	/* reuse GL_CW */
+    /* reuse GL_CCW */
+    /* reuse GL_CW */
 #define GL_MAX_PATCH_VERTICES             0x8E7D
 #define GL_MAX_TESS_GEN_LEVEL             0x8E7E
 #define GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS 0x8E7F
@@ -1919,9 +1919,9 @@ extern "C" {
 #endif
 
 #ifndef GL_ARB_texture_buffer_object_rgb32
-	/* reuse GL_RGB32F */
-	/* reuse GL_RGB32UI */
-	/* reuse GL_RGB32I */
+    /* reuse GL_RGB32F */
+    /* reuse GL_RGB32UI */
+    /* reuse GL_RGB32I */
 #endif
 
 #ifndef GL_ARB_transform_feedback2
@@ -1980,35 +1980,35 @@ extern "C" {
 #endif
 
 #ifndef GL_ARB_vertex_attrib_64bit
-	/* reuse GL_RGB32I */
-	/* reuse GL_DOUBLE_VEC2 */
-	/* reuse GL_DOUBLE_VEC3 */
-	/* reuse GL_DOUBLE_VEC4 */
-	/* reuse GL_DOUBLE_MAT2 */
-	/* reuse GL_DOUBLE_MAT3 */
-	/* reuse GL_DOUBLE_MAT4 */
-	/* reuse GL_DOUBLE_MAT2x3 */
-	/* reuse GL_DOUBLE_MAT2x4 */
-	/* reuse GL_DOUBLE_MAT3x2 */
-	/* reuse GL_DOUBLE_MAT3x4 */
-	/* reuse GL_DOUBLE_MAT4x2 */
-	/* reuse GL_DOUBLE_MAT4x3 */
+    /* reuse GL_RGB32I */
+    /* reuse GL_DOUBLE_VEC2 */
+    /* reuse GL_DOUBLE_VEC3 */
+    /* reuse GL_DOUBLE_VEC4 */
+    /* reuse GL_DOUBLE_MAT2 */
+    /* reuse GL_DOUBLE_MAT3 */
+    /* reuse GL_DOUBLE_MAT4 */
+    /* reuse GL_DOUBLE_MAT2x3 */
+    /* reuse GL_DOUBLE_MAT2x4 */
+    /* reuse GL_DOUBLE_MAT3x2 */
+    /* reuse GL_DOUBLE_MAT3x4 */
+    /* reuse GL_DOUBLE_MAT4x2 */
+    /* reuse GL_DOUBLE_MAT4x3 */
 #endif
 
 #ifndef GL_ARB_viewport_array
-	/* reuse GL_SCISSOR_BOX */
-	/* reuse GL_VIEWPORT */
-	/* reuse GL_DEPTH_RANGE */
-	/* reuse GL_SCISSOR_TEST */
+    /* reuse GL_SCISSOR_BOX */
+    /* reuse GL_VIEWPORT */
+    /* reuse GL_DEPTH_RANGE */
+    /* reuse GL_SCISSOR_TEST */
 #define GL_MAX_VIEWPORTS                  0x825B
 #define GL_VIEWPORT_SUBPIXEL_BITS         0x825C
 #define GL_VIEWPORT_BOUNDS_RANGE          0x825D
 #define GL_LAYER_PROVOKING_VERTEX         0x825E
 #define GL_VIEWPORT_INDEX_PROVOKING_VERTEX 0x825F
 #define GL_UNDEFINED_VERTEX               0x8260
-	/* reuse GL_FIRST_VERTEX_CONVENTION */
-	/* reuse GL_LAST_VERTEX_CONVENTION */
-	/* reuse GL_PROVOKING_VERTEX */
+    /* reuse GL_FIRST_VERTEX_CONVENTION */
+    /* reuse GL_LAST_VERTEX_CONVENTION */
+    /* reuse GL_PROVOKING_VERTEX */
 #endif
 
 #ifndef GL_ARB_cl_event
@@ -2042,7 +2042,7 @@ extern "C" {
 #endif
 
 #ifndef GL_ARB_robustness
-	/* reuse GL_NO_ERROR */
+    /* reuse GL_NO_ERROR */
 #define GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB 0x00000004
 #define GL_LOSE_CONTEXT_ON_RESET_ARB      0x8252
 #define GL_GUILTY_CONTEXT_RESET_ARB       0x8253
@@ -2253,7 +2253,7 @@ extern "C" {
 #define GL_PROGRAM_PIPELINE               0x82E4
 #define GL_SAMPLER                        0x82E6
 #define GL_DISPLAY_LIST                   0x82E7
-	/* DISPLAY_LIST used in compatibility profile only */
+    /* DISPLAY_LIST used in compatibility profile only */
 #define GL_MAX_LABEL_LENGTH               0x82E8
 #define GL_MAX_DEBUG_MESSAGE_LENGTH       0x9143
 #define GL_MAX_DEBUG_LOGGED_MESSAGES      0x9144
@@ -2263,8 +2263,8 @@ extern "C" {
 #define GL_DEBUG_SEVERITY_LOW             0x9148
 #define GL_DEBUG_OUTPUT                   0x92E0
 #define GL_CONTEXT_FLAG_DEBUG_BIT         0x00000002
-	/* reuse GL_STACK_UNDERFLOW */
-	/* reuse GL_STACK_OVERFLOW */
+    /* reuse GL_STACK_UNDERFLOW */
+    /* reuse GL_STACK_OVERFLOW */
 #endif
 
 #ifndef GL_ARB_arrays_of_arrays
@@ -2354,22 +2354,22 @@ extern "C" {
 #endif
 
 #ifndef GL_ARB_internalformat_query2
-	/* reuse GL_IMAGE_FORMAT_COMPATIBILITY_TYPE */
-	/* reuse GL_NUM_SAMPLE_COUNTS */
-	/* reuse GL_RENDERBUFFER */
-	/* reuse GL_SAMPLES */
-	/* reuse GL_TEXTURE_1D */
-	/* reuse GL_TEXTURE_1D_ARRAY */
-	/* reuse GL_TEXTURE_2D */
-	/* reuse GL_TEXTURE_2D_ARRAY */
-	/* reuse GL_TEXTURE_3D */
-	/* reuse GL_TEXTURE_CUBE_MAP */
-	/* reuse GL_TEXTURE_CUBE_MAP_ARRAY */
-	/* reuse GL_TEXTURE_RECTANGLE */
-	/* reuse GL_TEXTURE_BUFFER */
-	/* reuse GL_TEXTURE_2D_MULTISAMPLE */
-	/* reuse GL_TEXTURE_2D_MULTISAMPLE_ARRAY */
-	/* reuse GL_TEXTURE_COMPRESSED */
+    /* reuse GL_IMAGE_FORMAT_COMPATIBILITY_TYPE */
+    /* reuse GL_NUM_SAMPLE_COUNTS */
+    /* reuse GL_RENDERBUFFER */
+    /* reuse GL_SAMPLES */
+    /* reuse GL_TEXTURE_1D */
+    /* reuse GL_TEXTURE_1D_ARRAY */
+    /* reuse GL_TEXTURE_2D */
+    /* reuse GL_TEXTURE_2D_ARRAY */
+    /* reuse GL_TEXTURE_3D */
+    /* reuse GL_TEXTURE_CUBE_MAP */
+    /* reuse GL_TEXTURE_CUBE_MAP_ARRAY */
+    /* reuse GL_TEXTURE_RECTANGLE */
+    /* reuse GL_TEXTURE_BUFFER */
+    /* reuse GL_TEXTURE_2D_MULTISAMPLE */
+    /* reuse GL_TEXTURE_2D_MULTISAMPLE_ARRAY */
+    /* reuse GL_TEXTURE_COMPRESSED */
 #define GL_INTERNALFORMAT_SUPPORTED       0x826F
 #define GL_INTERNALFORMAT_PREFERRED       0x8270
 #define GL_INTERNALFORMAT_RED_SIZE        0x8271
@@ -2484,7 +2484,7 @@ extern "C" {
 #define GL_PROGRAM_OUTPUT                 0x92E4
 #define GL_BUFFER_VARIABLE                0x92E5
 #define GL_SHADER_STORAGE_BLOCK           0x92E6
-	/* reuse GL_ATOMIC_COUNTER_BUFFER */
+    /* reuse GL_ATOMIC_COUNTER_BUFFER */
 #define GL_VERTEX_SUBROUTINE              0x92E8
 #define GL_TESS_CONTROL_SUBROUTINE        0x92E9
 #define GL_TESS_EVALUATION_SUBROUTINE     0x92EA
@@ -2526,8 +2526,8 @@ extern "C" {
 #define GL_LOCATION                       0x930E
 #define GL_LOCATION_INDEX                 0x930F
 #define GL_IS_PER_PATCH                   0x92E7
-	/* reuse GL_NUM_COMPATIBLE_SUBROUTINES */
-	/* reuse GL_COMPATIBLE_SUBROUTINES */
+    /* reuse GL_NUM_COMPATIBLE_SUBROUTINES */
+    /* reuse GL_COMPATIBLE_SUBROUTINES */
 #endif
 
 #ifndef GL_ARB_robust_buffer_access_behavior
@@ -2553,7 +2553,7 @@ extern "C" {
 #define GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT 0x90DF
 #define GL_SHADER_STORAGE_BARRIER_BIT     0x2000
 #define GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS
-	/* reuse GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS */
+    /* reuse GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS */
 #endif
 
 #ifndef GL_ARB_stencil_texturing
@@ -2573,85 +2573,85 @@ extern "C" {
 #endif
 
 
-	/*************************************************************/
+    /*************************************************************/
 #ifndef IMAPP_IMPL
 #define GLEXTERN extern
 #else
 #define GLEXTERN 
 #endif
 #ifdef _MSC_VER
-GLEXTERN void(APIENTRY *glActiveTexture) (GLenum texture);
+GLEXTERN void(APIENTRY* glActiveTexture) (GLenum texture);
 #endif
-GLEXTERN void(APIENTRY *glUniform1i) (GLint location, GLint v0);
-GLEXTERN void(APIENTRY *glUniformMatrix3fv) (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-GLEXTERN void(APIENTRY *glBindFramebuffer) (GLenum target, GLuint framebuffer);
-GLEXTERN void(APIENTRY *glDeleteFramebuffers) (GLsizei n, const GLuint* framebuffers);
-GLEXTERN void(APIENTRY *glDeleteRenderbuffers) (GLsizei n, const GLuint* renderbuffers);
-GLEXTERN void(APIENTRY *glFramebufferTexture2D) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-GLEXTERN void(APIENTRY *glFramebufferRenderbuffer) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-GLEXTERN void(APIENTRY *glRenderbufferStorage) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-GLEXTERN void(APIENTRY *glGenFramebuffers) (GLsizei n, GLuint* framebuffers);
-GLEXTERN void(APIENTRY *glGenRenderbuffers) (GLsizei n, GLuint* renderbuffers);
-GLEXTERN void(APIENTRY *glBindRenderbuffer) (GLenum target, GLuint renderbuffer);
-GLEXTERN GLenum(APIENTRY *glCheckFramebufferStatus) (GLenum target);
-GLEXTERN void(APIENTRY *glGenerateMipmap) (GLenum target);
-GLEXTERN void(APIENTRY *glBufferData) (GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
-GLEXTERN void(APIENTRY *glUseProgram) (GLuint program);
-GLEXTERN GLint(APIENTRY *glGetUniformLocation) (GLuint program, const GLchar* name);
-GLEXTERN GLint(APIENTRY *glGetAttribLocation) (GLuint program, const GLchar* name);
-GLEXTERN void(APIENTRY *glDeleteBuffers) (GLsizei n, const GLuint* buffers);
-GLEXTERN void(APIENTRY *glDeleteVertexArrays) (GLsizei n, const GLuint* arrays);
-GLEXTERN void(APIENTRY *glEnableVertexAttribArray) (GLuint);
-GLEXTERN void(APIENTRY *glVertexAttribPointer) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
-GLEXTERN void(APIENTRY *glGenBuffers) (GLsizei n, GLuint* buffers);
-GLEXTERN void(APIENTRY *glBindBuffer) (GLenum target, GLuint buffer);
-GLEXTERN GLuint(APIENTRY *glCreateShader) (GLenum type);
-GLEXTERN void(APIENTRY *glShaderSource) (GLuint shader, GLsizei count, const GLchar** strings, const GLint* lengths);
-GLEXTERN void(APIENTRY *glCompileShader) (GLuint shader);
-GLEXTERN GLuint(APIENTRY *glCreateProgram) (void);
-GLEXTERN void(APIENTRY *glAttachShader) (GLuint program, GLuint shader);
-GLEXTERN void(APIENTRY *glDeleteProgram) (GLuint program);
-GLEXTERN void(APIENTRY *glDeleteShader) (GLuint shader);
-GLEXTERN void(APIENTRY *glDisableVertexAttribArray) (GLuint);
-GLEXTERN void(APIENTRY *glBindAttribLocation) (GLuint program, GLuint index, const GLchar* name);
-GLEXTERN void(APIENTRY *glVertexAttribDivisor) (GLuint index, GLuint divisor);
-GLEXTERN void(APIENTRY *glUniformMatrix4fv) (GLint location, GLsizei count, GLboolean transpose, const float* value);
-GLEXTERN void(APIENTRY *glGetShaderiv) (GLuint shader, GLenum pname, GLint* param);
-GLEXTERN void(APIENTRY *glLinkProgram) (GLuint program);
-GLEXTERN void(APIENTRY *glGetProgramiv) (GLuint program, GLenum pname, GLint* param);
-GLEXTERN void(APIENTRY *glBindVertexArray) (GLuint array);
-GLEXTERN void(APIENTRY *glUniform2fv) (GLint location, GLsizei count, const float* value);
-GLEXTERN void(APIENTRY *glUniform3f) (GLint location, float v0, float v1, float v2);
-GLEXTERN void(APIENTRY *glUniform3fv) (GLint location, GLsizei count, const float* value);
-GLEXTERN void(APIENTRY *glUniform4fv) (GLint location, GLsizei count, const float* value);
-GLEXTERN void(APIENTRY *glBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
-GLEXTERN void(APIENTRY *glGenVertexArrays) (GLsizei n, const GLuint* arrays);
-GLEXTERN void(APIENTRY *glGetShaderInfoLog) (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
-GLEXTERN void(APIENTRY *glGetProgramInfoLog) (GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
-GLEXTERN GLuint(APIENTRY *glGetUniformBlockIndex) (GLuint program, const GLchar* uniformBlockName);
-GLEXTERN void(APIENTRY *glUniformBlockBinding) (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
-GLEXTERN void(APIENTRY *glBindBufferBase) (GLenum target, GLuint index, GLuint buffer);
-GLEXTERN void(APIENTRY *glTransformFeedbackVaryings) (GLuint, GLsizei, const GLchar **, GLenum);
-GLEXTERN GLvoid* (APIENTRY *glMapBuffer) (GLenum target, GLenum access);
-GLEXTERN GLboolean(APIENTRY *glUnmapBuffer) (GLenum target);
-GLEXTERN void(APIENTRY *glDrawElementsInstanced) (GLenum, GLsizei, GLenum, const GLvoid*, GLsizei);
-GLEXTERN void(APIENTRY *glDrawArraysInstanced) (GLenum, GLint, GLsizei, GLsizei);
-GLEXTERN void(APIENTRY *glDrawElementsInstancedBaseVertex) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount, GLint basevertex);
-GLEXTERN void(APIENTRY *glBeginTransformFeedback) (GLenum);
-GLEXTERN void(APIENTRY *glEndTransformFeedback) (void);
-GLEXTERN void(APIENTRY *glUniform1f) (GLint location, float v0);
-GLEXTERN void(APIENTRY *glUniform2f) (GLint location, float v0, float v1);
-GLEXTERN void(APIENTRY *glBlendEquationSeparate) (GLenum, GLenum);
-GLEXTERN void(APIENTRY *glBlendFuncSeparate) (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
-GLEXTERN void(APIENTRY *glGetBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
-GLEXTERN void(APIENTRY *glGetShaderSource) (GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *source);
-GLEXTERN GLboolean(APIENTRY *glIsProgram)(GLuint program);
-GLEXTERN void(APIENTRY *glGetAttachedShaders)(GLuint program, GLsizei maxCount, GLsizei *count, GLuint *shaders);
-GLEXTERN void(APIENTRY *glDrawBuffers)(GLsizei n, const GLenum *bufs);
-GLEXTERN void(APIENTRY *glBlitFramebuffer)(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-GLEXTERN void(APIENTRY *glBlendEquation)(GLenum mode);
-GLEXTERN void(APIENTRY *glBindSampler)(GLuint unit, GLuint sampler);
-GLEXTERN void(APIENTRY *glDetachShader)(GLuint program, GLuint shader);
+GLEXTERN void(APIENTRY* glUniform1i) (GLint location, GLint v0);
+GLEXTERN void(APIENTRY* glUniformMatrix3fv) (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+GLEXTERN void(APIENTRY* glBindFramebuffer) (GLenum target, GLuint framebuffer);
+GLEXTERN void(APIENTRY* glDeleteFramebuffers) (GLsizei n, const GLuint* framebuffers);
+GLEXTERN void(APIENTRY* glDeleteRenderbuffers) (GLsizei n, const GLuint* renderbuffers);
+GLEXTERN void(APIENTRY* glFramebufferTexture2D) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+GLEXTERN void(APIENTRY* glFramebufferRenderbuffer) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+GLEXTERN void(APIENTRY* glRenderbufferStorage) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+GLEXTERN void(APIENTRY* glGenFramebuffers) (GLsizei n, GLuint* framebuffers);
+GLEXTERN void(APIENTRY* glGenRenderbuffers) (GLsizei n, GLuint* renderbuffers);
+GLEXTERN void(APIENTRY* glBindRenderbuffer) (GLenum target, GLuint renderbuffer);
+GLEXTERN GLenum(APIENTRY* glCheckFramebufferStatus) (GLenum target);
+GLEXTERN void(APIENTRY* glGenerateMipmap) (GLenum target);
+GLEXTERN void(APIENTRY* glBufferData) (GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+GLEXTERN void(APIENTRY* glUseProgram) (GLuint program);
+GLEXTERN GLint(APIENTRY* glGetUniformLocation) (GLuint program, const GLchar* name);
+GLEXTERN GLint(APIENTRY* glGetAttribLocation) (GLuint program, const GLchar* name);
+GLEXTERN void(APIENTRY* glDeleteBuffers) (GLsizei n, const GLuint* buffers);
+GLEXTERN void(APIENTRY* glDeleteVertexArrays) (GLsizei n, const GLuint* arrays);
+GLEXTERN void(APIENTRY* glEnableVertexAttribArray) (GLuint);
+GLEXTERN void(APIENTRY* glVertexAttribPointer) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
+GLEXTERN void(APIENTRY* glGenBuffers) (GLsizei n, GLuint* buffers);
+GLEXTERN void(APIENTRY* glBindBuffer) (GLenum target, GLuint buffer);
+GLEXTERN GLuint(APIENTRY* glCreateShader) (GLenum type);
+GLEXTERN void(APIENTRY* glShaderSource) (GLuint shader, GLsizei count, const GLchar** strings, const GLint* lengths);
+GLEXTERN void(APIENTRY* glCompileShader) (GLuint shader);
+GLEXTERN GLuint(APIENTRY* glCreateProgram) (void);
+GLEXTERN void(APIENTRY* glAttachShader) (GLuint program, GLuint shader);
+GLEXTERN void(APIENTRY* glDeleteProgram) (GLuint program);
+GLEXTERN void(APIENTRY* glDeleteShader) (GLuint shader);
+GLEXTERN void(APIENTRY* glDisableVertexAttribArray) (GLuint);
+GLEXTERN void(APIENTRY* glBindAttribLocation) (GLuint program, GLuint index, const GLchar* name);
+GLEXTERN void(APIENTRY* glVertexAttribDivisor) (GLuint index, GLuint divisor);
+GLEXTERN void(APIENTRY* glUniformMatrix4fv) (GLint location, GLsizei count, GLboolean transpose, const float* value);
+GLEXTERN void(APIENTRY* glGetShaderiv) (GLuint shader, GLenum pname, GLint* param);
+GLEXTERN void(APIENTRY* glLinkProgram) (GLuint program);
+GLEXTERN void(APIENTRY* glGetProgramiv) (GLuint program, GLenum pname, GLint* param);
+GLEXTERN void(APIENTRY* glBindVertexArray) (GLuint array);
+GLEXTERN void(APIENTRY* glUniform2fv) (GLint location, GLsizei count, const float* value);
+GLEXTERN void(APIENTRY* glUniform3f) (GLint location, float v0, float v1, float v2);
+GLEXTERN void(APIENTRY* glUniform3fv) (GLint location, GLsizei count, const float* value);
+GLEXTERN void(APIENTRY* glUniform4fv) (GLint location, GLsizei count, const float* value);
+GLEXTERN void(APIENTRY* glBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
+GLEXTERN void(APIENTRY* glGenVertexArrays) (GLsizei n, const GLuint* arrays);
+GLEXTERN void(APIENTRY* glGetShaderInfoLog) (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+GLEXTERN void(APIENTRY* glGetProgramInfoLog) (GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+GLEXTERN GLuint(APIENTRY* glGetUniformBlockIndex) (GLuint program, const GLchar* uniformBlockName);
+GLEXTERN void(APIENTRY* glUniformBlockBinding) (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+GLEXTERN void(APIENTRY* glBindBufferBase) (GLenum target, GLuint index, GLuint buffer);
+GLEXTERN void(APIENTRY* glTransformFeedbackVaryings) (GLuint, GLsizei, const GLchar**, GLenum);
+GLEXTERN GLvoid* (APIENTRY* glMapBuffer) (GLenum target, GLenum access);
+GLEXTERN GLboolean(APIENTRY* glUnmapBuffer) (GLenum target);
+GLEXTERN void(APIENTRY* glDrawElementsInstanced) (GLenum, GLsizei, GLenum, const GLvoid*, GLsizei);
+GLEXTERN void(APIENTRY* glDrawArraysInstanced) (GLenum, GLint, GLsizei, GLsizei);
+GLEXTERN void(APIENTRY* glDrawElementsInstancedBaseVertex) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount, GLint basevertex);
+GLEXTERN void(APIENTRY* glBeginTransformFeedback) (GLenum);
+GLEXTERN void(APIENTRY* glEndTransformFeedback) (void);
+GLEXTERN void(APIENTRY* glUniform1f) (GLint location, float v0);
+GLEXTERN void(APIENTRY* glUniform2f) (GLint location, float v0, float v1);
+GLEXTERN void(APIENTRY* glBlendEquationSeparate) (GLenum, GLenum);
+GLEXTERN void(APIENTRY* glBlendFuncSeparate) (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
+GLEXTERN void(APIENTRY* glGetBufferSubData) (GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
+GLEXTERN void(APIENTRY* glGetShaderSource) (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source);
+GLEXTERN GLboolean(APIENTRY* glIsProgram)(GLuint program);
+GLEXTERN void(APIENTRY* glGetAttachedShaders)(GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders);
+GLEXTERN void(APIENTRY* glDrawBuffers)(GLsizei n, const GLenum* bufs);
+GLEXTERN void(APIENTRY* glBlitFramebuffer)(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+GLEXTERN void(APIENTRY* glBlendEquation)(GLenum mode);
+GLEXTERN void(APIENTRY* glBindSampler)(GLuint unit, GLuint sampler);
+GLEXTERN void(APIENTRY* glDetachShader)(GLuint program, GLuint shader);
 
 
 
@@ -2662,930 +2662,931 @@ namespace ImApp
 #pragma comment(lib,"fmodstudio_vc.lib")
 #pragma comment(lib,"fmod_vc.lib")
 
-	void ERRCHECK_fn(FMOD_RESULT result, const char *file, int line);
+   void ERRCHECK_fn(FMOD_RESULT result, const char* file, int line);
 #define ERRCHECK(_result) ERRCHECK_fn(_result, __FILE__, __LINE__)
 #endif
 
-	struct Config
-	{
-		Config() : mWidth(1280), mHeight(720), mFullscreen(false)
-		{
+   struct Config
+   {
+      Config() : mWidth(1280), mHeight(720), mFullscreen(false)
+      {
 
-		}
-		int mWidth;
-		int mHeight;
-		bool mFullscreen;
-	};
+      }
+      int mWidth;
+      int mHeight;
+      bool mFullscreen;
+   };
 
-	struct ImApp
-	{
-		ImApp() : mInitExtensionsDone(false), mExtensionsPresent(false), mDone(true)
-		{
-			mInstance = this;
-		}
-		~ImApp()
-		{
-			mInstance = NULL;
-		}
-		static ImApp* Instance() { return mInstance; }
-		int Init(const Config& config = Config())
-		{
-			mConfig = config;
-			wininfo = WININFO{ 0,0,0,0,
-			{ 'c','X','d',0 }
-			};
-			WININFO     *info = &wininfo;
+   struct ImApp
+   {
+      ImApp() : mInitExtensionsDone(false), mExtensionsPresent(false), mDone(true)
+      {
+         mInstance = this;
+      }
+      ~ImApp()
+      {
+         mInstance = NULL;
+      }
+      static ImApp* Instance() { return mInstance; }
+      int Init(const Config& config = Config())
+      {
+         mConfig = config;
+         wininfo = WININFO{ 0,0,0,0,
+         { 'c','X','d',0 }
+         };
+         WININFO* info = &wininfo;
 
-			info->hInstance = GetModuleHandle(0);
+         info->hInstance = GetModuleHandle(0);
 
-			static DEVMODEA screenSettings = { { 0 },
+         static DEVMODEA screenSettings = { { 0 },
 #if _MSC_VER < 1400
-				0,0,148,0,0x001c0000,{ 0 },0,0,0,0,0,0,0,0,0,{ 0 },0,32,config.mWidth,config.mHeight,0,0,      // Visual C++ 6.0
+                0,0,148,0,0x001c0000,{ 0 },0,0,0,0,0,0,0,0,0,{ 0 },0,32,config.mWidth,config.mHeight,0,0,      // Visual C++ 6.0
 #else
-				0,0,156,0,0x001c0000,{ 0 },0,0,0,0,0,{ 0 },0,32,config.mWidth,config.mHeight,{ 0 }, 0,           // Visuatl Studio 2005
+                0,0,156,0,0x001c0000,{ 0 },0,0,0,0,0,{ 0 },0,32,static_cast<DWORD>(config.mWidth), static_cast<DWORD>(config.mHeight),{ 0 }, 0,           // Visuatl Studio 2005
 #endif
 #if(WINVER >= 0x0400)
-				0,0,0,0,0,0,
+                0,0,0,0,0,0,
 #if (WINVER >= 0x0500) || (_WIN32_WINNT >= 0x0400)
-				0,0
+                0,0
 #endif
 #endif
-			};
-			if (config.mFullscreen)
-			{
-				if (config.mFullscreen && ChangeDisplaySettingsA(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-					return 0;
-			}
+         };
+         if (config.mFullscreen)
+         {
+            if (config.mFullscreen && ChangeDisplaySettingsA(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+               return 0;
+         }
 #ifdef IMGUI_API
-			ImGui::CreateContext();
+         ImGui::CreateContext();
 #endif
-			if (!WindowInit(info))
-			{
-				WindowEnd(info);
-				return 0;
-			}
-			if (!InitExtension())
-				return 0;
+         if (!WindowInit(info))
+         {
+            WindowEnd(info);
+            return 0;
+         }
+         if (!InitExtension())
+            return 0;
 
 #ifdef IMGUI_API
-			if (!ImGui_Init())
-				return 0;
+         if (!ImGui_Init())
+            return 0;
 
 #endif
 #ifdef FMOD_API
-			void *extraDriverData = NULL;
-			ERRCHECK(FMOD::Studio::System::create(&system));
-			FMOD::System* lowLevelSystem = NULL;
-			ERRCHECK(system->getLowLevelSystem(&lowLevelSystem));
-			ERRCHECK(lowLevelSystem->setSoftwareFormat(0, FMOD_SPEAKERMODE_STEREO, 0)); // on rajoute la config pour le stereo
+         void* extraDriverData = NULL;
+         ERRCHECK(FMOD::Studio::System::create(&system));
+         FMOD::System* lowLevelSystem = NULL;
+         ERRCHECK(system->getLowLevelSystem(&lowLevelSystem));
+         ERRCHECK(lowLevelSystem->setSoftwareFormat(0, FMOD_SPEAKERMODE_STEREO, 0)); // on rajoute la config pour le stereo
 
 #ifdef RETAIL
-			ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, extraDriverData));
+         ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, extraDriverData));
 #else
-			ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL | FMOD_STUDIO_INIT_LIVEUPDATE | FMOD_STUDIO_INIT_SYNCHRONOUS_UPDATE, FMOD_INIT_NORMAL | FMOD_INIT_PROFILE_ENABLE, extraDriverData));
+         ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL | FMOD_STUDIO_INIT_LIVEUPDATE | FMOD_STUDIO_INIT_SYNCHRONOUS_UPDATE, FMOD_INIT_NORMAL | FMOD_INIT_PROFILE_ENABLE, extraDriverData));
 #endif
 #endif
-			mDone = false;
-			return 1;
-		}
+         mDone = false;
+         return 1;
+      }
 
-		void LoadBanks(int bankCount, const char **bankPaths);
-		void PlayEvent(const char *eventName);
+      void LoadBanks(int bankCount, const char** bankPaths);
+      void PlayEvent(const char* eventName);
 
-		void NewFrame()
-		{
-			MSG msg;
-			while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+      void NewFrame()
+      {
+         MSG msg;
+         while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+         {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
 
-				if (msg.message == WM_QUIT)
-					mDone = true;
-			}
+            if (msg.message == WM_QUIT)
+               mDone = true;
+         }
 
 #ifdef IMGUI_API
-			ImGui_NewFrame();
+         ImGui_NewFrame();
 #endif
-		}
+      }
 
-		void EndFrame()
-		{
+      void EndFrame()
+      {
 #ifdef FMOD_API
-			ERRCHECK(system->update());
+         ERRCHECK(system->update());
 #endif
 #ifdef IMGUI_API
-			ImGui::Render();
+         ImGui::Render();
 #endif
-			SwapBuffers(wininfo.hDC);
-		}
-		void Finish()
-		{
+         ImGui_RenderDrawLists(ImGui::GetDrawData());
+         SwapBuffers(wininfo.hDC);
+      }
+      void Finish()
+      {
 #ifdef IMGUI_API
-			ImGui_Shutdown();
+         ImGui_Shutdown();
 #endif
 #ifdef FMOD_API
-			ERRCHECK(system->unloadAll());
-			ERRCHECK(system->flushCommands());
-			ERRCHECK(system->release());
+         ERRCHECK(system->unloadAll());
+         ERRCHECK(system->flushCommands());
+         ERRCHECK(system->release());
 #endif
-		}
-		bool Done()
-		{
-			return mDone;
-		}
-	protected:
-		static ImApp *mInstance;
-		Config mConfig;
+      }
+      bool Done()
+      {
+         return mDone;
+      }
+   protected:
+      static ImApp* mInstance;
+      Config mConfig;
 
-		bool mInitExtensionsDone;
-		bool mExtensionsPresent;
-		bool mDone;
+      bool mInitExtensionsDone;
+      bool mExtensionsPresent;
+      bool mDone;
 #ifdef FMOD_API
-		FMOD::Studio::System* system;
+      FMOD::Studio::System* system;
 #endif
-		typedef struct
-		{
-			//---------------
-			HINSTANCE   hInstance;
-			HDC         hDC;
-			HGLRC       hRC;
-			HWND        hWnd;
-			char        wndclass[4];	// window class and title :)
-										//---------------
-		}WININFO;
+      typedef struct
+      {
+         //---------------
+         HINSTANCE   hInstance;
+         HDC         hDC;
+         HGLRC       hRC;
+         HWND        hWnd;
+         char        wndclass[4];    // window class and title :)
+                                     //---------------
+      }WININFO;
 
-		WININFO wininfo;
+      WININFO wininfo;
 
-		static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-		{
+      static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+      {
 #ifdef IMGUI_API
-			if (ImGui_WndProcHandler(hWnd, msg, wParam, lParam))
-				return true;
+         if (ImGui_WndProcHandler(hWnd, msg, wParam, lParam))
+            return true;
 #endif
-			switch (msg)
-			{
-			case WM_SIZE:
-			{
+         switch (msg)
+         {
+         case WM_SIZE:
+         {
 #ifdef IMGUI_API
-				ImGuiIO& io = ImGui::GetIO();
+            ImGuiIO& io = ImGui::GetIO();
 
-				int w, h;
-				int display_w, display_h;
-				//glfwGetWindowSize(g_Window, &w, &h);
-				//glfwGetFramebufferSize(g_Window, &display_w, &display_h);
-				w = LOWORD(lParam); // width of client area
-				h = HIWORD(lParam); // height of client area
-				io.DisplaySize = ImVec2((float)w, (float)h);
-				display_w = w;
-				display_h = h;
-				io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
+            int w, h;
+            int display_w, display_h;
+            //glfwGetWindowSize(g_Window, &w, &h);
+            //glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+            w = LOWORD(lParam); // width of client area
+            h = HIWORD(lParam); // height of client area
+            io.DisplaySize = ImVec2((float)w, (float)h);
+            display_w = w;
+            display_h = h;
+            io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
 #endif
-			}
-				return 0;
-			case WM_SYSCOMMAND:
-				if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-					return 0;
-				break;
-			case WM_DESTROY:
-				PostQuitMessage(0);
-				return 0;
-			}
-			return DefWindowProc(hWnd, msg, wParam, lParam);
-		}
+         }
+         return 0;
+         case WM_SYSCOMMAND:
+            if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+               return 0;
+            break;
+         case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
+         }
+         return DefWindowProc(hWnd, msg, wParam, lParam);
+      }
 
 
-		void WindowEnd(WININFO *info)
-		{
-			if (info->hRC)
-			{
-				wglMakeCurrent(0, 0);
-				wglDeleteContext(info->hRC);
-			}
+      void WindowEnd(WININFO* info)
+      {
+         if (info->hRC)
+         {
+            wglMakeCurrent(0, 0);
+            wglDeleteContext(info->hRC);
+         }
 
-			if (info->hDC) ReleaseDC(info->hWnd, info->hDC);
-			if (info->hWnd) DestroyWindow(info->hWnd);
+         if (info->hDC) ReleaseDC(info->hWnd, info->hDC);
+         if (info->hWnd) DestroyWindow(info->hWnd);
 
-			UnregisterClassA(info->wndclass, info->hInstance);
+         UnregisterClassA(info->wndclass, info->hInstance);
 
-			if (mConfig.mFullscreen)
-			{
-				ChangeDisplaySettings(0, 0);
-				while (ShowCursor(1)<0); // show cursor
-			}
-		}
+         if (mConfig.mFullscreen)
+         {
+            ChangeDisplaySettings(0, 0);
+            while (ShowCursor(1) < 0); // show cursor
+         }
+      }
 
-		int WindowInit(WININFO *info)
-		{
-			unsigned int	PixelFormat;
-			DWORD			dwExStyle, dwStyle;
-			DEVMODE			dmScreenSettings;
-			RECT			rec;
+      int WindowInit(WININFO* info)
+      {
+         unsigned int    PixelFormat;
+         DWORD            dwExStyle, dwStyle;
+         DEVMODE            dmScreenSettings;
+         RECT            rec;
 
-			WNDCLASSEXA WndClsEx;
+         WNDCLASSEXA WndClsEx;
 
-			// Create the application window
-			WndClsEx.cbSize = sizeof(WNDCLASSEX);
-			WndClsEx.style = CS_HREDRAW | CS_VREDRAW;
-			WndClsEx.lpfnWndProc = WndProc;
-			WndClsEx.cbClsExtra = 0;
-			WndClsEx.cbWndExtra = 0;
-			WndClsEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-			WndClsEx.hCursor = LoadCursor(NULL, IDC_ARROW);
-			WndClsEx.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-			WndClsEx.lpszMenuName = NULL;
-			WndClsEx.lpszClassName = info->wndclass;
-			WndClsEx.hInstance = info->hInstance;
-			WndClsEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+         // Create the application window
+         WndClsEx.cbSize = sizeof(WNDCLASSEX);
+         WndClsEx.style = CS_HREDRAW | CS_VREDRAW;
+         WndClsEx.lpfnWndProc = WndProc;
+         WndClsEx.cbClsExtra = 0;
+         WndClsEx.cbWndExtra = 0;
+         WndClsEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+         WndClsEx.hCursor = LoadCursor(NULL, IDC_ARROW);
+         WndClsEx.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+         WndClsEx.lpszMenuName = NULL;
+         WndClsEx.lpszClassName = info->wndclass;
+         WndClsEx.hInstance = info->hInstance;
+         WndClsEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-			if (!RegisterClassExA(&WndClsEx))
-				return 0;
+         if (!RegisterClassExA(&WndClsEx))
+            return 0;
 
-			if (mConfig.mFullscreen)
-			{
-				dmScreenSettings.dmSize = sizeof(DEVMODE);
-				dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-				dmScreenSettings.dmBitsPerPel = 32;
-				dmScreenSettings.dmPelsWidth = mConfig.mWidth;
-				dmScreenSettings.dmPelsHeight = mConfig.mHeight;
+         if (mConfig.mFullscreen)
+         {
+            dmScreenSettings.dmSize = sizeof(DEVMODE);
+            dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+            dmScreenSettings.dmBitsPerPel = 32;
+            dmScreenSettings.dmPelsWidth = mConfig.mWidth;
+            dmScreenSettings.dmPelsHeight = mConfig.mHeight;
 
-				if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-					return(0);
+            if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+               return(0);
 
-				dwExStyle = WS_EX_APPWINDOW;
-				dwStyle = WS_VISIBLE | WS_POPUP;
+            dwExStyle = WS_EX_APPWINDOW;
+            dwStyle = WS_VISIBLE | WS_POPUP;
 
-				//while (ShowCursor(0) >= 0);	// hide cursor
-			}
-			else
-			{
-				dwExStyle = 0;
-				dwStyle = WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_OVERLAPPED;
-				dwStyle = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_POPUP;
-			}
+            //while (ShowCursor(0) >= 0);    // hide cursor
+         }
+         else
+         {
+            dwExStyle = 0;
+            dwStyle = WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_OVERLAPPED;
+            dwStyle = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_POPUP;
+         }
 
-			rec.left = 0;
-			rec.top = 0;
-			rec.right = mConfig.mWidth;
-			rec.bottom = mConfig.mHeight;
+         rec.left = 0;
+         rec.top = 0;
+         rec.right = mConfig.mWidth;
+         rec.bottom = mConfig.mHeight;
 
-			AdjustWindowRect(&rec, dwStyle, 0);
+         AdjustWindowRect(&rec, dwStyle, 0);
 
-			info->hWnd = CreateWindowExA(dwExStyle, WndClsEx.lpszClassName, "", dwStyle| WS_MAXIMIZE,
-				(GetSystemMetrics(SM_CXSCREEN) - rec.right + rec.left) >> 1,
-				(GetSystemMetrics(SM_CYSCREEN) - rec.bottom + rec.top) >> 1,
-				rec.right - rec.left, rec.bottom - rec.top, 0, 0, info->hInstance, 0);
+         info->hWnd = CreateWindowExA(dwExStyle, WndClsEx.lpszClassName, "", dwStyle | WS_MAXIMIZE,
+            (GetSystemMetrics(SM_CXSCREEN) - rec.right + rec.left) >> 1,
+            (GetSystemMetrics(SM_CYSCREEN) - rec.bottom + rec.top) >> 1,
+            rec.right - rec.left, rec.bottom - rec.top, 0, 0, info->hInstance, 0);
 
-			if (!info->hWnd)
-				return(0);
+         if (!info->hWnd)
+            return(0);
 
-			if (!(info->hDC = GetDC(info->hWnd)))
-				return(0);
+         if (!(info->hDC = GetDC(info->hWnd)))
+            return(0);
 
-			static PIXELFORMATDESCRIPTOR pfd =
-			{
-				sizeof(PIXELFORMATDESCRIPTOR),
-				1,
-				PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-				PFD_TYPE_RGBA,
-				32,
-				0, 0, 0, 0, 0, 0, 8, 0,
-				0, 0, 0, 0, 0,  // accum
-				32,             // zbuffer
-				0,              // stencil!
-				0,              // aux
-				PFD_MAIN_PLANE,
-				0, 0, 0, 0
-			};
+         static PIXELFORMATDESCRIPTOR pfd =
+         {
+             sizeof(PIXELFORMATDESCRIPTOR),
+             1,
+             PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+             PFD_TYPE_RGBA,
+             32,
+             0, 0, 0, 0, 0, 0, 8, 0,
+             0, 0, 0, 0, 0,  // accum
+             32,             // zbuffer
+             0,              // stencil!
+             0,              // aux
+             PFD_MAIN_PLANE,
+             0, 0, 0, 0
+         };
 
-			if (!(PixelFormat = ChoosePixelFormat(info->hDC, &pfd)))
-				return(0);
+         if (!(PixelFormat = ChoosePixelFormat(info->hDC, &pfd)))
+            return(0);
 
-			if (!SetPixelFormat(info->hDC, PixelFormat, &pfd))
-				return(0);
+         if (!SetPixelFormat(info->hDC, PixelFormat, &pfd))
+            return(0);
 
-			if (!(info->hRC = wglCreateContext(info->hDC)))
-				return(0);
+         if (!(info->hRC = wglCreateContext(info->hDC)))
+            return(0);
 
-			if (!wglMakeCurrent(info->hDC, info->hRC))
-				return(0);
+         if (!wglMakeCurrent(info->hDC, info->hRC))
+            return(0);
 
-			return(1);
-		}
+         return(1);
+      }
 
 
-		bool loadExtension(const char *extensionName, void **functionPtr)
-		{
+      bool loadExtension(const char* extensionName, void** functionPtr)
+      {
 #if defined(_WIN32)
-			*functionPtr = glGetProcAddress(extensionName);
+         *functionPtr = glGetProcAddress(extensionName);
 #else
-			*functionPtr = (void *)glGetProcAddress((const GLubyte *)extensionName);
+         * functionPtr = (void*)glGetProcAddress((const GLubyte*)extensionName);
 #endif
-			return (*functionPtr != NULL);
-		}
+         return (*functionPtr != NULL);
+      }
 #define LE(x) mExtensionsPresent &= loadExtension(#x, (void**)&x);
 
-		bool InitExtension()
-		{
-			if (mInitExtensionsDone)
-				return true;
+      bool InitExtension()
+      {
+         if (mInitExtensionsDone)
+            return true;
 
-			mExtensionsPresent = true;
+         mExtensionsPresent = true;
 
-			LE(glUniform1i); //GLint location, GLint v0);
-			LE(glUniformMatrix3fv) // GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+         LE(glUniform1i); //GLint location, GLint v0);
+         LE(glUniformMatrix3fv) // GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 #ifdef _MSC_VER
-				LE(glActiveTexture); //GLenum texture);
+            LE(glActiveTexture); //GLenum texture);
 #endif
-			LE(glBindFramebuffer); //GLenum target, TextureID framebuffer);
-			LE(glDeleteFramebuffers); //GLsizei n, const TextureID* framebuffers);
-			LE(glDeleteRenderbuffers); //GLsizei n, const TextureID* renderbuffers);
-			LE(glFramebufferTexture2D); //GLenum target, GLenum attachment, GLenum textarget, TextureID texture, GLint level);
-			LE(glFramebufferRenderbuffer); //GLenum target, GLenum attachment, GLenum renderbuffertarget, TextureID renderbuffer);
-			LE(glRenderbufferStorage); //GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-			LE(glGenFramebuffers); //GLsizei n, TextureID* framebuffers);
-			LE(glGenRenderbuffers); //GLsizei n, TextureID* renderbuffers);
-			LE(glBindRenderbuffer); //GLenum target, TextureID renderbuffer);
-			LE(glCheckFramebufferStatus); //GLenum target);
-			LE(glGenerateMipmap); //GLenum target);
-			LE(glBufferData); //GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
-			LE(glUseProgram); //TextureID program);
-			LE(glGetUniformLocation); //TextureID program, const GLchar* name);
-			LE(glGetAttribLocation); //TextureID program, const GLchar* name);
-			LE(glDeleteBuffers); //GLsizei n, const TextureID* buffers);
-			LE(glDeleteVertexArrays); //GLsizei n, const TextureID* arrays);
-			LE(glEnableVertexAttribArray); //TextureID);
-			LE(glVertexAttribPointer); //TextureID index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
-			LE(glGenBuffers); //GLsizei n, TextureID* buffers);
-			LE(glBindBuffer); //GLenum target, TextureID buffer);
-			LE(glCreateShader); //GLenum type);
-			LE(glShaderSource); //TextureID shader, GLsizei count, const GLchar** strings, const GLint* lengths);
-			LE(glCompileShader); //TextureID shader);
-			LE(glCreateProgram); //void);
-			LE(glAttachShader); //TextureID program, TextureID shader);
-			LE(glDeleteProgram); //TextureID program);
-			LE(glDeleteShader); //TextureID shader);
-			LE(glDisableVertexAttribArray); //TextureID);
-			LE(glBindAttribLocation); //TextureID program, TextureID index, const GLchar* name);
-			LE(glVertexAttribDivisor); //TextureID index, TextureID divisor);
-			LE(glUniformMatrix4fv); //GLint location, GLsizei count, GLboolean transpose, const float* value);
-			LE(glGetShaderiv); //TextureID shader, GLenum pname, GLint* param);
-			LE(glLinkProgram); //TextureID program);
-			LE(glGetProgramiv); //TextureID program, GLenum pname, GLint* param);
-			LE(glBindVertexArray); //TextureID array);
-			LE(glUniform2fv);
-			LE(glUniform3f); //GLint location, float v0, float v1, float v2);
-			LE(glUniform3fv); //GLint location, GLsizei count, const float* value);
-			LE(glUniform4fv); //GLint location, GLsizei count, const float* value);
-			LE(glBufferSubData); //GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
-			LE(glGenVertexArrays); //GLsizei n, const TextureID* arrays);
-			LE(glGetShaderInfoLog); //TextureID shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
-			LE(glGetProgramInfoLog); //TextureID program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
-			LE(glGetUniformBlockIndex); //TextureID program, const GLchar* uniformBlockName);
-			LE(glUniformBlockBinding); //TextureID program, TextureID uniformBlockIndex, TextureID uniformBlockBinding);
-			LE(glBindBufferBase); //GLenum target, TextureID index, TextureID buffer);
-			LE(glTransformFeedbackVaryings); //TextureID, GLsizei, const GLchar **, GLenum);
-			LE(glMapBuffer); //GLenum target, GLenum access);
-			LE(glUnmapBuffer); //GLenum target);
-			LE(glDrawElementsInstanced); //GLenum, GLsizei, GLenum, const GLvoid*, GLsizei);
-			LE(glDrawArraysInstanced); //GLenum, GLint, GLsizei, GLsizei);
-			LE(glDrawElementsInstancedBaseVertex); //GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount, GLint basevertex);
-			LE(glBeginTransformFeedback); //GLenum);
-			LE(glEndTransformFeedback); //void);
-			LE(glUniform1f); //GLint location, float v0);
-			LE(glUniform2f); //GLint location, float v0, float v1);
-			LE(glBlendEquationSeparate); //GLenum, GLenum);
-			LE(glBlendFuncSeparate); //GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
-			LE(glGetBufferSubData); //GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
-			LE(glGetShaderSource);
-			LE(glIsProgram);
-			LE(glGetAttachedShaders);
-			LE(glDrawBuffers);
-			LE(glBlitFramebuffer);
-			LE(glBlendEquation);
-			LE(glBindSampler);
-			LE(glDetachShader);
+         LE(glBindFramebuffer); //GLenum target, TextureID framebuffer);
+         LE(glDeleteFramebuffers); //GLsizei n, const TextureID* framebuffers);
+         LE(glDeleteRenderbuffers); //GLsizei n, const TextureID* renderbuffers);
+         LE(glFramebufferTexture2D); //GLenum target, GLenum attachment, GLenum textarget, TextureID texture, GLint level);
+         LE(glFramebufferRenderbuffer); //GLenum target, GLenum attachment, GLenum renderbuffertarget, TextureID renderbuffer);
+         LE(glRenderbufferStorage); //GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+         LE(glGenFramebuffers); //GLsizei n, TextureID* framebuffers);
+         LE(glGenRenderbuffers); //GLsizei n, TextureID* renderbuffers);
+         LE(glBindRenderbuffer); //GLenum target, TextureID renderbuffer);
+         LE(glCheckFramebufferStatus); //GLenum target);
+         LE(glGenerateMipmap); //GLenum target);
+         LE(glBufferData); //GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+         LE(glUseProgram); //TextureID program);
+         LE(glGetUniformLocation); //TextureID program, const GLchar* name);
+         LE(glGetAttribLocation); //TextureID program, const GLchar* name);
+         LE(glDeleteBuffers); //GLsizei n, const TextureID* buffers);
+         LE(glDeleteVertexArrays); //GLsizei n, const TextureID* arrays);
+         LE(glEnableVertexAttribArray); //TextureID);
+         LE(glVertexAttribPointer); //TextureID index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
+         LE(glGenBuffers); //GLsizei n, TextureID* buffers);
+         LE(glBindBuffer); //GLenum target, TextureID buffer);
+         LE(glCreateShader); //GLenum type);
+         LE(glShaderSource); //TextureID shader, GLsizei count, const GLchar** strings, const GLint* lengths);
+         LE(glCompileShader); //TextureID shader);
+         LE(glCreateProgram); //void);
+         LE(glAttachShader); //TextureID program, TextureID shader);
+         LE(glDeleteProgram); //TextureID program);
+         LE(glDeleteShader); //TextureID shader);
+         LE(glDisableVertexAttribArray); //TextureID);
+         LE(glBindAttribLocation); //TextureID program, TextureID index, const GLchar* name);
+         LE(glVertexAttribDivisor); //TextureID index, TextureID divisor);
+         LE(glUniformMatrix4fv); //GLint location, GLsizei count, GLboolean transpose, const float* value);
+         LE(glGetShaderiv); //TextureID shader, GLenum pname, GLint* param);
+         LE(glLinkProgram); //TextureID program);
+         LE(glGetProgramiv); //TextureID program, GLenum pname, GLint* param);
+         LE(glBindVertexArray); //TextureID array);
+         LE(glUniform2fv);
+         LE(glUniform3f); //GLint location, float v0, float v1, float v2);
+         LE(glUniform3fv); //GLint location, GLsizei count, const float* value);
+         LE(glUniform4fv); //GLint location, GLsizei count, const float* value);
+         LE(glBufferSubData); //GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid* data);
+         LE(glGenVertexArrays); //GLsizei n, const TextureID* arrays);
+         LE(glGetShaderInfoLog); //TextureID shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+         LE(glGetProgramInfoLog); //TextureID program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+         LE(glGetUniformBlockIndex); //TextureID program, const GLchar* uniformBlockName);
+         LE(glUniformBlockBinding); //TextureID program, TextureID uniformBlockIndex, TextureID uniformBlockBinding);
+         LE(glBindBufferBase); //GLenum target, TextureID index, TextureID buffer);
+         LE(glTransformFeedbackVaryings); //TextureID, GLsizei, const GLchar **, GLenum);
+         LE(glMapBuffer); //GLenum target, GLenum access);
+         LE(glUnmapBuffer); //GLenum target);
+         LE(glDrawElementsInstanced); //GLenum, GLsizei, GLenum, const GLvoid*, GLsizei);
+         LE(glDrawArraysInstanced); //GLenum, GLint, GLsizei, GLsizei);
+         LE(glDrawElementsInstancedBaseVertex); //GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount, GLint basevertex);
+         LE(glBeginTransformFeedback); //GLenum);
+         LE(glEndTransformFeedback); //void);
+         LE(glUniform1f); //GLint location, float v0);
+         LE(glUniform2f); //GLint location, float v0, float v1);
+         LE(glBlendEquationSeparate); //GLenum, GLenum);
+         LE(glBlendFuncSeparate); //GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
+         LE(glGetBufferSubData); //GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
+         LE(glGetShaderSource);
+         LE(glIsProgram);
+         LE(glGetAttachedShaders);
+         LE(glDrawBuffers);
+         LE(glBlitFramebuffer);
+         LE(glBlendEquation);
+         LE(glBindSampler);
+         LE(glDetachShader);
 
-			return mExtensionsPresent;
-		}
+         return mExtensionsPresent;
+      }
 
 #ifdef IMGUI_API
-		// Data
-		static double       g_Time;
-		static bool         g_MousePressed[3];
-		static float        g_MouseWheel;
-		static GLuint       g_FontTexture;
-		static int          g_ShaderHandle, g_VertHandle, g_FragHandle;
-		static int          g_AttribLocationTex, g_AttribLocationProjMtx;
-		static int          g_AttribLocationPosition, g_AttribLocationUV, g_AttribLocationColor;
-		static unsigned int g_VboHandle, g_VaoHandle, g_ElementsHandle;
+      // Data
+      static double       g_Time;
+      static bool         g_MousePressed[3];
+      static float        g_MouseWheel;
+      static GLuint       g_FontTexture;
+      static int          g_ShaderHandle, g_VertHandle, g_FragHandle;
+      static int          g_AttribLocationTex, g_AttribLocationProjMtx;
+      static int          g_AttribLocationPosition, g_AttribLocationUV, g_AttribLocationColor;
+      static unsigned int g_VboHandle, g_VaoHandle, g_ElementsHandle;
 
-		static bool IsAnyMouseButtonDown()
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			for (int n = 0; n < ARRAYSIZE(io.MouseDown); n++)
-				if (io.MouseDown[n])
-					return true;
-			return false;
-		}
+      static bool IsAnyMouseButtonDown()
+      {
+         ImGuiIO& io = ImGui::GetIO();
+         for (int n = 0; n < ARRAYSIZE(io.MouseDown); n++)
+            if (io.MouseDown[n])
+               return true;
+         return false;
+      }
 
-		// We use the Win32 capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinations when dragging mouse outside of our window bounds.
-		static IMGUI_API LRESULT ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			switch (msg)
-			{
-			case WM_LBUTTONDOWN:
-			case WM_RBUTTONDOWN:
-			case WM_MBUTTONDOWN:
-			{
-				int button = 0;
-				if (msg == WM_LBUTTONDOWN) button = 0;
-				if (msg == WM_RBUTTONDOWN) button = 1;
-				if (msg == WM_MBUTTONDOWN) button = 2;
-				if (!IsAnyMouseButtonDown() && GetCapture() == NULL)
-					SetCapture(hwnd);
-				io.MouseDown[button] = true;
-				return 0;
-			}
-			case WM_LBUTTONUP:
-			case WM_RBUTTONUP:
-			case WM_MBUTTONUP:
-			{
-				int button = 0;
-				if (msg == WM_LBUTTONUP) button = 0;
-				if (msg == WM_RBUTTONUP) button = 1;
-				if (msg == WM_MBUTTONUP) button = 2;
-				io.MouseDown[button] = false;
-				if (!IsAnyMouseButtonDown() && GetCapture() == hwnd)
-					ReleaseCapture();
-				return 0;
-			}
-			case WM_MOUSEWHEEL:
-				io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
-				return 0;
-			case WM_MOUSEMOVE:
-				io.MousePos.x = (signed short)(lParam);
-				io.MousePos.y = (signed short)(lParam >> 16);
-				return 0;
-			case WM_KEYDOWN:
-			case WM_SYSKEYDOWN:
-				if (wParam < 256)
-					io.KeysDown[wParam] = 1;
-				return 0;
-			case WM_KEYUP:
-			case WM_SYSKEYUP:
-				if (wParam < 256)
-					io.KeysDown[wParam] = 0;
-				return 0;
-			case WM_CHAR:
-				// You can also use ToAscii()+GetKeyboardState() to retrieve characters.
-				if (wParam > 0 && wParam < 0x10000)
-					io.AddInputCharacter((unsigned short)wParam);
-				return 0;
-			}
-			return 0;
-		}
-		// This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
-		// Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so. 
-		// If text or lines are blurry when integrating ImGui in your engine: in your Render function, try translating your projection matrix by (0.5f,0.5f) or (0.375f,0.375f)
-		static void ImGui_RenderDrawLists(ImDrawData* draw_data)
-		{
-			// Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
-			ImGuiIO& io = ImGui::GetIO();
-			int fb_width = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
-			int fb_height = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
-			if (fb_width == 0 || fb_height == 0)
-				return;
-			draw_data->ScaleClipRects(io.DisplayFramebufferScale);
+      // We use the Win32 capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinations when dragging mouse outside of our window bounds.
+      static IMGUI_API LRESULT ImGui_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+      {
+         ImGuiIO& io = ImGui::GetIO();
+         switch (msg)
+         {
+         case WM_LBUTTONDOWN:
+         case WM_RBUTTONDOWN:
+         case WM_MBUTTONDOWN:
+         {
+            int button = 0;
+            if (msg == WM_LBUTTONDOWN) button = 0;
+            if (msg == WM_RBUTTONDOWN) button = 1;
+            if (msg == WM_MBUTTONDOWN) button = 2;
+            if (!IsAnyMouseButtonDown() && GetCapture() == NULL)
+               SetCapture(hwnd);
+            io.MouseDown[button] = true;
+            return 0;
+         }
+         case WM_LBUTTONUP:
+         case WM_RBUTTONUP:
+         case WM_MBUTTONUP:
+         {
+            int button = 0;
+            if (msg == WM_LBUTTONUP) button = 0;
+            if (msg == WM_RBUTTONUP) button = 1;
+            if (msg == WM_MBUTTONUP) button = 2;
+            io.MouseDown[button] = false;
+            if (!IsAnyMouseButtonDown() && GetCapture() == hwnd)
+               ReleaseCapture();
+            return 0;
+         }
+         case WM_MOUSEWHEEL:
+            io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
+            return 0;
+         case WM_MOUSEMOVE:
+            io.MousePos.x = (signed short)(lParam);
+            io.MousePos.y = (signed short)(lParam >> 16);
+            return 0;
+         case WM_KEYDOWN:
+         case WM_SYSKEYDOWN:
+            if (wParam < 256)
+               io.KeysDown[wParam] = 1;
+            return 0;
+         case WM_KEYUP:
+         case WM_SYSKEYUP:
+            if (wParam < 256)
+               io.KeysDown[wParam] = 0;
+            return 0;
+         case WM_CHAR:
+            // You can also use ToAscii()+GetKeyboardState() to retrieve characters.
+            if (wParam > 0 && wParam < 0x10000)
+               io.AddInputCharacter((unsigned short)wParam);
+            return 0;
+         }
+         return 0;
+      }
+      // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
+      // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so. 
+      // If text or lines are blurry when integrating ImGui in your engine: in your Render function, try translating your projection matrix by (0.5f,0.5f) or (0.375f,0.375f)
+      static void ImGui_RenderDrawLists(ImDrawData* draw_data)
+      {
+         // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
+         ImGuiIO& io = ImGui::GetIO();
+         int fb_width = (int)(io.DisplaySize.x * io.DisplayFramebufferScale.x);
+         int fb_height = (int)(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+         if (fb_width == 0 || fb_height == 0)
+            return;
+         draw_data->ScaleClipRects(io.DisplayFramebufferScale);
 
-			// Backup GL state
-			GLenum last_active_texture; glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
-			glActiveTexture(GL_TEXTURE0);
-			GLint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
-			GLint last_texture; glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-			GLint last_sampler; glGetIntegerv(GL_SAMPLER_BINDING, &last_sampler);
-			GLint last_array_buffer; glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
-			GLint last_element_array_buffer; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
-			GLint last_vertex_array; glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
-			GLint last_polygon_mode[2]; glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode);
-			GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
-			GLint last_scissor_box[4]; glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
-			GLenum last_blend_src_rgb; glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*)&last_blend_src_rgb);
-			GLenum last_blend_dst_rgb; glGetIntegerv(GL_BLEND_DST_RGB, (GLint*)&last_blend_dst_rgb);
-			GLenum last_blend_src_alpha; glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*)&last_blend_src_alpha);
-			GLenum last_blend_dst_alpha; glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*)&last_blend_dst_alpha);
-			GLenum last_blend_equation_rgb; glGetIntegerv(GL_BLEND_EQUATION_RGB, (GLint*)&last_blend_equation_rgb);
-			GLenum last_blend_equation_alpha; glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (GLint*)&last_blend_equation_alpha);
-			GLboolean last_enable_blend = glIsEnabled(GL_BLEND);
-			GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
-			GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
-			GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
+         // Backup GL state
+         GLenum last_active_texture; glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
+         glActiveTexture(GL_TEXTURE0);
+         GLint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+         GLint last_texture; glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+         GLint last_sampler; glGetIntegerv(GL_SAMPLER_BINDING, &last_sampler);
+         GLint last_array_buffer; glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+         GLint last_element_array_buffer; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
+         GLint last_vertex_array; glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
+         GLint last_polygon_mode[2]; glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode);
+         GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
+         GLint last_scissor_box[4]; glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
+         GLenum last_blend_src_rgb; glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*)&last_blend_src_rgb);
+         GLenum last_blend_dst_rgb; glGetIntegerv(GL_BLEND_DST_RGB, (GLint*)&last_blend_dst_rgb);
+         GLenum last_blend_src_alpha; glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*)&last_blend_src_alpha);
+         GLenum last_blend_dst_alpha; glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*)&last_blend_dst_alpha);
+         GLenum last_blend_equation_rgb; glGetIntegerv(GL_BLEND_EQUATION_RGB, (GLint*)&last_blend_equation_rgb);
+         GLenum last_blend_equation_alpha; glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (GLint*)&last_blend_equation_alpha);
+         GLboolean last_enable_blend = glIsEnabled(GL_BLEND);
+         GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
+         GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
+         GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
 
-			// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
-			glEnable(GL_BLEND);
-			glBlendEquation(GL_FUNC_ADD);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDisable(GL_CULL_FACE);
-			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_SCISSOR_TEST);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+         // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
+         glEnable(GL_BLEND);
+         glBlendEquation(GL_FUNC_ADD);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         glDisable(GL_CULL_FACE);
+         glDisable(GL_DEPTH_TEST);
+         glEnable(GL_SCISSOR_TEST);
+         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-			// Setup viewport, orthographic projection matrix
-			glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
-			const float ortho_projection[4][4] =
-			{
-				{ 2.0f / io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },
-				{ 0.0f,                  2.0f / -io.DisplaySize.y, 0.0f, 0.0f },
-				{ 0.0f,                  0.0f,                  -1.0f, 0.0f },
-				{ -1.0f,                  1.0f,                   0.0f, 1.0f },
-			};
-			glUseProgram(g_ShaderHandle);
-			glUniform1i(g_AttribLocationTex, 0);
-			glUniformMatrix4fv(g_AttribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
-			glBindVertexArray(g_VaoHandle);
-			glBindSampler(0, 0); // Rely on combined texture/sampler state.
+         // Setup viewport, orthographic projection matrix
+         glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
+         const float ortho_projection[4][4] =
+         {
+             { 2.0f / io.DisplaySize.x, 0.0f,                   0.0f, 0.0f },
+             { 0.0f,                  2.0f / -io.DisplaySize.y, 0.0f, 0.0f },
+             { 0.0f,                  0.0f,                  -1.0f, 0.0f },
+             { -1.0f,                  1.0f,                   0.0f, 1.0f },
+         };
+         glUseProgram(g_ShaderHandle);
+         glUniform1i(g_AttribLocationTex, 0);
+         glUniformMatrix4fv(g_AttribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
+         glBindVertexArray(g_VaoHandle);
+         glBindSampler(0, 0); // Rely on combined texture/sampler state.
 
-			for (int n = 0; n < draw_data->CmdListsCount; n++)
-			{
-				const ImDrawList* cmd_list = draw_data->CmdLists[n];
-				const ImDrawIdx* idx_buffer_offset = 0;
+         for (int n = 0; n < draw_data->CmdListsCount; n++)
+         {
+            const ImDrawList* cmd_list = draw_data->CmdLists[n];
+            const ImDrawIdx* idx_buffer_offset = 0;
 
-				glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-				glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), (const GLvoid*)cmd_list->VtxBuffer.Data, GL_STREAM_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+            glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), (const GLvoid*)cmd_list->VtxBuffer.Data, GL_STREAM_DRAW);
 
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), (const GLvoid*)cmd_list->IdxBuffer.Data, GL_STREAM_DRAW);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), (const GLvoid*)cmd_list->IdxBuffer.Data, GL_STREAM_DRAW);
 
-				for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
-				{
-					const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-					if (pcmd->UserCallback)
-					{
-						pcmd->UserCallback(cmd_list, pcmd);
-					}
-					else
-					{
-						glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
-						glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
-						glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
-					}
-					idx_buffer_offset += pcmd->ElemCount;
-				}
-			}
+            for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
+            {
+               const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+               if (pcmd->UserCallback)
+               {
+                  pcmd->UserCallback(cmd_list, pcmd);
+               }
+               else
+               {
+                  glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
+                  glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+                  glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
+               }
+               idx_buffer_offset += pcmd->ElemCount;
+            }
+         }
 
-			// Restore modified GL state
-			glUseProgram(last_program);
-			glBindTexture(GL_TEXTURE_2D, last_texture);
-			glBindSampler(0, last_sampler);
-			glActiveTexture(last_active_texture);
-			glBindVertexArray(last_vertex_array);
-			glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
-			glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
-			glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha, last_blend_dst_alpha);
-			if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
-			if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-			if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
-			if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
-			glPolygonMode(GL_FRONT_AND_BACK, last_polygon_mode[0]);
-			glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
-			glScissor(last_scissor_box[0], last_scissor_box[1], (GLsizei)last_scissor_box[2], (GLsizei)last_scissor_box[3]);
-		}
+         // Restore modified GL state
+         glUseProgram(last_program);
+         glBindTexture(GL_TEXTURE_2D, last_texture);
+         glBindSampler(0, last_sampler);
+         glActiveTexture(last_active_texture);
+         glBindVertexArray(last_vertex_array);
+         glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
+         glBlendEquationSeparate(last_blend_equation_rgb, last_blend_equation_alpha);
+         glBlendFuncSeparate(last_blend_src_rgb, last_blend_dst_rgb, last_blend_src_alpha, last_blend_dst_alpha);
+         if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+         if (last_enable_cull_face) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
+         if (last_enable_depth_test) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
+         if (last_enable_scissor_test) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
+         glPolygonMode(GL_FRONT_AND_BACK, last_polygon_mode[0]);
+         glViewport(last_viewport[0], last_viewport[1], (GLsizei)last_viewport[2], (GLsizei)last_viewport[3]);
+         glScissor(last_scissor_box[0], last_scissor_box[1], (GLsizei)last_scissor_box[2], (GLsizei)last_scissor_box[3]);
+      }
 #if 0
-		static const char* ImGui_GetClipboardText(void* user_data)
-		{
-			return glfwGetClipboardString((GLFWwindow*)user_data);
-		}
+      static const char* ImGui_GetClipboardText(void* user_data)
+      {
+         return glfwGetClipboardString((GLFWwindow*)user_data);
+      }
 
-		static void ImGui_SetClipboardText(void* user_data, const char* text)
-		{
-			glfwSetClipboardString((GLFWwindow*)user_data, text);
-		}
+      static void ImGui_SetClipboardText(void* user_data, const char* text)
+      {
+         glfwSetClipboardString((GLFWwindow*)user_data, text);
+      }
 
-		void ImGui_MouseButtonCallback(GLFWwindow*, int button, int action, int /*mods*/)
-		{
-			if (action == GLFW_PRESS && button >= 0 && button < 3)
-				g_MousePressed[button] = true;
-		}
+      void ImGui_MouseButtonCallback(GLFWwindow*, int button, int action, int /*mods*/)
+      {
+         if (action == GLFW_PRESS && button >= 0 && button < 3)
+            g_MousePressed[button] = true;
+      }
 
-		void ImGui_ScrollCallback(GLFWwindow*, double /*xoffset*/, double yoffset)
-		{
-			g_MouseWheel += (float)yoffset; // Use fractional mouse wheel, 1.0 unit 5 lines.
-		}
+      void ImGui_ScrollCallback(GLFWwindow*, double /*xoffset*/, double yoffset)
+      {
+         g_MouseWheel += (float)yoffset; // Use fractional mouse wheel, 1.0 unit 5 lines.
+      }
 
-		void ImGui_KeyCallback(GLFWwindow*, int key, int, int action, int mods)
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			if (action == GLFW_PRESS)
-				io.KeysDown[key] = true;
-			if (action == GLFW_RELEASE)
-				io.KeysDown[key] = false;
+      void ImGui_KeyCallback(GLFWwindow*, int key, int, int action, int mods)
+      {
+         ImGuiIO& io = ImGui::GetIO();
+         if (action == GLFW_PRESS)
+            io.KeysDown[key] = true;
+         if (action == GLFW_RELEASE)
+            io.KeysDown[key] = false;
 
-			(void)mods; // Modifiers are not reliable across systems
-			io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-			io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-			io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-			io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
-		}
+         (void)mods; // Modifiers are not reliable across systems
+         io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+         io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+         io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+         io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+      }
 
-		void ImGui_CharCallback(GLFWwindow*, unsigned int c)
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			if (c > 0 && c < 0x10000)
-				io.AddInputCharacter((unsigned short)c);
-		}
+      void ImGui_CharCallback(GLFWwindow*, unsigned int c)
+      {
+         ImGuiIO& io = ImGui::GetIO();
+         if (c > 0 && c < 0x10000)
+            io.AddInputCharacter((unsigned short)c);
+      }
 #endif
-		bool ImGui_CreateFontsTexture()
-		{
-			// Build texture atlas
-			ImGuiIO& io = ImGui::GetIO();
-			unsigned char* pixels;
-			int width, height;
-			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
+      bool ImGui_CreateFontsTexture()
+      {
+         // Build texture atlas
+         ImGuiIO& io = ImGui::GetIO();
+         unsigned char* pixels;
+         int width, height;
+         io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
-																	  // Upload texture to graphics system
-			GLint last_texture;
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-			glGenTextures(1, &g_FontTexture);
-			glBindTexture(GL_TEXTURE_2D, g_FontTexture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+                                                                   // Upload texture to graphics system
+         GLint last_texture;
+         glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+         glGenTextures(1, &g_FontTexture);
+         glBindTexture(GL_TEXTURE_2D, g_FontTexture);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-			// Store our identifier
-			io.Fonts->TexID = (void *)(intptr_t)g_FontTexture;
+         // Store our identifier
+         io.Fonts->TexID = (void*)(intptr_t)g_FontTexture;
 
-			// Restore state
-			glBindTexture(GL_TEXTURE_2D, last_texture);
+         // Restore state
+         glBindTexture(GL_TEXTURE_2D, last_texture);
 
-			return true;
-		}
+         return true;
+      }
 
-		bool ImGui_CreateDeviceObjects()
-		{
-			// Backup GL state
-			GLint last_texture, last_array_buffer, last_vertex_array;
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-			glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
-			glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
+      bool ImGui_CreateDeviceObjects()
+      {
+         // Backup GL state
+         GLint last_texture, last_array_buffer, last_vertex_array;
+         glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+         glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
+         glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
 
-			const GLchar *vertex_shader =
-				"#version 330\n"
-				"uniform mat4 ProjMtx;\n"
-				"in vec2 Position;\n"
-				"in vec2 UV;\n"
-				"in vec4 Color;\n"
-				"out vec2 Frag_UV;\n"
-				"out vec4 Frag_Color;\n"
-				"void main()\n"
-				"{\n"
-				"	Frag_UV = UV;\n"
-				"	Frag_Color = Color;\n"
-				"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-				"}\n";
+         const GLchar* vertex_shader =
+            "#version 330\n"
+            "uniform mat4 ProjMtx;\n"
+            "in vec2 Position;\n"
+            "in vec2 UV;\n"
+            "in vec4 Color;\n"
+            "out vec2 Frag_UV;\n"
+            "out vec4 Frag_Color;\n"
+            "void main()\n"
+            "{\n"
+            "    Frag_UV = UV;\n"
+            "    Frag_Color = Color;\n"
+            "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+            "}\n";
 
-			const GLchar* fragment_shader =
-				"#version 330\n"
-				"uniform sampler2D Texture;\n"
-				"in vec2 Frag_UV;\n"
-				"in vec4 Frag_Color;\n"
-				"out vec4 Out_Color;\n"
-				"void main()\n"
-				"{\n"
-				"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
-				"}\n";
+         const GLchar* fragment_shader =
+            "#version 330\n"
+            "uniform sampler2D Texture;\n"
+            "in vec2 Frag_UV;\n"
+            "in vec4 Frag_Color;\n"
+            "out vec4 Out_Color;\n"
+            "void main()\n"
+            "{\n"
+            "    Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
+            "}\n";
 
-			g_ShaderHandle = glCreateProgram();
-			g_VertHandle = glCreateShader(GL_VERTEX_SHADER);
-			g_FragHandle = glCreateShader(GL_FRAGMENT_SHADER);
-			glShaderSource(g_VertHandle, 1, &vertex_shader, 0);
-			glShaderSource(g_FragHandle, 1, &fragment_shader, 0);
-			glCompileShader(g_VertHandle);
-			glCompileShader(g_FragHandle);
-			glAttachShader(g_ShaderHandle, g_VertHandle);
-			glAttachShader(g_ShaderHandle, g_FragHandle);
-			glLinkProgram(g_ShaderHandle);
+         g_ShaderHandle = glCreateProgram();
+         g_VertHandle = glCreateShader(GL_VERTEX_SHADER);
+         g_FragHandle = glCreateShader(GL_FRAGMENT_SHADER);
+         glShaderSource(g_VertHandle, 1, &vertex_shader, 0);
+         glShaderSource(g_FragHandle, 1, &fragment_shader, 0);
+         glCompileShader(g_VertHandle);
+         glCompileShader(g_FragHandle);
+         glAttachShader(g_ShaderHandle, g_VertHandle);
+         glAttachShader(g_ShaderHandle, g_FragHandle);
+         glLinkProgram(g_ShaderHandle);
 
-			g_AttribLocationTex = glGetUniformLocation(g_ShaderHandle, "Texture");
-			g_AttribLocationProjMtx = glGetUniformLocation(g_ShaderHandle, "ProjMtx");
-			g_AttribLocationPosition = glGetAttribLocation(g_ShaderHandle, "Position");
-			g_AttribLocationUV = glGetAttribLocation(g_ShaderHandle, "UV");
-			g_AttribLocationColor = glGetAttribLocation(g_ShaderHandle, "Color");
+         g_AttribLocationTex = glGetUniformLocation(g_ShaderHandle, "Texture");
+         g_AttribLocationProjMtx = glGetUniformLocation(g_ShaderHandle, "ProjMtx");
+         g_AttribLocationPosition = glGetAttribLocation(g_ShaderHandle, "Position");
+         g_AttribLocationUV = glGetAttribLocation(g_ShaderHandle, "UV");
+         g_AttribLocationColor = glGetAttribLocation(g_ShaderHandle, "Color");
 
-			glGenBuffers(1, &g_VboHandle);
-			glGenBuffers(1, &g_ElementsHandle);
+         glGenBuffers(1, &g_VboHandle);
+         glGenBuffers(1, &g_ElementsHandle);
 
-			glGenVertexArrays(1, &g_VaoHandle);
-			glBindVertexArray(g_VaoHandle);
-			glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-			glEnableVertexAttribArray(g_AttribLocationPosition);
-			glEnableVertexAttribArray(g_AttribLocationUV);
-			glEnableVertexAttribArray(g_AttribLocationColor);
+         glGenVertexArrays(1, &g_VaoHandle);
+         glBindVertexArray(g_VaoHandle);
+         glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+         glEnableVertexAttribArray(g_AttribLocationPosition);
+         glEnableVertexAttribArray(g_AttribLocationUV);
+         glEnableVertexAttribArray(g_AttribLocationColor);
 #ifndef OFFSETOF
 #define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
 #endif
-			glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
-			glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
-			glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
+         glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, pos));
+         glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, uv));
+         glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)OFFSETOF(ImDrawVert, col));
 #undef OFFSETOF
 
-			ImGui_CreateFontsTexture();
+         ImGui_CreateFontsTexture();
 
-			// Restore modified GL state
-			glBindTexture(GL_TEXTURE_2D, last_texture);
-			glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-			glBindVertexArray(last_vertex_array);
+         // Restore modified GL state
+         glBindTexture(GL_TEXTURE_2D, last_texture);
+         glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
+         glBindVertexArray(last_vertex_array);
 
-			return true;
-		}
+         return true;
+      }
 
-		void    ImGui_InvalidateDeviceObjects()
-		{
-			if (g_VaoHandle) glDeleteVertexArrays(1, &g_VaoHandle);
-			if (g_VboHandle) glDeleteBuffers(1, &g_VboHandle);
-			if (g_ElementsHandle) glDeleteBuffers(1, &g_ElementsHandle);
-			g_VaoHandle = g_VboHandle = g_ElementsHandle = 0;
+      void    ImGui_InvalidateDeviceObjects()
+      {
+         if (g_VaoHandle) glDeleteVertexArrays(1, &g_VaoHandle);
+         if (g_VboHandle) glDeleteBuffers(1, &g_VboHandle);
+         if (g_ElementsHandle) glDeleteBuffers(1, &g_ElementsHandle);
+         g_VaoHandle = g_VboHandle = g_ElementsHandle = 0;
 
-			if (g_ShaderHandle && g_VertHandle) glDetachShader(g_ShaderHandle, g_VertHandle);
-			if (g_VertHandle) glDeleteShader(g_VertHandle);
-			g_VertHandle = 0;
+         if (g_ShaderHandle && g_VertHandle) glDetachShader(g_ShaderHandle, g_VertHandle);
+         if (g_VertHandle) glDeleteShader(g_VertHandle);
+         g_VertHandle = 0;
 
-			if (g_ShaderHandle && g_FragHandle) glDetachShader(g_ShaderHandle, g_FragHandle);
-			if (g_FragHandle) glDeleteShader(g_FragHandle);
-			g_FragHandle = 0;
+         if (g_ShaderHandle && g_FragHandle) glDetachShader(g_ShaderHandle, g_FragHandle);
+         if (g_FragHandle) glDeleteShader(g_FragHandle);
+         g_FragHandle = 0;
 
-			if (g_ShaderHandle) glDeleteProgram(g_ShaderHandle);
-			g_ShaderHandle = 0;
+         if (g_ShaderHandle) glDeleteProgram(g_ShaderHandle);
+         g_ShaderHandle = 0;
 
-			if (g_FontTexture)
-			{
-				glDeleteTextures(1, &g_FontTexture);
-				ImGui::GetIO().Fonts->TexID = 0;
-				g_FontTexture = 0;
-			}
-		}
+         if (g_FontTexture)
+         {
+            glDeleteTextures(1, &g_FontTexture);
+            ImGui::GetIO().Fonts->TexID = 0;
+            g_FontTexture = 0;
+         }
+      }
 
-		bool    ImGui_Init()
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			io.KeyMap[ImGuiKey_Tab] = VK_TAB;                       // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will update during the application lifetime.
-			io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
-			io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
-			io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
-			io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
-			io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
-			io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
-			io.KeyMap[ImGuiKey_Home] = VK_HOME;
-			io.KeyMap[ImGuiKey_End] = VK_END;
-			io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
-			io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
-			io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
-			io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
-			io.KeyMap[ImGuiKey_A] = 'A';
-			io.KeyMap[ImGuiKey_C] = 'C';
-			io.KeyMap[ImGuiKey_V] = 'V';
-			io.KeyMap[ImGuiKey_X] = 'X';
-			io.KeyMap[ImGuiKey_Y] = 'Y';
-			io.KeyMap[ImGuiKey_Z] = 'Z';
+      bool    ImGui_Init()
+      {
+         ImGuiIO& io = ImGui::GetIO();
+         io.KeyMap[ImGuiKey_Tab] = VK_TAB;                       // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will update during the application lifetime.
+         io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
+         io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
+         io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
+         io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
+         io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
+         io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
+         io.KeyMap[ImGuiKey_Home] = VK_HOME;
+         io.KeyMap[ImGuiKey_End] = VK_END;
+         io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
+         io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
+         io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
+         io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+         io.KeyMap[ImGuiKey_A] = 'A';
+         io.KeyMap[ImGuiKey_C] = 'C';
+         io.KeyMap[ImGuiKey_V] = 'V';
+         io.KeyMap[ImGuiKey_X] = 'X';
+         io.KeyMap[ImGuiKey_Y] = 'Y';
+         io.KeyMap[ImGuiKey_Z] = 'Z';
 
-			io.ImeWindowHandle = this->wininfo.hWnd;
-			io.RenderDrawListsFn = ImGui_RenderDrawLists;       // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
-			/*
-			io.SetClipboardTextFn = ImGui_SetClipboardText;
-			io.GetClipboardTextFn = ImGui_GetClipboardText;
-			//io.ClipboardUserData = g_Window;
-			*/
-			return true;
-		}
+         io.ImeWindowHandle = this->wininfo.hWnd;
+         //io.RenderDrawListsFn = ImGui_RenderDrawLists;       // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
+         /*
+         io.SetClipboardTextFn = ImGui_SetClipboardText;
+         io.GetClipboardTextFn = ImGui_GetClipboardText;
+         //io.ClipboardUserData = g_Window;
+         */
+         return true;
+      }
 
-		void ImGui_Shutdown()
-		{
-			ImGui_InvalidateDeviceObjects();
-		}
+      void ImGui_Shutdown()
+      {
+         ImGui_InvalidateDeviceObjects();
+      }
 
-		void ImGui_NewFrame()
-		{
-			if (!g_FontTexture)
-				ImGui_CreateDeviceObjects();
+      void ImGui_NewFrame()
+      {
+         if (!g_FontTexture)
+            ImGui_CreateDeviceObjects();
 
-			ImGuiIO& io = ImGui::GetIO();
+         ImGuiIO& io = ImGui::GetIO();
 
-			// Read keyboard modifiers inputs
-			io.KeyCtrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
-			io.KeyShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-			io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
-			io.KeySuper = false;
+         // Read keyboard modifiers inputs
+         io.KeyCtrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+         io.KeyShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+         io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
+         io.KeySuper = false;
 
-			/*
-			// Setup display size (every frame to accommodate for window resizing)
-			int w, h;
-			int display_w, display_h;
-			glfwGetWindowSize(g_Window, &w, &h);
-			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
-			io.DisplaySize = ImVec2((float)w, (float)h);
-			io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
+         /*
+         // Setup display size (every frame to accommodate for window resizing)
+         int w, h;
+         int display_w, display_h;
+         glfwGetWindowSize(g_Window, &w, &h);
+         glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+         io.DisplaySize = ImVec2((float)w, (float)h);
+         io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
 
-			// Setup time step
-			double current_time = glfwGetTime();
-			io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f / 60.0f);
-			g_Time = current_time;
+         // Setup time step
+         double current_time = glfwGetTime();
+         io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f / 60.0f);
+         g_Time = current_time;
 
-			// Setup inputs
-			// (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
-			if (glfwGetWindowAttrib(g_Window, GLFW_FOCUSED))
-			{
-				if (io.WantMoveMouse)
-				{
-					glfwSetCursorPos(g_Window, (double)io.MousePos.x, (double)io.MousePos.y);   // Set mouse position if requested by io.WantMoveMouse flag (used when io.NavMovesTrue is enabled by user and using directional navigation)
-				}
-				else
-				{
-					double mouse_x, mouse_y;
-					glfwGetCursorPos(g_Window, &mouse_x, &mouse_y);
-					io.MousePos = ImVec2((float)mouse_x, (float)mouse_y);   // Get mouse position in screen coordinates (set to -1,-1 if no mouse / on another screen, etc.)
-				}
-			}
-			else
-			{
-				io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
-			}
+         // Setup inputs
+         // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
+         if (glfwGetWindowAttrib(g_Window, GLFW_FOCUSED))
+         {
+             if (io.WantMoveMouse)
+             {
+                 glfwSetCursorPos(g_Window, (double)io.MousePos.x, (double)io.MousePos.y);   // Set mouse position if requested by io.WantMoveMouse flag (used when io.NavMovesTrue is enabled by user and using directional navigation)
+             }
+             else
+             {
+                 double mouse_x, mouse_y;
+                 glfwGetCursorPos(g_Window, &mouse_x, &mouse_y);
+                 io.MousePos = ImVec2((float)mouse_x, (float)mouse_y);   // Get mouse position in screen coordinates (set to -1,-1 if no mouse / on another screen, etc.)
+             }
+         }
+         else
+         {
+             io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+         }
 
-			for (int i = 0; i < 3; i++)
-			{
-				io.MouseDown[i] = g_MousePressed[i] || glfwGetMouseButton(g_Window, i) != 0;    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-				g_MousePressed[i] = false;
-			}
+         for (int i = 0; i < 3; i++)
+         {
+             io.MouseDown[i] = g_MousePressed[i] || glfwGetMouseButton(g_Window, i) != 0;    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+             g_MousePressed[i] = false;
+         }
 
-			io.MouseWheel = g_MouseWheel;
-			g_MouseWheel = 0.0f;
+         io.MouseWheel = g_MouseWheel;
+         g_MouseWheel = 0.0f;
 
-			// Hide OS mouse cursor if ImGui is drawing it
-			glfwSetInputMode(g_Window, GLFW_CURSOR, io.MouseDrawCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
-			*/
-			// Start the frame
-			ImGui::NewFrame();
-		}
+         // Hide OS mouse cursor if ImGui is drawing it
+         glfwSetInputMode(g_Window, GLFW_CURSOR, io.MouseDrawCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
+         */
+         // Start the frame
+         ImGui::NewFrame();
+      }
 
 
 
 
 #endif // IMGUI_API
 
-	}; // IMAPP
+   }; // IMAPP
 
 #ifdef IMAPP_IMPL
-	ImApp *ImApp::mInstance = NULL;
+   ImApp* ImApp::mInstance = NULL;
 #ifdef IMGUI_API
 
-	double       ImApp::g_Time = 0.0f;
-	bool         ImApp::g_MousePressed[3] = { false, false, false };
-	float        ImApp::g_MouseWheel = 0.0f;
-	GLuint       ImApp::g_FontTexture = 0;
-	int          ImApp::g_ShaderHandle = 0, ImApp::g_VertHandle = 0, ImApp::g_FragHandle = 0;
-	int          ImApp::g_AttribLocationTex = 0, ImApp::g_AttribLocationProjMtx = 0;
-	int          ImApp::g_AttribLocationPosition = 0, ImApp::g_AttribLocationUV = 0, ImApp::g_AttribLocationColor = 0;
-	unsigned int ImApp::g_VboHandle = 0, ImApp::g_VaoHandle = 0, ImApp::g_ElementsHandle = 0;
+   double       ImApp::g_Time = 0.0f;
+   bool         ImApp::g_MousePressed[3] = { false, false, false };
+   float        ImApp::g_MouseWheel = 0.0f;
+   GLuint       ImApp::g_FontTexture = 0;
+   int          ImApp::g_ShaderHandle = 0, ImApp::g_VertHandle = 0, ImApp::g_FragHandle = 0;
+   int          ImApp::g_AttribLocationTex = 0, ImApp::g_AttribLocationProjMtx = 0;
+   int          ImApp::g_AttribLocationPosition = 0, ImApp::g_AttribLocationUV = 0, ImApp::g_AttribLocationColor = 0;
+   unsigned int ImApp::g_VboHandle = 0, ImApp::g_VaoHandle = 0, ImApp::g_ElementsHandle = 0;
 #endif
 
 #ifdef FMOD_API
-	void ERRCHECK_fn(FMOD_RESULT result, const char *file, int line)
-	{
-		if (result != FMOD_OK)
-		{
-			/*if (Common_Private_Error)
-			{
-				Common_Private_Error(result, file, line);
-			}
-			Common_Fatal("%s(%d): FMOD error %d - %s", file, line, result, FMOD_ErrorString(result));
-			*/
-			MessageBoxA(NULL, "", "FMOD Error", MB_OK);
-		}
-	}
+   void ERRCHECK_fn(FMOD_RESULT result, const char* file, int line)
+   {
+      if (result != FMOD_OK)
+      {
+         /*if (Common_Private_Error)
+         {
+             Common_Private_Error(result, file, line);
+         }
+         Common_Fatal("%s(%d): FMOD error %d - %s", file, line, result, FMOD_ErrorString(result));
+         */
+         MessageBoxA(NULL, "", "FMOD Error", MB_OK);
+      }
+   }
 
-	void ImApp::LoadBanks(int bankCount, const char **bankPaths)
-	{
-		for (int i = 0; i < bankCount; i++)
-		{
-			FMOD::Studio::Bank* bank;
-			ERRCHECK(system->loadBankFile(bankPaths[i], FMOD_STUDIO_LOAD_BANK_NONBLOCKING, &bank));
+   void ImApp::LoadBanks(int bankCount, const char** bankPaths)
+   {
+      for (int i = 0; i < bankCount; i++)
+      {
+         FMOD::Studio::Bank* bank;
+         ERRCHECK(system->loadBankFile(bankPaths[i], FMOD_STUDIO_LOAD_BANK_NONBLOCKING, &bank));
 
-			//loadBank(system, (LoadBankMethod)i, Common_MediaPath(BANK_NAMES[i]), &banks[i]));
-		}
-	}
-	void ImApp::PlayEvent(const char *eventName)
-	{
-		FMOD::Studio::ID FMODEventID = { 0 };
-		//ERRCHECK( FMODsystem->lookupID(facts[j].mName.c_str(), &FMODEventID) );
-		FMOD::Studio::EventDescription* eventDescription = NULL;
-		ERRCHECK(system->getEvent(eventName, /*FMOD_STUDIO_LOAD_BEGIN_NOW,*/ &eventDescription));
-		FMOD::Studio::EventInstance* FMODeventInstance = NULL;
-		ERRCHECK(eventDescription->createInstance(&FMODeventInstance));
-		ERRCHECK(FMODeventInstance->start());
-	}
+         //loadBank(system, (LoadBankMethod)i, Common_MediaPath(BANK_NAMES[i]), &banks[i]));
+      }
+   }
+   void ImApp::PlayEvent(const char* eventName)
+   {
+      FMOD::Studio::ID FMODEventID = { 0 };
+      //ERRCHECK( FMODsystem->lookupID(facts[j].mName.c_str(), &FMODEventID) );
+      FMOD::Studio::EventDescription* eventDescription = NULL;
+      ERRCHECK(system->getEvent(eventName, /*FMOD_STUDIO_LOAD_BEGIN_NOW,*/ &eventDescription));
+      FMOD::Studio::EventInstance* FMODeventInstance = NULL;
+      ERRCHECK(eventDescription->createInstance(&FMODeventInstance));
+      ERRCHECK(FMODeventInstance->start());
+   }
 #else
-	void ImApp::LoadBanks(int bankCount, const char **bankPaths) {}
-	void ImApp::PlayEvent(const char *eventName) {}
+   void ImApp::LoadBanks(int bankCount, const char** bankPaths) {}
+   void ImApp::PlayEvent(const char* eventName) {}
 #endif
 
 #endif

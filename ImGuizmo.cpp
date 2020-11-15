@@ -40,7 +40,7 @@ namespace ImGuizmo
    static const float ZPI = 3.14159265358979323846f;
    static const float RAD2DEG = (180.f / ZPI);
    static const float DEG2RAD = (ZPI / 180.f);
-	static float gGizmoSizeClipSpace = 0.1f;
+   static float gGizmoSizeClipSpace = 0.1f;
    const float screenRotateSize = 0.06f;
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -849,7 +849,7 @@ namespace ImGuizmo
    void SetDrawlist(ImDrawList* drawlist)
    {
       gContext.mDrawList = drawlist ? drawlist : ImGui::GetWindowDrawList();
-}
+   }
 
    void BeginFrame()
    {
@@ -890,9 +890,9 @@ namespace ImGuizmo
 
    bool IsOver(OPERATION op) {
       switch (op) {
-      case SCALE:       return GetScaleType()      != NONE || IsUsing();
-      case ROTATE:      return GetRotateType()     != NONE || IsUsing();
-      case TRANSLATE:   return GetMoveType(NULL)   != NONE || IsUsing();
+      case SCALE:       return GetScaleType() != NONE || IsUsing();
+      case ROTATE:      return GetRotateType() != NONE || IsUsing();
+      case TRANSLATE:   return GetMoveType(NULL) != NONE || IsUsing();
       }
       return false;
    }
@@ -1032,9 +1032,9 @@ namespace ImGuizmo
          float lenDirPlaneY = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirPlaneY);
          float lenDirMinusPlaneY = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), -dirPlaneY);
 
-         float mulAxis = (lenDir < lenDirMinus && fabsf(lenDir - lenDirMinus) > FLT_EPSILON) ? -1.f : 1.f;
-         float mulAxisX = (lenDirPlaneX < lenDirMinusPlaneX && fabsf(lenDirPlaneX - lenDirMinusPlaneX) > FLT_EPSILON) ? -1.f : 1.f;
-         float mulAxisY = (lenDirPlaneY < lenDirMinusPlaneY && fabsf(lenDirPlaneY - lenDirMinusPlaneY) > FLT_EPSILON) ? -1.f : 1.f;
+         float mulAxis = (lenDir < lenDirMinus&& fabsf(lenDir - lenDirMinus) > FLT_EPSILON) ? -1.f : 1.f;
+         float mulAxisX = (lenDirPlaneX < lenDirMinusPlaneX&& fabsf(lenDirPlaneX - lenDirMinusPlaneX) > FLT_EPSILON) ? -1.f : 1.f;
+         float mulAxisY = (lenDirPlaneY < lenDirMinusPlaneY&& fabsf(lenDirPlaneY - lenDirMinusPlaneY) > FLT_EPSILON) ? -1.f : 1.f;
          dirAxis *= mulAxis;
          dirPlaneX *= mulAxisX;
          dirPlaneY *= mulAxisY;
@@ -1461,10 +1461,10 @@ namespace ImGuizmo
 
             switch (operation)
             {
-               case TRANSLATE: type = GetMoveType(&gizmoHitProportion); break;
-               case ROTATE: type = GetRotateType(); break;
-               case SCALE: type = GetScaleType(); break;
-               case BOUNDS: break;
+            case TRANSLATE: type = GetMoveType(&gizmoHitProportion); break;
+            case ROTATE: type = GetRotateType(); break;
+            case SCALE: type = GetScaleType(); break;
+            case BOUNDS: break;
             }
             if (type != NONE)
             {
@@ -1778,9 +1778,9 @@ namespace ImGuizmo
 
          }
 
-         if(delta != gContext.mTranslationLastDelta)
+         if (delta != gContext.mTranslationLastDelta)
          {
-             modified = true;
+            modified = true;
          }
          gContext.mTranslationLastDelta = delta;
 
@@ -1909,9 +1909,9 @@ namespace ImGuizmo
          for (int i = 0; i < 3; i++)
             gContext.mScale[i] = max(gContext.mScale[i], 0.001f);
 
-         if(gContext.mScaleLast != gContext.mScale)
+         if (gContext.mScaleLast != gContext.mScale)
          {
-             modified = true;
+            modified = true;
          }
          gContext.mScaleLast = gContext.mScale;
 
@@ -1996,9 +1996,9 @@ namespace ImGuizmo
 
          matrix_t deltaRotation;
          deltaRotation.RotationAxis(rotationAxisLocalSpace, gContext.mRotationAngle - gContext.mRotationAngleOrigin);
-         if(gContext.mRotationAngle != gContext.mRotationAngleOrigin)
+         if (gContext.mRotationAngle != gContext.mRotationAngleOrigin)
          {
-             modified = true;
+            modified = true;
          }
          gContext.mRotationAngleOrigin = gContext.mRotationAngle;
 
@@ -2157,7 +2157,7 @@ namespace ImGuizmo
 
    void SetGizmoSizeClipSpace(float value)
    {
-       gGizmoSizeClipSpace = value;
+      gGizmoSizeClipSpace = value;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2203,7 +2203,7 @@ namespace ImGuizmo
    {
       matrix_t viewInverse;
       viewInverse.Inverse(*(matrix_t*)view);
-      
+
       struct CubeFace
       {
          float z;
@@ -2289,19 +2289,19 @@ namespace ImGuizmo
                cubeFace.faceCoordsScreen[iCoord] = worldToPos(faceCoords[iCoord] * 0.5f * invert, res);
             }
             cubeFace.color = directionColor[normalIndex] | 0x808080;
-            
+
             cubeFace.z = centerPositionVP.z / centerPositionVP.w;
             cubeFaceCount++;
          }
       }
-      qsort(faces, cubeFaceCount, sizeof(CubeFace), [](void const* _a, void const* _b){
-            CubeFace* a = (CubeFace*)_a;
-            CubeFace* b = (CubeFace*)_b;
-            if (a->z < b->z)
-            {
-               return 1;
-            }
-            return -1;
+      qsort(faces, cubeFaceCount, sizeof(CubeFace), [](void const* _a, void const* _b) {
+         CubeFace* a = (CubeFace*)_a;
+         CubeFace* b = (CubeFace*)_b;
+         if (a->z < b->z)
+         {
+            return 1;
+         }
+         return -1;
          });
       // draw face with lighter color
       for (int iFace = 0; iFace < cubeFaceCount; iFace++)
@@ -2317,7 +2317,7 @@ namespace ImGuizmo
       vec_t frustum[6];
       ComputeFrustumPlanes(frustum, viewProjection.m16);
       matrix_t res = *(matrix_t*)matrix * viewProjection;
-         
+
       for (float f = -gridSize; f <= gridSize; f += 1.f)
       {
          for (int dir = 0; dir < 2; dir++)
@@ -2478,7 +2478,7 @@ namespace ImGuizmo
                }
 
                const ImVec2 panelCorners[2] = { panelPosition[iPanel], panelPosition[iPanel] + panelSize[iPanel] };
-               bool insidePanel = localx > panelCorners[0].x&& localx < panelCorners[1].x && localy > panelCorners[0].y&& localy < panelCorners[1].y;
+               bool insidePanel = localx > panelCorners[0].x && localx < panelCorners[1].x&& localy > panelCorners[0].y && localy < panelCorners[1].y;
                int boxCoordInt = int(boxCoord.x * 9.f + boxCoord.y * 3.f + boxCoord.z);
                assert(boxCoordInt < 27);
                boxes[boxCoordInt] |= insidePanel && (!isDraging);
