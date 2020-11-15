@@ -150,6 +150,7 @@
     <ClInclude Include="..\ImGradient.h" />
     <ClInclude Include="..\ImGuizmo.h" />
     <ClInclude Include="..\ImSequencer.h" />
+    <ClInclude Include="..\ImZoomSlider.h" />
     <ClInclude Include="ImApp.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />

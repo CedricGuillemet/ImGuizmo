@@ -4,6 +4,7 @@
 
 #include "ImGuizmo.h"
 #include "ImSequencer.h"
+#include "ImZoomSlider.h"
 
 #include <math.h>
 #include <vector>
@@ -475,6 +476,32 @@ int main(int, char**)
 
    float cameraProjection[16];
 
+   // build a procedural texture. Copy/pasted and adapted from https://rosettacode.org/wiki/Plasma_effect#Graphics_version
+   unsigned int procTexture;
+   glGenTextures(1, &procTexture);
+   glBindTexture(GL_TEXTURE_2D, procTexture);
+   uint32_t* tempBitmap = new uint32_t[256 * 256];
+   int index = 0;
+   for (int y = 0; y < 256; y++)
+   {
+      for (int x = 0; x < 256; x++)
+      {
+         float dx = x + .5f;
+         float dy = y + .5f;
+         float dv = sinf(x * 0.02f) + sinf(0.03f * (x + y)) + sinf(sqrtf(0.4f * (dx * dx + dy * dy) + 1.f));
+
+         tempBitmap[index] = 0xFF000000 +
+         (int(255 * fabsf(sinf(dv * 3.141592f))) << 16) +
+         (int(255 * fabsf(sinf(dv * 3.141592f + 2 * 3.141592f / 3))) << 8) + 
+         (int(255 * fabs(sin(dv * 3.141592f + 4.f * 3.141592f / 3.f))));
+
+         index++;
+      }
+   }
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tempBitmap);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   delete [] tempBitmap;
+
    // sequence with default values
    MySequence mySequence;
    mySequence.mFrameMin = -100;
@@ -566,40 +593,51 @@ int main(int, char**)
       ImGui::SetNextWindowPos(ImVec2(10, 350));
 
       ImGui::SetNextWindowSize(ImVec2(940, 480));
-      ImGui::Begin("DoubleScroller");
-
-      ImGui::End();
-
-
-      /*
-      // let's create the sequencer
-      static int selectedEntry = -1;
-      static int firstFrame = 0;
-      static bool expanded = true;
-      static int currentFrame = 100;
-      ImGui::SetNextWindowPos(ImVec2(10, 350));
-
-      ImGui::SetNextWindowSize(ImVec2(940, 480));
-      ImGui::Begin("Sequencer");
-
-      ImGui::PushItemWidth(130);
-      ImGui::InputInt("Frame Min", &mySequence.mFrameMin);
-      ImGui::SameLine();
-      ImGui::InputInt("Frame ", &currentFrame);
-      ImGui::SameLine();
-      ImGui::InputInt("Frame Max", &mySequence.mFrameMax);
-      ImGui::PopItemWidth();
-      Sequencer(&mySequence, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
-      // add a UI to edit that particular item
-      if (selectedEntry != -1)
+      ImGui::Begin("Other controls");
+      if (ImGui::CollapsingHeader("Zoom Slider"))
       {
-        const MySequence::MySequenceItem &item = mySequence.myItems[selectedEntry];
-        ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
-        // switch (type) ....
+         static float uMin = 0.4f, uMax = 0.6f;
+         static float vMin = 0.4f, vMax = 0.6f;
+         ImGui::Image((ImTextureID)(uint64_t)procTexture, ImVec2(900,300), ImVec2(uMin, vMin), ImVec2(uMax, vMax));
+         {
+            ImGui::SameLine();
+            ImGui::PushID(18);
+            ImZoomSlider::ImZoomSlider(0.f, 1.f, vMin, vMax, 0.01f, ImZoomSlider::ImGuiZoomSliderFlags_Vertical);
+            ImGui::PopID();
+         }
+      
+         {
+            ImGui::PushID(19);
+            ImZoomSlider::ImZoomSlider(0.f, 1.f, uMin, uMax);
+            ImGui::PopID();
+         }
       }
+      if (ImGui::CollapsingHeader("Sequencer"))
+      {
+         // let's create the sequencer
+         static int selectedEntry = -1;
+         static int firstFrame = 0;
+         static bool expanded = true;
+         static int currentFrame = 100;
 
+         ImGui::PushItemWidth(130);
+         ImGui::InputInt("Frame Min", &mySequence.mFrameMin);
+         ImGui::SameLine();
+         ImGui::InputInt("Frame ", &currentFrame);
+         ImGui::SameLine();
+         ImGui::InputInt("Frame Max", &mySequence.mFrameMax);
+         ImGui::PopItemWidth();
+         Sequencer(&mySequence, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
+         // add a UI to edit that particular item
+         if (selectedEntry != -1)
+         {
+           const MySequence::MySequenceItem &item = mySequence.myItems[selectedEntry];
+           ImGui::Text("I am a %s, please edit me", SequencerItemTypeNames[item.mType]);
+           // switch (type) ....
+         }
+      }
       ImGui::End();
-      */
+      
       ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(io.DisplaySize.x - 128, 0), ImVec2(128, 128), 0x10101010);
 
       // render everything

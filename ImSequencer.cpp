@@ -58,7 +58,6 @@ namespace ImSequencer
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
       ImVec2 canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList API uses screen coordinates!
       ImVec2 canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
-      static const int scrollBarHeight = 14;
       int firstFrameUsed = firstFrame ? *firstFrame : 0;
 
 
