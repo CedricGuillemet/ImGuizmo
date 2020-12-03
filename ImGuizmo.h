@@ -120,6 +120,12 @@ namespace ImGuizmo
    // call BeginFrame right after ImGui_XXXX_NewFrame();
    IMGUI_API void BeginFrame();
 
+   // this is necessary because when imguizmo is compiled into a dll, and imgui into another
+   // globals are not shared between them.
+   // More details at https://stackoverflow.com/questions/19373061/what-happens-to-global-and-static-variables-in-a-shared-library-when-it-is-dynam
+   // expose method to set imgui context
+   IMGUI_API void SetImGuiContext(ImGuiContext* ctx);
+
    // return true if mouse cursor is over any gizmo control (axis, plan or screen component)
    IMGUI_API bool IsOver();
 

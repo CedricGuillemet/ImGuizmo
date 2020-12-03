@@ -851,6 +851,11 @@ namespace ImGuizmo
       gContext.mDrawList = drawlist ? drawlist : ImGui::GetWindowDrawList();
    }
 
+   void SetImGuiContext(ImGuiContext* ctx) 
+   {
+      ImGui::SetCurrentContext(ctx);
+   }
+
    void BeginFrame()
    {
       ImGuiIO& io = ImGui::GetIO();
