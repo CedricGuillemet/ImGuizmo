@@ -627,6 +627,8 @@ namespace ImGuizmo
       bool mbUsing;
       bool mbEnable;
 
+      bool mReversed; // reversed projection matrix
+
       // translation
       vec_t mTranslationPlan;
       vec_t mTranslationPlanOrigin;
@@ -730,13 +732,16 @@ namespace ImGuizmo
       matrix_t mViewProjInverse;
       mViewProjInverse.Inverse(gContext.mViewMat * gContext.mProjectionMat);
 
-      float mox = ((io.MousePos.x - position.x) / size.x) * 2.f - 1.f;
-      float moy = (1.f - ((io.MousePos.y - position.y) / size.y)) * 2.f - 1.f;
+      const float mox = ((io.MousePos.x - position.x) / size.x) * 2.f - 1.f;
+      const float moy = (1.f - ((io.MousePos.y - position.y) / size.y)) * 2.f - 1.f;
 
-      rayOrigin.Transform(makeVect(mox, moy, 0.f, 1.f), mViewProjInverse);
+      const float zNear = gContext.mReversed ? (1.f - FLT_EPSILON) : 0.f;
+      const float zFar = gContext.mReversed ? 0.f : (1.f - FLT_EPSILON);
+
+      rayOrigin.Transform(makeVect(mox, moy, zNear, 1.f), mViewProjInverse);
       rayOrigin *= 1.f / rayOrigin.w;
       vec_t rayEnd;
-      rayEnd.Transform(makeVect(mox, moy, 1.f - FLT_EPSILON, 1.f), mViewProjInverse);
+      rayEnd.Transform(makeVect(mox, moy, zFar, 1.f), mViewProjInverse);
       rayEnd *= 1.f / rayEnd.w;
       rayDir = Normalized(rayEnd - rayOrigin);
    }
@@ -948,6 +953,14 @@ namespace ImGuizmo
       gContext.mCameraEye = viewInverse.v.position;
       gContext.mCameraRight = viewInverse.v.right;
       gContext.mCameraUp = viewInverse.v.up;
+
+
+      // projection reverse
+      vec_t near, far;
+      near.Transform(makeVect(0, 0, 1.f, 1.f), gContext.mProjectionMat);
+      far.Transform(makeVect(0, 0, 2.f, 1.f), gContext.mProjectionMat);
+
+      gContext.mReversed = (near.z/near.w) > (far.z / far.w);
 
       // compute scale from the size of camera right vector projected on screen at the matrix position
       vec_t pointRight = viewInverse.v.right;
@@ -1696,6 +1709,8 @@ namespace ImGuizmo
          type = MOVE_SCREEN;
       }
 
+      const vec_t screenCoord = makeVect(io.MousePos - ImVec2(gContext.mX, gContext.mY));
+
       // compute
       for (unsigned int i = 0; i < 3 && type == NONE; i++)
       {
@@ -1713,9 +1728,8 @@ namespace ImGuizmo
          const ImVec2 axisStartOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor * 0.1f, gContext.mViewProjection);
          const ImVec2 axisEndOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor, gContext.mViewProjection);
 
-         vec_t closestPointOnAxis = PointOnSegment(makeVect(posOnPlanScreen), makeVect(axisStartOnScreen), makeVect(axisEndOnScreen));
-
-         if ((closestPointOnAxis - makeVect(posOnPlanScreen)).Length() < 12.f) // pixel size
+         vec_t closestPointOnAxis = PointOnSegment(screenCoord, makeVect(axisStartOnScreen), makeVect(axisEndOnScreen));
+         if ((closestPointOnAxis - screenCoord).Length() < 12.f) // pixel size
          {
             type = MOVE_X + i;
          }
