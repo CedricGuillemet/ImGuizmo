@@ -957,8 +957,8 @@ namespace ImGuizmo
 
       // projection reverse
       vec_t near, far;
-      near.Transform(makeVect(0, 0, 1.f, 1.f), gContext.mProjectionMat);
-      far.Transform(makeVect(0, 0, 2.f, 1.f), gContext.mProjectionMat);
+      near.Transform(makeVect(0, 0, -1.f, 1.f), gContext.mProjectionMat);
+      far.Transform(makeVect(0, 0, -2.f, 1.f), gContext.mProjectionMat);
 
       gContext.mReversed = (near.z/near.w) > (far.z / far.w);
 
