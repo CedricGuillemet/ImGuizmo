@@ -18,6 +18,38 @@
 //
 static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 
+bool useWindow = true;
+int gizmoCount = 1;
+float camDistance = 8.f;
+
+float objectMatrix[4][16] = {
+  { 1.f, 0.f, 0.f, 0.f,
+    0.f, 1.f, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f },
+
+  { 1.f, 0.f, 0.f, 0.f,
+  0.f, 1.f, 0.f, 0.f,
+  0.f, 0.f, 1.f, 0.f,
+  2.f, 0.f, 0.f, 1.f },
+
+  { 1.f, 0.f, 0.f, 0.f,
+  0.f, 1.f, 0.f, 0.f,
+  0.f, 0.f, 1.f, 0.f,
+  2.f, 0.f, 2.f, 1.f },
+
+  { 1.f, 0.f, 0.f, 0.f,
+  0.f, 1.f, 0.f, 0.f,
+  0.f, 0.f, 1.f, 0.f,
+  0.f, 0.f, 2.f, 1.f }
+};
+
+static const float identityMatrix[16] =
+{ 1.f, 0.f, 0.f, 0.f,
+    0.f, 1.f, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f };
+
 void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float* m16)
 {
    float temp, temp2, temp3, temp4;
@@ -78,20 +110,14 @@ void LookAt(const float* eye, const float* at, const float* up, float* m16)
    tmp[0] = eye[0] - at[0];
    tmp[1] = eye[1] - at[1];
    tmp[2] = eye[2] - at[2];
-   //Z.normalize(eye - at);
    Normalize(tmp, Z);
    Normalize(up, Y);
-   //Y.normalize(up);
 
    Cross(Y, Z, tmp);
-   //tmp.cross(Y, Z);
    Normalize(tmp, X);
-   //X.normalize(tmp);
 
    Cross(Z, X, tmp);
-   //tmp.cross(Z, X);
    Normalize(tmp, Y);
-   //Y.normalize(tmp);
 
    m16[0] = X[0];
    m16[1] = Y[0];
@@ -131,7 +157,7 @@ void OrthoGraphic(const float l, float r, float b, const float t, float zn, cons
    m16[15] = 1.0f;
 }
 
-void EditTransform(const float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition)
+void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition)
 {
    static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
@@ -200,9 +226,39 @@ void EditTransform(const float* cameraView, float* cameraProjection, float* matr
          ImGui::PopID();
       }
    }
+
    ImGuiIO& io = ImGui::GetIO();
-   ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+   float viewManipulateRight = io.DisplaySize.x;
+   float viewManipulateTop = 0;
+   if (useWindow)
+   {
+      ImGui::SetNextWindowSize(ImVec2(800, 400));
+      ImGui::SetNextWindowPos(ImVec2(400,20));
+      ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.35f, 0.3f, 0.3f));
+      ImGui::Begin("Gizmo", 0, ImGuiWindowFlags_NoMove);
+      ImGuizmo::SetDrawlist();
+      float windowWidth = (float)ImGui::GetWindowWidth();
+      float windowHeight = (float)ImGui::GetWindowHeight();
+      ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+      viewManipulateRight = ImGui::GetWindowPos().x + windowWidth;
+      viewManipulateTop = ImGui::GetWindowPos().y;
+   }
+   else
+   {
+      ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+   }
+
+   ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
+   ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
    ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing ? bounds : NULL, boundSizingSnap ? boundsSnap : NULL);
+
+   ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
+
+   if (useWindow)
+   {
+      ImGui::End();
+      ImGui::PopStyleColor(1);
+   }
 }
 
 //
@@ -440,33 +496,6 @@ int main(int, char**)
    imApp.Init(config);
 
    int lastUsing = 0;
-   float objectMatrix[4][16] = {
-     { 1.f, 0.f, 0.f, 0.f,
-       0.f, 1.f, 0.f, 0.f,
-       0.f, 0.f, 1.f, 0.f,
-       0.f, 0.f, 0.f, 1.f },
-
-     { 1.f, 0.f, 0.f, 0.f,
-     0.f, 1.f, 0.f, 0.f,
-     0.f, 0.f, 1.f, 0.f,
-     2.f, 0.f, 0.f, 1.f },
-
-     { 1.f, 0.f, 0.f, 0.f,
-     0.f, 1.f, 0.f, 0.f,
-     0.f, 0.f, 1.f, 0.f,
-     2.f, 0.f, 2.f, 1.f },
-
-     { 1.f, 0.f, 0.f, 0.f,
-     0.f, 1.f, 0.f, 0.f,
-     0.f, 0.f, 1.f, 0.f,
-     0.f, 0.f, 2.f, 1.f }
-   };
-
-   static const float identityMatrix[16] =
-   { 1.f, 0.f, 0.f, 0.f,
-       0.f, 1.f, 0.f, 0.f,
-       0.f, 0.f, 1.f, 0.f,
-       0.f, 0.f, 0.f, 1.f };
 
    float cameraView[16] =
    { 1.f, 0.f, 0.f, 0.f,
@@ -518,8 +547,6 @@ int main(int, char**)
    float viewWidth = 10.f; // for orthographic
    float camYAngle = 165.f / 180.f * 3.14159f;
    float camXAngle = 32.f / 180.f * 3.14159f;
-   float camDistance = 8.f;
-   int gizmoCount = 1;
 
    bool firstFrame = true;
 
@@ -548,6 +575,10 @@ int main(int, char**)
       ImGui::SetNextWindowPos(ImVec2(10, 10));
       ImGui::SetNextWindowSize(ImVec2(320, 340));
       ImGui::Begin("Editor");
+      if (ImGui::RadioButton("Full view", !useWindow)) useWindow = false;
+      ImGui::SameLine();
+      if (ImGui::RadioButton("Window", useWindow)) useWindow = true;
+
       ImGui::Text("Camera");
       bool viewDirty = false;
       if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
@@ -574,8 +605,7 @@ int main(int, char**)
       }
 
       ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
-      ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
-      ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
+
       ImGui::Separator();
       for (int matId = 0; matId < gizmoCount; matId++)
       {
@@ -637,8 +667,6 @@ int main(int, char**)
          }
       }
       ImGui::End();
-      
-      ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(io.DisplaySize.x - 128, 0), ImVec2(128, 128), 0x10101010);
 
       // render everything
       glClearColor(0.45f, 0.4f, 0.4f, 1.f);
