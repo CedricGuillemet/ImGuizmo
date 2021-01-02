@@ -605,9 +605,20 @@ int main(int, char**)
       }
 
       ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
-      ImGui::Text(ImGuizmo::IsOver()?"Over gizmo":"");
-      ImGui::SameLine();
-      ImGui::Text(ImGuizmo::IsOver(mCurrentGizmoOperation) ? "Over gizmo" : "");
+      if (ImGuizmo::IsUsing())
+      {
+         ImGui::Text("Using gizmo");
+      }
+      else
+      {
+         ImGui::Text(ImGuizmo::IsOver()?"Over gizmo":"");
+         ImGui::SameLine();
+         ImGui::Text(ImGuizmo::IsOver(ImGuizmo::TRANSLATE) ? "Over translate gizmo" : "");
+         ImGui::SameLine();
+         ImGui::Text(ImGuizmo::IsOver(ImGuizmo::ROTATE) ? "Over rotate gizmo" : "");
+         ImGui::SameLine();
+         ImGui::Text(ImGuizmo::IsOver(ImGuizmo::SCALE) ? "Over scale gizmo" : "");
+      }
       ImGui::Separator();
       for (int matId = 0; matId < gizmoCount; matId++)
       {

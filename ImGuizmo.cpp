@@ -896,9 +896,9 @@ namespace ImGuizmo
 
    bool IsOver(OPERATION op) {
       switch (op) {
-      case SCALE:       return GetScaleType() != NONE || IsUsing();
-      case ROTATE:      return GetRotateType() != NONE || IsUsing();
-      case TRANSLATE:   return GetMoveType(NULL) != NONE || IsUsing();
+      case SCALE:       return gContext.mOperation == SCALE && GetScaleType() != NONE || IsUsing();
+      case ROTATE:      return gContext.mOperation == ROTATE && GetRotateType() != NONE || IsUsing();
+      case TRANSLATE:   return gContext.mOperation == TRANSLATE && GetMoveType(NULL) != NONE || IsUsing();
       case BOUNDS: break;
       }
       return false;
