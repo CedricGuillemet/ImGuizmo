@@ -21,6 +21,7 @@ static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return Im
 bool useWindow = true;
 int gizmoCount = 1;
 float camDistance = 8.f;
+static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 
 float objectMatrix[4][16] = {
   { 1.f, 0.f, 0.f, 0.f,
@@ -159,7 +160,6 @@ void OrthoGraphic(const float l, float r, float b, const float t, float zn, cons
 
 void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition)
 {
-   static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
    static bool useSnap = false;
    static float snap[3] = { 1.f, 1.f, 1.f };
@@ -605,7 +605,9 @@ int main(int, char**)
       }
 
       ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
-
+      ImGui::Text(ImGuizmo::IsOver()?"Over gizmo":"");
+      ImGui::SameLine();
+      ImGui::Text(ImGuizmo::IsOver(mCurrentGizmoOperation) ? "Over gizmo" : "");
       ImGui::Separator();
       for (int matId = 0; matId < gizmoCount; matId++)
       {
