@@ -2263,8 +2263,8 @@ namespace ImGuizmo
          if (!gContext.mbUsingBounds)
          {
             manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap) ||
-                          HandleRotation(matrix, deltaMatrix, operation, type, snap) ||
-                          HandleScale(matrix, deltaMatrix, operation, type, snap);
+                          HandleScale(matrix, deltaMatrix, operation, type, snap) ||
+                          HandleRotation(matrix, deltaMatrix, operation, type, snap);
          }
       }
 
