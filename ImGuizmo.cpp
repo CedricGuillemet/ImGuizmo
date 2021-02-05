@@ -2060,7 +2060,10 @@ namespace ImGuizmo
          }
 
          if (!io.MouseDown[0])
+         {
             gContext.mbUsing = false;
+            gContext.mScale.Set(1.f, 1.f, 1.f);
+         }
 
          type = gContext.mCurrentOperation;
       }
