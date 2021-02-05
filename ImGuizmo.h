@@ -165,11 +165,26 @@ namespace ImGuizmo
    // translation is applied in world space
    enum OPERATION
    {
-      TRANSLATE,
-      ROTATE,
-      SCALE,
-      BOUNDS,
+      TRANSLATE_X      = (1u << 0),
+      TRANSLATE_Y      = (1u << 1),
+      TRANSLATE_Z      = (1u << 2),
+      ROTATE_X         = (1u << 3),
+      ROTATE_Y         = (1u << 4),
+      ROTATE_Z         = (1u << 5),
+      ROTATE_SCREEN    = (1u << 6),
+      SCALE_X          = (1u << 7),
+      SCALE_Y          = (1u << 8),
+      SCALE_Z          = (1u << 9),
+      BOUNDS           = (1u << 10),
+      TRANSLATE = TRANSLATE_X | TRANSLATE_Y | TRANSLATE_Z,
+      ROTATE = ROTATE_X | ROTATE_Y | ROTATE_Z | ROTATE_SCREEN,
+      SCALE = SCALE_X | SCALE_Y | SCALE_Z
    };
+
+   inline OPERATION operator|(OPERATION lhs, OPERATION rhs)
+   {
+     return static_cast<OPERATION>(static_cast<int>(lhs) | static_cast<int>(rhs));
+   }
 
    enum MODE
    {
@@ -190,4 +205,9 @@ namespace ImGuizmo
    // return true if the cursor is over the operation's gizmo
    IMGUI_API bool IsOver(OPERATION op);
    IMGUI_API void SetGizmoSizeClipSpace(float value);
-};
+
+   // Allow axis to flip
+   // When true (default), the guizmo axis flip for better visibility
+   // When false, they always stay along the positive world/local axis
+   IMGUI_API void AllowAxisFlip(bool value);
+}
