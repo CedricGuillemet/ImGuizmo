@@ -190,4 +190,9 @@ namespace ImGuizmo
    // return true if the cursor is over the operation's gizmo
    IMGUI_API bool IsOver(OPERATION op);
    IMGUI_API void SetGizmoSizeClipSpace(float value);
-};
+
+   // Allow axis to flip
+   // When true (default), the guizmo axis flip for better visibility
+   // When false, they always stay along the positive world/local axis
+   IMGUI_API void AllowAxisFlip(bool value);
+}
