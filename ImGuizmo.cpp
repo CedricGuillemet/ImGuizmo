@@ -1198,7 +1198,7 @@ namespace ImGuizmo
          {
             continue;
          }
-         ImVec2 circlePos[circleMul * halfCircleSegmentCount + 1];
+         ImVec2* circlePos = (ImVec2*) alloca(sizeof(ImVec2) * (circleMul * halfCircleSegmentCount + 1));
 
          float angleStart = atan2f(cameraToModelNormalized[(4 - axis) % 3], cameraToModelNormalized[(3 - axis) % 3]) + ZPI * 0.5f;
 
