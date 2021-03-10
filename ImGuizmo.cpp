@@ -1536,7 +1536,7 @@ namespace ImGuizmo
          {
             ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
             ImVec2 worldBound2 = worldToPos(aabb[(i + 1) % 4], boundsMVP);
-            if (!IsInContextRect(worldBound1) || !IsInContextRect(worldBound2))
+            if (!IsInContextRect(worldBound1) && !IsInContextRect(worldBound2))
             {
                continue;
             }
