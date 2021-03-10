@@ -29,6 +29,8 @@
 #if !defined(_WIN32)
 #define _malloca(x) alloca(x)
 #else
+#undef far
+#undef near
 #include <malloc.h>
 #endif
 
@@ -636,7 +638,7 @@ namespace ImGuizmo
 
    struct Context
    {
-      Context() : mbUsing(false), mbEnable(true), mbUsingBounds(false)
+      Context() : mbUsing(false), mbEnable(true), mbUsingBounds(false), mbEnableViewManipulate(true)
       {
       }
 
@@ -670,6 +672,9 @@ namespace ImGuizmo
 
       bool mbUsing;
       bool mbEnable;
+
+      bool mbOverViewManipulate;
+      bool mbEnableViewManipulate;
 
       bool mReversed; // reversed projection matrix
 
@@ -2493,6 +2498,16 @@ namespace ImGuizmo
       }
    }
 
+   void EnableViewManipulate(bool enable)
+   {
+      gContext.mbEnableViewManipulate = enable;
+   }
+
+   bool IsOverViewManipulate()
+   {
+      return gContext.mbEnableViewManipulate && gContext.mbOverViewManipulate;
+   }
+
    void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
    {
       static bool isDraging = false;
@@ -2502,6 +2517,8 @@ namespace ImGuizmo
       static vec_t interpolationDir;
       static int interpolationFrames = 0;
       const vec_t referenceUp = makeVect(0.f, 1.f, 0.f);
+
+      gContext.mbOverViewManipulate = false;
 
       matrix_t svgView, svgProjection;
       svgView = gContext.mViewMat;
@@ -2604,12 +2621,14 @@ namespace ImGuizmo
                int boxCoordInt = int(boxCoord.x * 9.f + boxCoord.y * 3.f + boxCoord.z);
                assert(boxCoordInt < 27);
                boxes[boxCoordInt] |= insidePanel && (!isDraging);
+               gContext.mbOverViewManipulate |= boxes[boxCoordInt];
+               isInside |= gContext.mbOverViewManipulate;
 
                // draw face with lighter color
                if (iPass)
                {
-                  gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor[normalIndex] | 0x80808080) | (isInside ? 0x080808 : 0));
-                  if (boxes[boxCoordInt])
+                  gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor[normalIndex] | 0x80808080) | ((gContext.mbEnableViewManipulate && isInside) ? 0x080808 : 0));
+                  if (gContext.mbEnableViewManipulate && boxes[boxCoordInt])
                   {
                      gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, 0x8060A0F0);
 
@@ -2633,6 +2652,7 @@ namespace ImGuizmo
                            {
                               right.x = 0.f;
                            }
+
                            right.Normalize();
                            interpolationUp = Cross(interpolationDir, right);
                            interpolationUp.Normalize();
@@ -2641,10 +2661,12 @@ namespace ImGuizmo
                         {
                            interpolationUp = referenceUp;
                         }
+
                         interpolationFrames = 40;
                         isClicking = false;
                      }
-                     if (io.MouseDown[0] && !isDraging)
+
+                     if (io.MouseClicked[0] && !isDraging)
                      {
                         isClicking = true;
                      }
@@ -2653,6 +2675,7 @@ namespace ImGuizmo
             }
          }
       }
+
       if (interpolationFrames)
       {
          interpolationFrames--;
@@ -2667,10 +2690,22 @@ namespace ImGuizmo
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &newUp.x, view);
       }
-      isInside = ImRect(position, position + size).Contains(io.MousePos);
+
+      if ((backgroundColor & IM_COL32_A_MASK) != 0)
+      {
+         gContext.mbOverViewManipulate = isInside = ImRect(position, position + size).Contains(io.MousePos);
+         if (isInside && io.MouseClicked[0] && !isDraging)
+         {
+            isClicking = true;
+         }
+      }
+      else
+      {
+         isInside = ImRect(position, position + size).Contains(io.MousePos);
+      }
 
       // drag view
-      if (!isDraging && io.MouseDown[0] && isInside && (fabsf(io.MouseDelta.x) > 0.f || fabsf(io.MouseDelta.y) > 0.f))
+      if (gContext.mbEnableViewManipulate && gContext.mbOverViewManipulate && !isDraging && isClicking && (fabsf(io.MouseDelta.x) > 0.f || fabsf(io.MouseDelta.y) > 0.f))
       {
          isDraging = true;
          isClicking = false;
