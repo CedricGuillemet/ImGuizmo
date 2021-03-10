@@ -2692,16 +2692,16 @@ namespace ImGuizmo
 
       if ((backgroundColor & IM_COL32_A_MASK) != 0)
       {
-         gContext.mbOverViewManipulate = isInside = ImRect(position, position + size).Contains(io.MousePos);
+         gContext.mbOverViewManipulate = ImRect(position, position + size).Contains(io.MousePos);
+
          if (isInside && io.MouseClicked[0] && !isDraging)
          {
             isClicking = true;
          }
       }
-      else
-      {
-         isInside = ImRect(position, position + size).Contains(io.MousePos);
-      }
+
+      if (!isDraging)
+         isInside = gContext.mbOverViewManipulate;
 
       // drag view
       if (gContext.mbEnableViewManipulate && gContext.mbOverViewManipulate && !isDraging && isClicking && (fabsf(io.MouseDelta.x) > 0.f || fabsf(io.MouseDelta.y) > 0.f))
