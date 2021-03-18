@@ -638,7 +638,7 @@ namespace ImGuizmo
 
    struct Context
    {
-      Context() : mbUsing(false), mbEnable(true), mbUsingBounds(false), mbEnableViewManipulate(true)
+      Context() : mbUsing(false), mbEnable(true), mbUsingBounds(false), mbEnableViewManipulate(true), mbUsingViewManipulate(false)
       {
       }
 
@@ -672,6 +672,7 @@ namespace ImGuizmo
 
       bool mbUsing;
       bool mbEnable;
+      bool mbUsingViewManipulate;
 
       bool mbOverViewManipulate;
       bool mbEnableViewManipulate;
@@ -935,7 +936,7 @@ namespace ImGuizmo
 
    bool IsUsing()
    {
-      return gContext.mbUsing || gContext.mbUsingBounds;
+      return gContext.mbUsing || gContext.mbUsingBounds || gContext.mbUsingViewManipulate;
    }
 
    bool IsOver()
@@ -2716,6 +2717,8 @@ namespace ImGuizmo
 
       if (isDraging)
       {
+         gContext.mbUsingViewManipulate = true;
+
          matrix_t rx, ry, roll;
 
          rx.RotationAxis(referenceUp, -io.MouseDelta.x * 0.01f);
@@ -2741,6 +2744,8 @@ namespace ImGuizmo
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &referenceUp.x, view);
       }
+      else
+         gContext.mbUsingViewManipulate = false;
 
       // restore view/projection because it was used to compute ray
       ComputeContext(svgView.m16, svgProjection.m16, gContext.mModelSource.m16, gContext.mMode);
