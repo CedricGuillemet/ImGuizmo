@@ -317,7 +317,6 @@ namespace ImGuizmo
          vec_t component[4];
       };
 
-      matrix_t(const matrix_t& other) { memcpy(&m16[0], &other.m16[0], sizeof(float) * 16); }
       matrix_t() {}
 
       operator float* () { return m16; }
@@ -638,7 +637,7 @@ namespace ImGuizmo
 
    struct Context
    {
-      Context() : mbUsing(false), mbEnable(true), mbUsingBounds(false), mbEnableViewManipulate(true), mbUsingViewManipulate(false)
+      Context() : mbUsing(false), mbEnable(true), mbUsingViewManipulate(false), mbEnableViewManipulate(true),mbUsingBounds(false)
       {
       }
 
@@ -1208,7 +1207,7 @@ namespace ImGuizmo
 
          float angleStart = atan2f(cameraToModelNormalized[(4 - axis) % 3], cameraToModelNormalized[(3 - axis) % 3]) + ZPI * 0.5f;
 
-         for (unsigned int i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
+         for (int i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
          {
             float ng = angleStart + circleMul * ZPI * ((float)i / (float)halfCircleSegmentCount);
             vec_t axisPos = makeVect(cosf(ng), sinf(ng), 0.f);
@@ -1737,9 +1736,6 @@ namespace ImGuizmo
          dirAxis.TransformVector(gContext.mModel);
          dirPlaneX.TransformVector(gContext.mModel);
          dirPlaneY.TransformVector(gContext.mModel);
-
-         const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.v.position, dirAxis));
-         vec_t posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len;
 
          const ImVec2 axisStartOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor * 0.1f, gContext.mViewProjection) - ImVec2(gContext.mX, gContext.mY);
          const ImVec2 axisEndOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor, gContext.mViewProjection) - ImVec2(gContext.mX, gContext.mY);
