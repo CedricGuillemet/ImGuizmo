@@ -40,7 +40,6 @@ namespace ImGuizmo
    static const float ZPI = 3.14159265358979323846f;
    static const float RAD2DEG = (180.f / ZPI);
    static const float DEG2RAD = (ZPI / 180.f);
-   static float gGizmoSizeClipSpace = 0.1f;
    const float screenRotateSize = 0.06f;
 
    static OPERATION operator&(OPERATION lhs, OPERATION rhs)
@@ -724,6 +723,7 @@ namespace ImGuizmo
       OPERATION mOperation = OPERATION(-1);
 
       bool mAllowAxisFlip = true;
+      float mGizmoSizeClipSpace = 0.1f;
    };
 
    static Context gContext;
@@ -1011,12 +1011,12 @@ namespace ImGuizmo
       // compute scale from the size of camera right vector projected on screen at the matrix position
       vec_t pointRight = viewInverse.v.right;
       pointRight.TransformPoint(gContext.mViewProjection);
-      gContext.mScreenFactor = gGizmoSizeClipSpace / (pointRight.x / pointRight.w - gContext.mMVP.v.position.x / gContext.mMVP.v.position.w);
+      gContext.mScreenFactor = gContext.mGizmoSizeClipSpace / (pointRight.x / pointRight.w - gContext.mMVP.v.position.x / gContext.mMVP.v.position.w);
 
       vec_t rightViewInverse = viewInverse.v.right;
       rightViewInverse.TransformVector(gContext.mModelInverse);
       float rightLength = GetSegmentLengthClipSpace(makeVect(0.f, 0.f), rightViewInverse);
-      gContext.mScreenFactor = gGizmoSizeClipSpace / rightLength;
+      gContext.mScreenFactor = gContext.mGizmoSizeClipSpace / rightLength;
 
       ImVec2 centerSSpace = worldToPos(makeVect(0.f, 0.f), gContext.mMVP);
       gContext.mScreenSquareCenter = centerSSpace;
@@ -2285,7 +2285,7 @@ namespace ImGuizmo
 
    void SetGizmoSizeClipSpace(float value)
    {
-      gGizmoSizeClipSpace = value;
+      gContext.mGizmoSizeClipSpace = value;
    }
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////
