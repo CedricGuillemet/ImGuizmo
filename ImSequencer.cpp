@@ -1,7 +1,3 @@
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include "ImSequencer.h"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -119,7 +115,7 @@ namespace ImSequencer
          ImGui::InvisibleButton("canvas", ImVec2(canvas_size.x - canvas_pos.x, (float)ItemHeight));
          draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
          char tmps[512];
-         sprintf(tmps, "%d Frames / %d entries", frameCount, sequenceCount);
+         ImFormatString(tmps, IM_ARRAYSIZE(tmps), "%d Frames / %d entries", frameCount, sequenceCount);
          draw_list->AddText(ImVec2(canvas_pos.x + 26, canvas_pos.y + 2), 0xFFFFFFFF, tmps);
       }
       else
@@ -220,7 +216,7 @@ namespace ImSequencer
             if (baseIndex && px > (canvas_pos.x + legendWidth))
             {
                char tmps[512];
-               sprintf(tmps, "%d", i);
+               ImFormatString(tmps, IM_ARRAYSIZE(tmps), "%d", i);
                draw_list->AddText(ImVec2((float)px + 3.f, canvas_pos.y), 0xFFBBBBBB, tmps);
             }
 
@@ -448,7 +444,7 @@ namespace ImSequencer
             float cursorOffset = contentMin.x + legendWidth + (*currentFrame - firstFrameUsed) * framePixelWidth + framePixelWidth / 2 - cursorWidth * 0.5f;
             draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, cursorWidth);
             char tmps[512];
-            sprintf(tmps, "%d", *currentFrame);
+            ImFormatString(tmps, IM_ARRAYSIZE(tmps), "%d", *currentFrame);
             draw_list->AddText(ImVec2(cursorOffset + 10, canvas_pos.y + 2), 0xFF2A2AFF, tmps);
          }
 
