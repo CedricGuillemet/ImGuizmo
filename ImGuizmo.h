@@ -193,12 +193,17 @@ namespace ImGuizmo
    };
 
    IMGUI_API bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL);
+
+   IMGUI_API void EnableViewManipulate(bool enable);
+   IMGUI_API bool IsOverViewManipulate();
+
    //
    // Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en
    // It seems to be a defensive patent in the US. I don't think it will bring troubles using it as
    // other software are using the same mechanics. But just in case, you are now warned!
    //
    IMGUI_API void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
+
 
    IMGUI_API void SetID(int id);
 

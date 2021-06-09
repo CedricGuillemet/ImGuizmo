@@ -29,6 +29,8 @@
 #if !defined(_WIN32)
 #define _malloca(x) alloca(x)
 #else
+#undef far
+#undef near
 #include <malloc.h>
 #endif
 
@@ -315,7 +317,6 @@ namespace ImGuizmo
          vec_t component[4];
       };
 
-      matrix_t(const matrix_t& other) { memcpy(&m16[0], &other.m16[0], sizeof(float) * 16); }
       matrix_t() {}
 
       operator float* () { return m16; }
@@ -636,7 +637,7 @@ namespace ImGuizmo
 
    struct Context
    {
-      Context() : mbUsing(false), mbEnable(true), mbUsingBounds(false)
+      Context() : mbUsing(false), mbEnable(true), mbUsingViewManipulate(false), mbEnableViewManipulate(true),mbUsingBounds(false)
       {
       }
 
@@ -670,6 +671,10 @@ namespace ImGuizmo
 
       bool mbUsing;
       bool mbEnable;
+      bool mbUsingViewManipulate;
+
+      bool mbOverViewManipulate;
+      bool mbEnableViewManipulate;
 
       bool mReversed; // reversed projection matrix
 
@@ -930,7 +935,7 @@ namespace ImGuizmo
 
    bool IsUsing()
    {
-      return gContext.mbUsing || gContext.mbUsingBounds;
+      return gContext.mbUsing || gContext.mbUsingBounds || gContext.mbUsingViewManipulate;
    }
 
    bool IsOver()
@@ -1202,7 +1207,7 @@ namespace ImGuizmo
 
          float angleStart = atan2f(cameraToModelNormalized[(4 - axis) % 3], cameraToModelNormalized[(3 - axis) % 3]) + ZPI * 0.5f;
 
-         for (unsigned int i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
+         for (int i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
          {
             float ng = angleStart + circleMul * ZPI * ((float)i / (float)halfCircleSegmentCount);
             vec_t axisPos = makeVect(cosf(ng), sinf(ng), 0.f);
@@ -1293,7 +1298,7 @@ namespace ImGuizmo
          // draw axis
          if (belowAxisLimit)
          {
-            bool hasTranslateOnAxis = Contains(op, static_cast<OPERATION>(TRANSLATE_X << i)) ;
+            bool hasTranslateOnAxis = Contains(op, static_cast<OPERATION>(TRANSLATE_X << i));
             float markerScale = hasTranslateOnAxis ? 1.4f : 1.0f;
             ImVec2 baseSSpace = worldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVP);
             ImVec2 worldDirSSpaceNoScale = worldToPos(dirAxis * markerScale * gContext.mScreenFactor, gContext.mMVP);
@@ -1531,7 +1536,7 @@ namespace ImGuizmo
          {
             ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
             ImVec2 worldBound2 = worldToPos(aabb[(i + 1) % 4], boundsMVP);
-            if (!IsInContextRect(worldBound1) || !IsInContextRect(worldBound2))
+            if (!IsInContextRect(worldBound1) && !IsInContextRect(worldBound2))
             {
                continue;
             }
@@ -1715,6 +1720,8 @@ namespace ImGuizmo
          type = MT_SCALE_XYZ;
       }
 
+      const vec_t screenCoord = makeVect(io.MousePos - ImVec2(gContext.mX, gContext.mY));
+
       // compute
       for (unsigned int i = 0; i < 3 && type == MT_NONE; i++)
       {
@@ -1722,6 +1729,7 @@ namespace ImGuizmo
          {
             continue;
          }
+
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
          ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
@@ -1729,18 +1737,11 @@ namespace ImGuizmo
          dirPlaneX.TransformVector(gContext.mModel);
          dirPlaneY.TransformVector(gContext.mModel);
 
-         const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, BuildPlan(gContext.mModel.v.position, dirAxis));
-         vec_t posOnPlan = gContext.mRayOrigin + gContext.mRayVector * len;
+         const ImVec2 axisStartOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor * 0.1f, gContext.mViewProjection) - ImVec2(gContext.mX, gContext.mY);
+         const ImVec2 axisEndOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor, gContext.mViewProjection) - ImVec2(gContext.mX, gContext.mY);
 
-         const float startOffset = Contains(op, static_cast<OPERATION>(TRANSLATE_X << i)) ? 1.0f : 0.1f;
-         const float endOffset = Contains(op, static_cast<OPERATION>(TRANSLATE_X << i)) ? 1.4f : 1.0f;
-         const ImVec2 posOnPlanScreen = worldToPos(posOnPlan, gContext.mViewProjection);
-         const ImVec2 axisStartOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor * startOffset, gContext.mViewProjection);
-         const ImVec2 axisEndOnScreen = worldToPos(gContext.mModel.v.position + dirAxis * gContext.mScreenFactor * endOffset, gContext.mViewProjection);
-
-         vec_t closestPointOnAxis = PointOnSegment(makeVect(posOnPlanScreen), makeVect(axisStartOnScreen), makeVect(axisEndOnScreen));
-
-         if ((closestPointOnAxis - makeVect(posOnPlanScreen)).Length() < 12.f) // pixel size
+         vec_t closestPointOnAxis = PointOnSegment(screenCoord, makeVect(axisStartOnScreen), makeVect(axisEndOnScreen));
+         if ((closestPointOnAxis - screenCoord).Length() < 12.f) // pixel size
          {
             type = MT_SCALE_X + i;
          }
@@ -2493,6 +2494,16 @@ namespace ImGuizmo
       }
    }
 
+   void EnableViewManipulate(bool enable)
+   {
+      gContext.mbEnableViewManipulate = enable;
+   }
+
+   bool IsOverViewManipulate()
+   {
+      return gContext.mbEnableViewManipulate && gContext.mbOverViewManipulate;
+   }
+
    void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
    {
       static bool isDraging = false;
@@ -2502,6 +2513,8 @@ namespace ImGuizmo
       static vec_t interpolationDir;
       static int interpolationFrames = 0;
       const vec_t referenceUp = makeVect(0.f, 1.f, 0.f);
+
+      gContext.mbOverViewManipulate = false;
 
       matrix_t svgView, svgProjection;
       svgView = gContext.mViewMat;
@@ -2604,12 +2617,14 @@ namespace ImGuizmo
                int boxCoordInt = int(boxCoord.x * 9.f + boxCoord.y * 3.f + boxCoord.z);
                assert(boxCoordInt < 27);
                boxes[boxCoordInt] |= insidePanel && (!isDraging);
+               gContext.mbOverViewManipulate |= boxes[boxCoordInt];
+               isInside |= gContext.mbOverViewManipulate;
 
                // draw face with lighter color
                if (iPass)
                {
-                  gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor[normalIndex] | 0x80808080) | (isInside ? 0x080808 : 0));
-                  if (boxes[boxCoordInt])
+                  gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor[normalIndex] | 0x80808080) | ((gContext.mbEnableViewManipulate && isInside) ? 0x080808 : 0));
+                  if (gContext.mbEnableViewManipulate && boxes[boxCoordInt])
                   {
                      gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, 0x8060A0F0);
 
@@ -2633,6 +2648,7 @@ namespace ImGuizmo
                            {
                               right.x = 0.f;
                            }
+
                            right.Normalize();
                            interpolationUp = Cross(interpolationDir, right);
                            interpolationUp.Normalize();
@@ -2641,10 +2657,12 @@ namespace ImGuizmo
                         {
                            interpolationUp = referenceUp;
                         }
+
                         interpolationFrames = 40;
                         isClicking = false;
                      }
-                     if (io.MouseDown[0] && !isDraging)
+
+                     if (io.MouseClicked[0] && !isDraging)
                      {
                         isClicking = true;
                      }
@@ -2653,6 +2671,7 @@ namespace ImGuizmo
             }
          }
       }
+
       if (interpolationFrames)
       {
          interpolationFrames--;
@@ -2667,10 +2686,22 @@ namespace ImGuizmo
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &newUp.x, view);
       }
-      isInside = ImRect(position, position + size).Contains(io.MousePos);
+
+      if ((backgroundColor & IM_COL32_A_MASK) != 0)
+      {
+         gContext.mbOverViewManipulate = ImRect(position, position + size).Contains(io.MousePos);
+
+         if (isInside && io.MouseClicked[0] && !isDraging)
+         {
+            isClicking = true;
+         }
+      }
+
+      if (!isDraging)
+         isInside = gContext.mbOverViewManipulate;
 
       // drag view
-      if (!isDraging && io.MouseDown[0] && isInside && (fabsf(io.MouseDelta.x) > 0.f || fabsf(io.MouseDelta.y) > 0.f))
+      if (gContext.mbEnableViewManipulate && gContext.mbOverViewManipulate && !isDraging && isClicking && (fabsf(io.MouseDelta.x) > 0.f || fabsf(io.MouseDelta.y) > 0.f))
       {
          isDraging = true;
          isClicking = false;
@@ -2682,6 +2713,8 @@ namespace ImGuizmo
 
       if (isDraging)
       {
+         gContext.mbUsingViewManipulate = true;
+
          matrix_t rx, ry, roll;
 
          rx.RotationAxis(referenceUp, -io.MouseDelta.x * 0.01f);
@@ -2707,6 +2740,8 @@ namespace ImGuizmo
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &referenceUp.x, view);
       }
+      else
+         gContext.mbUsingViewManipulate = false;
 
       // restore view/projection because it was used to compute ray
       ComputeContext(svgView.m16, svgProjection.m16, gContext.mModelSource.m16, gContext.mMode);
