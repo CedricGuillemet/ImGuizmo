@@ -301,7 +301,6 @@ namespace ImCurveEdit
             int originalIndex = 0;
             for (auto& sel : prevSelection)
             {
-               const ImVec2* pts = delegate.GetPoints(sel.curveIndex);
                const ImVec2 p = rangeToPoint(pointToRange(originalPoints[originalIndex]) + (io.MousePos - mousePosOrigin) * sizeOfPixel);
                const int newIndex = delegate.EditPoint(sel.curveIndex, sel.pointIndex, p);
                if (newIndex != sel.pointIndex)

@@ -50,7 +50,7 @@ namespace ImZoomSlider
       static bool movingScrollBarSvg = false;
       static bool sizingRBarSvg = false;
       static bool sizingLBarSvg = false;
-      static ImGuiID editingId = -1;
+      static ImGuiID editingId = (ImGuiID)-1;
       static float scrollingSource = 0.f;
       static float saveViewLower;
       static float saveViewHigher;
@@ -172,7 +172,7 @@ namespace ImZoomSlider
          if (!io.MouseDown[0])
          {
             sizingRBarSvg = false;
-            editingId = -1;
+            editingId = (ImGuiID)-1;
          }
          else
          {
@@ -184,7 +184,7 @@ namespace ImZoomSlider
          if (!io.MouseDown[0])
          {
             sizingLBarSvg = false;
-            editingId = -1;
+            editingId = (ImGuiID)-1;
          }
          else
          {
@@ -198,7 +198,7 @@ namespace ImZoomSlider
             if (!io.MouseDown[0])
             {
                movingScrollBarSvg = false;
-               editingId = -1;
+               editingId = (ImGuiID)-1;
             }
             else
             {
