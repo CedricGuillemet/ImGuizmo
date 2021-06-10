@@ -28,6 +28,7 @@
 #include "ImGuizmo.h"
 #if !defined(_WIN32)
 #define _malloca(x) alloca(x)
+#define _freea(x)
 #else
 #include <malloc.h>
 #endif
@@ -2435,6 +2436,8 @@ namespace ImGuizmo
          const CubeFace& cubeFace = faces[iFace];
          gContext.mDrawList->AddConvexPolyFilled(cubeFace.faceCoordsScreen, 4, cubeFace.color);
       }
+
+      _freea(faces);
    }
 
    void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize)
