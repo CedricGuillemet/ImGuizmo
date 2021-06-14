@@ -1763,6 +1763,9 @@ namespace ImGuizmo
 
       const vec_t planNormals[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir };
 
+      vec_t modelViewPos;
+      modelViewPos.TransformPoint(gContext.mModel.v.position, gContext.mViewMat);
+
       for (unsigned int i = 0; i < 3 && type == MT_NONE; i++)
       {
          if(!Intersects(op, static_cast<OPERATION>(ROTATE_X << i)))
@@ -1773,20 +1776,24 @@ namespace ImGuizmo
          vec_t pickupPlan = BuildPlan(gContext.mModel.v.position, planNormals[i]);
 
          const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, pickupPlan);
-         vec_t localPos = gContext.mRayOrigin + gContext.mRayVector * len - gContext.mModel.v.position;
+         const vec_t intersectWorldPos = gContext.mRayOrigin + gContext.mRayVector * len;
+         vec_t intersectViewPos;
+         intersectViewPos.TransformPoint(intersectWorldPos, gContext.mViewMat);
 
-         if (Dot(Normalized(localPos), gContext.mRayVector) < -FLT_EPSILON)
+         if (ImAbs(modelViewPos.z) - ImAbs(intersectViewPos.z) < -FLT_EPSILON)
          {
             continue;
          }
+
+         const vec_t localPos = intersectWorldPos - gContext.mModel.v.position;
          vec_t idealPosOnCircle = Normalized(localPos);
          idealPosOnCircle.TransformVector(gContext.mModelInverse);
-         ImVec2 idealPosOnCircleScreen = worldToPos(idealPosOnCircle * gContext.mScreenFactor, gContext.mMVP);
+         const ImVec2 idealPosOnCircleScreen = worldToPos(idealPosOnCircle * gContext.mScreenFactor, gContext.mMVP);
 
          //gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, IM_COL32_WHITE);
-         ImVec2 distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
+         const ImVec2 distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
 
-         float distance = makeVect(distanceOnScreen).Length();
+         const float distance = makeVect(distanceOnScreen).Length();
          if (distance < 8.f) // pixel size
          {
             type = MT_ROTATE_X + i;
