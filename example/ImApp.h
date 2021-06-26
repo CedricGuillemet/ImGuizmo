@@ -2879,6 +2879,7 @@ namespace ImApp
       int WindowInit(WININFO* info)
       {
          unsigned int    PixelFormat;
+         
          DWORD            dwExStyle, dwStyle;
          DEVMODE            dmScreenSettings;
          RECT            rec;
@@ -2895,8 +2896,8 @@ namespace ImApp
          WndClsEx.hCursor = LoadCursor(NULL, IDC_ARROW);
          WndClsEx.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
          WndClsEx.lpszMenuName = NULL;
-         WndClsEx.lpszClassName = info->wndclass;
-         WndClsEx.hInstance = info->hInstance;
+         WndClsEx.lpszClassName = "ImGuizmoWndClass";
+         WndClsEx.hInstance = GetModuleHandle(NULL);
          WndClsEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
          if (!RegisterClassExA(&WndClsEx))
@@ -2921,22 +2922,22 @@ namespace ImApp
          else
          {
             dwExStyle = 0;
-            dwStyle = WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_OVERLAPPED;
+            //dwStyle = WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_OVERLAPPED;
             dwStyle = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_POPUP;
          }
-
+         
          rec.left = 0;
          rec.top = 0;
          rec.right = mConfig.mWidth;
          rec.bottom = mConfig.mHeight;
-
          AdjustWindowRect(&rec, dwStyle, 0);
 
-         info->hWnd = CreateWindowExA(dwExStyle, WndClsEx.lpszClassName, "", dwStyle | WS_MAXIMIZE,
+         info->hWnd = CreateWindowExA(dwExStyle, "ImGuizmoWndClass", " ", dwStyle | WS_MAXIMIZE,
             (GetSystemMetrics(SM_CXSCREEN) - rec.right + rec.left) >> 1,
             (GetSystemMetrics(SM_CYSCREEN) - rec.bottom + rec.top) >> 1,
-            rec.right - rec.left, rec.bottom - rec.top, 0, 0, info->hInstance, 0);
-
+            rec.right - rec.left, rec.bottom - rec.top,
+            0, 0, info->hInstance, 0);
+            
          if (!info->hWnd)
             return(0);
 

@@ -5,11 +5,12 @@
 #include "ImGuizmo.h"
 #include "ImSequencer.h"
 #include "ImZoomSlider.h"
-
+#include "ImCurveEdit.h"
+#include "GraphEditor.h"
 #include <math.h>
 #include <vector>
 #include <algorithm>
-#include "ImCurveEdit.h"
+
 #include "imgui_internal.h"
 //
 //
@@ -158,6 +159,29 @@ void OrthoGraphic(const float l, float r, float b, const float t, float zn, cons
    m16[15] = 1.0f;
 }
 
+inline void rotationY(const float angle, float* m16)
+{
+   float c = cosf(angle);
+   float s = sinf(angle);
+
+   m16[0] = c;
+   m16[1] = 0.0f;
+   m16[2] = -s;
+   m16[3] = 0.0f;
+   m16[4] = 0.0f;
+   m16[5] = 1.f;
+   m16[6] = 0.0f;
+   m16[7] = 0.0f;
+   m16[8] = s;
+   m16[9] = 0.0f;
+   m16[10] = c;
+   m16[11] = 0.0f;
+   m16[12] = 0.f;
+   m16[13] = 0.f;
+   m16[14] = 0.f;
+   m16[15] = 1.0f;
+}
+
 void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bool editTransformDecomposition)
 {
    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
@@ -267,7 +291,6 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
 //
 //
 static const char* SequencerItemTypeNames[] = { "Camera","Music", "ScreenEffect", "FadeIn", "Animation" };
-
 
 struct RampEdit : public ImCurveEdit::Delegate
 {
@@ -462,28 +485,172 @@ struct MySequence : public ImSequencer::SequenceInterface
    }
 };
 
-inline void rotationY(const float angle, float* m16)
-{
-   float c = cosf(angle);
-   float s = sinf(angle);
+//
+//
+// GraphEditor interface
+//
+//
 
-   m16[0] = c;
-   m16[1] = 0.0f;
-   m16[2] = -s;
-   m16[3] = 0.0f;
-   m16[4] = 0.0f;
-   m16[5] = 1.f;
-   m16[6] = 0.0f;
-   m16[7] = 0.0f;
-   m16[8] = s;
-   m16[9] = 0.0f;
-   m16[10] = c;
-   m16[11] = 0.0f;
-   m16[12] = 0.f;
-   m16[13] = 0.f;
-   m16[14] = 0.f;
-   m16[15] = 1.0f;
-}
+
+template <typename T, std::size_t N>
+struct Array
+{
+   T data[N];
+   const size_t size() const { return N; }
+
+   const T operator [] (size_t index) const { return data[index]; }
+   operator T* () {
+      T* p = new T[N];
+      memcpy(p, data, sizeof(data));
+      return p;
+   }
+};
+
+template <typename T, typename ... U> Array(T, U...)->Array<T, 1 + sizeof...(U)>;
+
+struct GraphEditorDelegate : public GraphEditor::Delegate
+{
+   bool AllowedLink(GraphEditor::NodeIndex from, GraphEditor::NodeIndex to) override
+   {
+      return true;
+   }
+
+   void SelectNode(GraphEditor::NodeIndex nodeIndex, bool selected) override
+   {
+      mNodes[nodeIndex].mSelected = selected;
+   }
+
+   void MoveSelectedNodes(const ImVec2 delta) override
+   {
+      for (auto& node : mNodes)
+      {
+         if (!node.mSelected)
+         {
+            continue;
+         }
+         node.x += delta.x;
+         node.y += delta.y;
+      }
+   }
+
+   virtual void RightClick(GraphEditor::NodeIndex nodeIndex, GraphEditor::SlotIndex slotIndexInput, GraphEditor::SlotIndex slotIndexOutput) override
+   {
+   }
+
+   void AddLink(GraphEditor::NodeIndex inputNodeIndex, GraphEditor::SlotIndex inputSlotIndex, GraphEditor::NodeIndex outputNodeIndex, GraphEditor::SlotIndex outputSlotIndex) override
+   {
+      mLinks.push_back({ inputNodeIndex, inputSlotIndex, outputNodeIndex, outputSlotIndex });
+   }
+
+   void DelLink(GraphEditor::LinkIndex linkIndex) override
+   {
+      mLinks.erase(mLinks.begin() + linkIndex);
+   }
+
+   void CustomDraw(ImDrawList* drawList, ImRect rectangle, GraphEditor::NodeIndex nodeIndex) override
+   {
+      drawList->AddLine(rectangle.Min, rectangle.Max, IM_COL32(0, 0, 0, 255));
+      drawList->AddText(rectangle.Min, IM_COL32(255, 128, 64, 255), "Draw");
+   }
+
+   const size_t GetTemplateCount() override
+   {
+      return sizeof(mTemplates) / sizeof(GraphEditor::Template);
+   }
+
+   const GraphEditor::Template GetTemplate(GraphEditor::TemplateIndex index) override
+   {
+      return mTemplates[index];
+   }
+
+   const size_t GetNodeCount() override
+   {
+      return mNodes.size();
+   }
+
+   const GraphEditor::Node GetNode(GraphEditor::NodeIndex index) override
+   {
+      const auto& myNode = mNodes[index];
+      return GraphEditor::Node
+      {
+          myNode.name,
+          myNode.templateIndex,
+          ImRect(ImVec2(myNode.x, myNode.y), ImVec2(myNode.x + 200, myNode.y + 200)),
+          myNode.mSelected
+      };
+   }
+
+   const size_t GetLinkCount() override
+   {
+      return mLinks.size();
+   }
+
+   const GraphEditor::Link GetLink(GraphEditor::LinkIndex index) override
+   {
+      return mLinks[index];
+   }
+
+   // Graph datas
+   static const inline GraphEditor::Template mTemplates[] = {
+       {
+           IM_COL32(160, 160, 180, 255),
+           IM_COL32(100, 100, 140, 255),
+           IM_COL32(110, 110, 150, 255),
+           1,
+           Array{"MyInput"},
+           nullptr,
+           2,
+           Array{"MyOutput0", "MyOuput1"},
+           nullptr
+       },
+
+       {
+           IM_COL32(180, 160, 160, 255),
+           IM_COL32(140, 100, 100, 255),
+           IM_COL32(150, 110, 110, 255),
+           3,
+           nullptr,
+           Array{ IM_COL32(200,100,100,255), IM_COL32(100,200,100,255), IM_COL32(100,100,200,255) },
+           1,
+           Array{"MyOutput0"},
+           Array{ IM_COL32(200,200,200,255)}
+       }
+   };
+
+   struct Node
+   {
+      const char* name;
+      GraphEditor::TemplateIndex templateIndex;
+      float x, y;
+      bool mSelected;
+   };
+
+   std::vector<Node> mNodes = {
+       {
+           "My Node 0",
+           0,
+           0, 0,
+           false
+       },
+
+       {
+           "My Node 1",
+           0,
+           400, 0,
+           false
+       },
+
+       {
+           "My Node 2",
+           1,
+           400, 400,
+           false
+       }
+   };
+
+   std::vector<GraphEditor::Link> mLinks = { {0, 0, 1, 0} };
+};
+
 
 int main(int, char**)
 {
@@ -679,7 +846,39 @@ int main(int, char**)
            // switch (type) ....
          }
       }
+
+      // Graph Editor
+      static GraphEditor::Options options;
+      static GraphEditorDelegate delegate;
+      static GraphEditor::ViewState viewState;
+      static GraphEditor::FitOnScreen fit = GraphEditor::Fit_None;
+      static bool showGraphEditor = true;
+
+      if (ImGui::CollapsingHeader("Graph Editor"))
+      {
+         ImGui::Checkbox("Show GraphEditor", &showGraphEditor);
+         GraphEditor::EditOptions(options);
+      }
+
       ImGui::End();
+
+      if (showGraphEditor)
+      {
+         ImGui::Begin("Graph Editor", NULL, 0);
+         if (ImGui::Button("Fit all nodes"))
+         {
+            fit = GraphEditor::Fit_AllNodes;
+         }
+         ImGui::SameLine();
+         if (ImGui::Button("Fit selected nodes"))
+         {
+            fit = GraphEditor::Fit_SelectedNodes;
+         }
+         GraphEditor::Show(delegate, options, viewState, true, &fit);
+
+         ImGui::End();
+      }
+
 
       // render everything
       glClearColor(0.45f, 0.4f, 0.4f, 1.f);
