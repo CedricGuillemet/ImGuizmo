@@ -1,4 +1,6 @@
 #include "imgui.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_internal.h"
 #define IMAPP_IMPL
 #include "ImApp.h"
 
@@ -10,14 +12,6 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
-
-#include "imgui_internal.h"
-//
-//
-// ImGuizmo example helper functions
-//
-//
-static inline ImVec2 operator-(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
 
 bool useWindow = true;
 int gizmoCount = 1;
@@ -398,7 +392,7 @@ struct MySequence : public ImSequencer::SequenceInterface
    virtual const char* GetItemLabel(int index) const
    {
       static char tmps[512];
-      sprintf_s(tmps, "[%02d] %s", index, SequencerItemTypeNames[myItems[index].mType]);
+      snprintf(tmps, 512, "[%02d] %s", index, SequencerItemTypeNames[myItems[index].mType]);
       return tmps;
    }
 

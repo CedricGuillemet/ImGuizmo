@@ -1,12 +1,14 @@
 #pragma once
 
+#include <stdint.h>     // intptr_t
+
 #if defined(_WIN32)
 // dont bother adding library
 #pragma comment(lib,"opengl32.lib")
 #define WINDOWS_LEAN_AND_MEAN
 #include <Windows.h>
 #include <GL/GL.h>
-#  define glGetProcAddress(name) wglGetProcAddress((LPCSTR)name)
+#  define glGetProcAddress(name) (void *)wglGetProcAddress((LPCSTR)name)
 #elif defined(__APPLE__) && !defined(GLEW_APPLE_GLX)
 #  define glGetProcAddress(name) NSGLGetProcAddress(name)
 #elif defined(__sgi) || defined(__sun)
@@ -2579,7 +2581,7 @@ typedef float GLfloat;
 #else
 #define GLEXTERN 
 #endif
-#ifdef _MSC_VER
+#ifdef _WIN32
 GLEXTERN void(APIENTRY* glActiveTexture) (GLenum texture);
 #endif
 GLEXTERN void(APIENTRY* glUniform1i) (GLint location, GLint v0);
@@ -2699,7 +2701,7 @@ namespace ImApp
          info->hInstance = GetModuleHandle(0);
 
          static DEVMODEA screenSettings = { { 0 },
-#if _MSC_VER < 1400
+#if defined(_MSC_VER) && _MSC_VER < 1400
                 0,0,148,0,0x001c0000,{ 0 },0,0,0,0,0,0,0,0,0,{ 0 },0,32,config.mWidth,config.mHeight,0,0,      // Visual C++ 6.0
 #else
                 0,0,156,0,0x001c0000,{ 0 },0,0,0,0,0,{ 0 },0,32,static_cast<DWORD>(config.mWidth), static_cast<DWORD>(config.mHeight),{ 0 }, 0,           // Visuatl Studio 2005
@@ -2996,7 +2998,7 @@ namespace ImApp
 
          LE(glUniform1i); //GLint location, GLint v0);
          LE(glUniformMatrix3fv) // GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
-#ifdef _MSC_VER
+#ifdef _WIN32
             LE(glActiveTexture); //GLenum texture);
 #endif
          LE(glBindFramebuffer); //GLenum target, TextureID framebuffer);
@@ -3085,7 +3087,7 @@ namespace ImApp
       static bool IsAnyMouseButtonDown()
       {
          ImGuiIO& io = ImGui::GetIO();
-         for (int n = 0; n < ARRAYSIZE(io.MouseDown); n++)
+         for (int n = 0; n < IM_ARRAYSIZE(io.MouseDown); n++)
             if (io.MouseDown[n])
                return true;
          return false;
