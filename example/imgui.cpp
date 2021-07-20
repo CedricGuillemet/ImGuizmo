@@ -1,4 +1,4 @@
-// dear imgui, v1.83 WIP
+// dear imgui, v1.83
 // (main code and documentation)
 
 // Help:
@@ -304,9 +304,9 @@ CODE
              }
              else
              {
-                 // The texture for the draw call is specified by pcmd->TextureId.
+                 // The texture for the draw call is specified by pcmd->GetTexID().
                  // The vast majority of draw calls will use the Dear ImGui texture atlas, which value you have set yourself during initialization.
-                 MyEngineBindTexture((MyTexture*)pcmd->TextureId);
+                 MyEngineBindTexture((MyTexture*)pcmd->GetTexID());
 
                  // We are using scissoring to clip some objects. All low-level graphics API should support it.
                  // - If your engine doesn't support scissoring yet, you may ignore this at first. You will get some small glitches
@@ -376,6 +376,9 @@ CODE
  When you are not sure about an old symbol or function name, try using the Search/Find function of your IDE to look for comments or references in all imgui files.
  You can read releases logs https://github.com/ocornut/imgui/releases for more details.
 
+ - 2021/05/19 (1.83) - backends: obsoleted direct access to ImDrawCmd::TextureId in favor of calling ImDrawCmd::GetTexID().
+                        - if you are using official backends from the source tree: you have nothing to do.
+                        - if you have copied old backend code or using your own: change access to draw_cmd->TextureId to draw_cmd->GetTexID().
  - 2021/03/12 (1.82) - upgraded ImDrawList::AddRect(), AddRectFilled(), PathRect() to use ImDrawFlags instead of ImDrawCornersFlags.
                         - ImDrawCornerFlags_TopLeft  -> use ImDrawFlags_RoundCornersTopLeft
                         - ImDrawCornerFlags_BotRight -> use ImDrawFlags_RoundCornersBottomRight
@@ -4103,20 +4106,20 @@ void ImGui::UpdateDebugToolItemPicker()
     if (g.DebugItemPickerActive)
     {
         const ImGuiID hovered_id = g.HoveredIdPreviousFrame;
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-        if (ImGui::IsKeyPressedMap(ImGuiKey_Escape))
+        SetMouseCursor(ImGuiMouseCursor_Hand);
+        if (IsKeyPressedMap(ImGuiKey_Escape))
             g.DebugItemPickerActive = false;
-        if (ImGui::IsMouseClicked(0) && hovered_id)
+        if (IsMouseClicked(0) && hovered_id)
         {
             g.DebugItemPickerBreakId = hovered_id;
             g.DebugItemPickerActive = false;
         }
-        ImGui::SetNextWindowBgAlpha(0.60f);
-        ImGui::BeginTooltip();
-        ImGui::Text("HoveredId: 0x%08X", hovered_id);
-        ImGui::Text("Press ESC to abort picking.");
-        ImGui::TextColored(GetStyleColorVec4(hovered_id ? ImGuiCol_Text : ImGuiCol_TextDisabled), "Click to break in debugger!");
-        ImGui::EndTooltip();
+        SetNextWindowBgAlpha(0.60f);
+        BeginTooltip();
+        Text("HoveredId: 0x%08X", hovered_id);
+        Text("Press ESC to abort picking.");
+        TextColored(GetStyleColorVec4(hovered_id ? ImGuiCol_Text : ImGuiCol_TextDisabled), "Click to break in debugger!");
+        EndTooltip();
     }
 }
 
@@ -4138,10 +4141,8 @@ void ImGui::Initialize(ImGuiContext* context)
         g.SettingsHandlers.push_back(ini_handler);
     }
 
-#ifdef IMGUI_HAS_TABLE
     // Add .ini handle for ImGuiTable type
     TableSettingsInstallHandler(context);
-#endif // #ifdef IMGUI_HAS_TABLE
 
     // Create default viewport
     ImGuiViewportP* viewport = IM_NEW(ImGuiViewportP)();
@@ -7212,13 +7213,11 @@ void    ImGui::ErrorCheckEndFrameRecover(ImGuiErrorLogCallback log_callback, voi
     ImGuiContext& g = *GImGui;
     while (g.CurrentWindowStack.Size > 0)
     {
-#ifdef IMGUI_HAS_TABLE
         while (g.CurrentTable && (g.CurrentTable->OuterWindow == g.CurrentWindow || g.CurrentTable->InnerWindow == g.CurrentWindow))
         {
             if (log_callback) log_callback(user_data, "Recovered from missing EndTable() in '%s'", g.CurrentTable->OuterWindow->Name);
             EndTable();
         }
-#endif
         ImGuiWindow* window = g.CurrentWindow;
         IM_ASSERT(window != NULL);
         while (g.CurrentTabBar != NULL) //-V1044
@@ -9665,8 +9664,13 @@ static void ImGui::NavUpdateWindowing()
             NavInitWindow(apply_focus_window, false);
 
         // If the window has ONLY a menu layer (no main layer), select it directly
-        // FIXME-NAV: This should be done in NavInit.. or in FocusWindow..
-        if (apply_focus_window->DC.NavLayersActiveMask == (1 << ImGuiNavLayer_Menu))
+        // Use NavLayersActiveMaskNext since windows didn't have a chance to be Begin()-ed on this frame,
+        // so CTRL+Tab where the keys are only held for 1 frame will be able to use correct layers mask since
+        // the target window as already been previewed once.
+        // FIXME-NAV: This should be done in NavInit.. or in FocusWindow... However in both of those cases,
+        // we won't have a guarantee that windows has been visible before and therefore NavLayersActiveMask*
+        // won't be valid.
+        if (apply_focus_window->DC.NavLayersActiveMaskNext == (1 << ImGuiNavLayer_Menu))
             g.NavLayer = ImGuiNavLayer_Menu;
     }
     if (apply_focus_window)
@@ -10906,6 +10910,10 @@ static void MetricsHelpMarker(const char* desc)
     }
 }
 
+#ifndef IMGUI_DISABLE_DEMO_WINDOWS
+namespace ImGui { void ShowFontAtlas(ImFontAtlas* atlas); }
+#endif
+
 void ImGui::ShowMetricsWindow(bool* p_open)
 {
     if (!Begin("Dear ImGui Metrics/Debugger", p_open))
@@ -11101,14 +11109,22 @@ void ImGui::ShowMetricsWindow(bool* p_open)
     }
 
     // Details for Tables
-#ifdef IMGUI_HAS_TABLE
     if (TreeNode("Tables", "Tables (%d)", g.Tables.GetSize()))
     {
         for (int n = 0; n < g.Tables.GetSize(); n++)
             DebugNodeTable(g.Tables.GetByIndex(n));
         TreePop();
     }
-#endif // #ifdef IMGUI_HAS_TABLE
+
+    // Details for Fonts
+#ifndef IMGUI_DISABLE_DEMO_WINDOWS
+    ImFontAtlas* atlas = g.IO.Fonts;
+    if (TreeNode("Fonts", "Fonts (%d)", atlas->Fonts.Size))
+    {
+        ShowFontAtlas(atlas);
+        TreePop();
+    }
+#endif
 
     // Details for Docking
 #ifdef IMGUI_HAS_DOCK
@@ -11148,14 +11164,12 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             TreePop();
         }
 
-#ifdef IMGUI_HAS_TABLE
         if (TreeNode("SettingsTables", "Settings packed data: Tables: %d bytes", g.SettingsTables.size()))
         {
             for (ImGuiTableSettings* settings = g.SettingsTables.begin(); settings != NULL; settings = g.SettingsTables.next_chunk(settings))
                 DebugNodeTableSettings(settings);
             TreePop();
         }
-#endif // #ifdef IMGUI_HAS_TABLE
 
 #ifdef IMGUI_HAS_DOCK
 #endif // #ifdef IMGUI_HAS_DOCK
@@ -11229,7 +11243,6 @@ void ImGui::ShowMetricsWindow(bool* p_open)
         }
     }
 
-#ifdef IMGUI_HAS_TABLE
     // Overlay: Display Tables Rectangles
     if (cfg->ShowTablesRects)
     {
@@ -11256,7 +11269,6 @@ void ImGui::ShowMetricsWindow(bool* p_open)
             }
         }
     }
-#endif // #ifdef IMGUI_HAS_TABLE
 
 #ifdef IMGUI_HAS_DOCK
     // Overlay: Display Docking info
