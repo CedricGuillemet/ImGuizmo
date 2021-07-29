@@ -81,13 +81,19 @@ namespace ImSequencer
       ImDrawList* draw_list = ImGui::GetWindowDrawList();
       ImVec2 canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList API uses screen coordinates!
       ImVec2 canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
+      ImVec2 headerSize(canvas_size.x, (float)ItemHeight);
+      ImVec2 scrollBarSize(canvas_size.x, 14.f);
       int firstFrameUsed = firstFrame ? *firstFrame : 0;
 
 
+      const float spacer = 8.0f;
       int controlHeight = sequenceCount * ItemHeight;
       for (int i = 0; i < sequenceCount; i++)
          controlHeight += int(sequence->GetCustomHeight(i));
       int frameCount = ImMax(sequence->GetFrameMax() - sequence->GetFrameMin(), 1);
+
+      // Don't hide elements below. Limit our height to the space we use.
+      canvas_size.y = spacer + 10.0f + static_cast<float>(controlHeight) + headerSize.y + scrollBarSize.y;
 
       static bool MovingScrollBar = false;
       static bool MovingCurrentFrame = false;
@@ -155,12 +161,10 @@ namespace ImSequencer
          }
          */
          // test scroll area
-         ImVec2 headerSize(canvas_size.x, (float)ItemHeight);
-         ImVec2 scrollBarSize(canvas_size.x, 14.f);
          ImGui::InvisibleButton("topBar", headerSize);
          draw_list->AddRectFilled(canvas_pos, canvas_pos + headerSize, 0xFFFF0000, 0);
          ImVec2 childFramePos = ImGui::GetCursorScreenPos();
-         ImVec2 childFrameSize(canvas_size.x, canvas_size.y - 8.f - headerSize.y - (hasScrollBar ? scrollBarSize.y : 0));
+         ImVec2 childFrameSize(canvas_size.x, canvas_size.y - spacer - headerSize.y - (hasScrollBar ? scrollBarSize.y : 0));
          ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
          ImGui::BeginChild(889, childFrameSize, ImGuiChildFlags_FrameStyle);
          sequence->focused = ImGui::IsWindowFocused();
