@@ -328,7 +328,7 @@ namespace ImSequencer
          {
             customHeight = 0;
             for (int i = 0; i < *selectedEntry; i++)
-               customHeight += sequence->GetCustomHeight(i);;
+               customHeight += sequence->GetCustomHeight(i);
             draw_list->AddRectFilled(ImVec2(contentMin.x, contentMin.y + ItemHeight * *selectedEntry + customHeight), ImVec2(contentMin.x + canvas_size.x, contentMin.y + ItemHeight * (*selectedEntry + 1) + customHeight), 0x801080FF, 1.f);
          }
 
