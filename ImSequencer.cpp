@@ -40,7 +40,7 @@ namespace ImSequencer
       ImGuiIO& io = ImGui::GetIO();
       ImRect delRect(pos, ImVec2(pos.x + 16, pos.y + 16));
       bool overDel = delRect.Contains(io.MousePos);
-      int delColor = overDel ? 0xFFAAAAAA : 0x50000000;
+      int delColor = overDel ? 0xFFAAAAAA : 0x77A3B2AA;
       float midy = pos.y + 16 / 2 - 0.5f;
       float midx = pos.x + 16 / 2 - 0.5f;
       draw_list->AddRect(delRect.Min, delRect.Max, delColor, 4);
