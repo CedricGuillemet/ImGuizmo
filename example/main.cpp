@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.83
+// v 1.84 WIP
 //
 // The MIT License(MIT)
 //
@@ -227,6 +227,8 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
       ImGui::SameLine();
       if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
          mCurrentGizmoOperation = ImGuizmo::SCALE;
+      if (ImGui::RadioButton("Universal", mCurrentGizmoOperation == ImGuizmo::UNIVERSAL))
+         mCurrentGizmoOperation = ImGuizmo::UNIVERSAL;
       float matrixTranslation[3], matrixRotation[3], matrixScale[3];
       ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
       ImGui::InputFloat3("Tr", matrixTranslation);
@@ -897,7 +899,6 @@ int main(int, char**)
 
          ImGui::End();
       }
-
 
       // render everything
       glClearColor(0.45f, 0.4f, 0.4f, 1.f);

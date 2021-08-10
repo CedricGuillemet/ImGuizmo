@@ -1,3 +1,5 @@
+Latest stable tagged version is 1.83. Current master version is 1.84 WIP.
+
 What started with the gizmo is now a collection of dear imgui widgets and more advanced controls.
 
 ### ImViewGizmo
