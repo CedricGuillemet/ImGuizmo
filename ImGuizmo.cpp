@@ -42,7 +42,7 @@
 // includes patches for multiview from
 // https://github.com/CedricGuillemet/ImGuizmo/issues/15
 
-namespace ImGuizmo
+namespace IMGUIZMO_NAMESPACE
 {
    static const float ZPI = 3.14159265358979323846f;
    static const float RAD2DEG = (180.f / ZPI);
