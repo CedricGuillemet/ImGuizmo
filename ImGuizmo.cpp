@@ -2837,7 +2837,7 @@ namespace IMGUIZMO_NAMESPACE
       isInside = ImRect(position, position + size).Contains(io.MousePos);
 
       // drag view
-      if (!isDraging && io.MouseDown[0] && isInside && (fabsf(io.MouseDelta.x) > 0.f || fabsf(io.MouseDelta.y) > 0.f))
+      if (!isDraging && io.MouseClicked[0] && isInside)
       {
          isDraging = true;
          isClicking = false;
