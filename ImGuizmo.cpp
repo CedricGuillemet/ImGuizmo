@@ -2403,7 +2403,8 @@ namespace IMGUIZMO_NAMESPACE
 
    bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
    {
-      ComputeContext(view, projection, matrix, mode);
+      // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
+      ComputeContext(view, projection, matrix, (operation & SCALE) ? LOCAL : mode);
 
       // set delta to identity
       if (deltaMatrix)
