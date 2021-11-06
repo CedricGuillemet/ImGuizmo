@@ -224,7 +224,7 @@ namespace IMGUIZMO_NAMESPACE
       const vec_t& operator + () const { return (*this); }
       float Length() const { return sqrtf(x * x + y * y + z * z); };
       float LengthSq() const { return (x * x + y * y + z * z); };
-      vec_t Normalize() { (*this) *= (1.f / ( Length() ? Length() : FLT_EPSILON ) ); return (*this); }
+      vec_t Normalize() { (*this) *= (1.f / ( Length() > FLT_EPSILON ? Length() : FLT_EPSILON ) ); return (*this); }
       vec_t Normalize(const vec_t& v) { this->Set(v.x, v.y, v.z, v.w); this->Normalize(); return (*this); }
       vec_t Abs() const;
 
