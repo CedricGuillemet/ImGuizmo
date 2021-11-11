@@ -790,7 +790,7 @@ namespace IMGUIZMO_NAMESPACE
       const float moy = (1.f - ((io.MousePos.y - position.y) / size.y)) * 2.f - 1.f;
 
       const float zNear = gContext.mReversed ? (1.f - FLT_EPSILON) : 0.f;
-      const float zFar = gContext.mReversed ? 0.f : (1.f - FLT_EPSILON);
+      const float zFar = gContext.mReversed ? 0.1f : (1.f - FLT_EPSILON); // for reversed-z, use z = 0.1 for the far plane since the actual far plane may be at infinity
 
       rayOrigin.Transform(makeVect(mox, moy, zNear, 1.f), mViewProjInverse);
       rayOrigin *= 1.f / rayOrigin.w;
