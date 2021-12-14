@@ -2096,10 +2096,12 @@ namespace IMGUIZMO_NAMESPACE
          // find new possible way to move
          vec_t gizmoHitProportion;
          type = GetMoveType(op, &gizmoHitProportion);
+#ifdef IMGUIZMO_MOUSE_CAPTURE_ON_HOVER
          if (type != MT_NONE)
          {
             ImGui::CaptureMouseFromApp();
          }
+#endif
          if (CanActivate() && type != MT_NONE)
          {
             gContext.mbUsing = true;
@@ -2141,10 +2143,12 @@ namespace IMGUIZMO_NAMESPACE
       {
          // find new possible way to scale
          type = GetScaleType(op);
+#ifdef IMGUIZMO_MOUSE_CAPTURE_ON_HOVER
          if (type != MT_NONE)
          {
             ImGui::CaptureMouseFromApp();
          }
+#endif
          if (CanActivate() && type != MT_NONE)
          {
             gContext.mbUsing = true;
@@ -2254,12 +2258,12 @@ namespace IMGUIZMO_NAMESPACE
       if (!gContext.mbUsing)
       {
          type = GetRotateType(op);
-
+#ifdef IMGUIZMO_MOUSE_CAPTURE_ON_HOVER
          if (type != MT_NONE)
          {
             ImGui::CaptureMouseFromApp();
          }
-
+#endif
          if (type == MT_ROTATE_SCREEN)
          {
             applyRotationLocaly = true;
