@@ -701,6 +701,10 @@ namespace IMGUIZMO_NAMESPACE
       vec_t mScaleLast;
       float mSaveMousePosx;
 
+      // last drag event data
+      bool mFinishedDragging;
+      matrix_t mFinishedDragMatrix;
+
       // save axis factor when using gizmo
       bool mBelowAxisLimit[3];
       bool mBelowPlaneLimit[3];
@@ -950,6 +954,19 @@ namespace IMGUIZMO_NAMESPACE
       return (Intersects(gContext.mOperation, TRANSLATE) && GetMoveType(gContext.mOperation, NULL) != MT_NONE) ||
          (Intersects(gContext.mOperation, ROTATE) && GetRotateType(gContext.mOperation) != MT_NONE) ||
          (Intersects(gContext.mOperation, SCALE) && GetScaleType(gContext.mOperation) != MT_NONE) || IsUsing();
+   }
+
+   bool FinishedDragging()
+   {
+       return gContext.mFinishedDragging;
+   }
+
+   void GetFinishedDragMatrix(float* dragMatrix)
+   {
+       if (dragMatrix)
+       {
+           *((matrix_t*)dragMatrix) = gContext.mFinishedDragMatrix;
+       }
    }
 
    bool IsOver(OPERATION op)
@@ -1300,7 +1317,7 @@ namespace IMGUIZMO_NAMESPACE
          scaleDisplay = gContext.mScale;
       }
 
-      for (unsigned int i = 0; i < 3; i++)
+      for (int i = 0; i < 3; i++)
       {
          if(!Intersects(op, static_cast<OPERATION>(SCALE_X << i)))
          {
@@ -1387,7 +1404,7 @@ namespace IMGUIZMO_NAMESPACE
          scaleDisplay = gContext.mScale;
       }
 
-      for (unsigned int i = 0; i < 3; i++)
+      for (int i = 0; i < 3; i++)
       {
          if (!Intersects(op, static_cast<OPERATION>(SCALE_XU << i)))
          {
@@ -1470,7 +1487,7 @@ namespace IMGUIZMO_NAMESPACE
       // draw
       bool belowAxisLimit = false;
       bool belowPlaneLimit = false;
-      for (unsigned int i = 0; i < 3; ++i)
+      for (int i = 0; i < 3; ++i)
       {
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
@@ -2086,6 +2103,10 @@ namespace IMGUIZMO_NAMESPACE
 
          if (!io.MouseDown[0])
          {
+            if (gContext.mbUsing == true)
+            {
+               gContext.mFinishedDragging = true;
+            }
             gContext.mbUsing = false;
          }
 
@@ -2096,7 +2117,7 @@ namespace IMGUIZMO_NAMESPACE
          // find new possible way to move
          vec_t gizmoHitProportion;
          type = GetMoveType(op, &gizmoHitProportion);
-#ifdef IMGUIZMO_MOUSE_CAPTURE_ON_HOVER
+#ifndef IMGUIZMO_NO_MOUSE_CAPTURE_ON_HOVER
          if (type != MT_NONE)
          {
             ImGui::CaptureMouseFromApp();
@@ -2104,6 +2125,10 @@ namespace IMGUIZMO_NAMESPACE
 #endif
          if (CanActivate() && type != MT_NONE)
          {
+            if (gContext.mbUsing == false)
+            {
+               gContext.mFinishedDragMatrix.SetToIdentity();
+            }
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.mActualID;
             gContext.mCurrentOperation = type;
@@ -2143,7 +2168,7 @@ namespace IMGUIZMO_NAMESPACE
       {
          // find new possible way to scale
          type = GetScaleType(op);
-#ifdef IMGUIZMO_MOUSE_CAPTURE_ON_HOVER
+#ifndef IMGUIZMO_NO_MOUSE_CAPTURE_ON_HOVER
          if (type != MT_NONE)
          {
             ImGui::CaptureMouseFromApp();
@@ -2151,6 +2176,10 @@ namespace IMGUIZMO_NAMESPACE
 #endif
          if (CanActivate() && type != MT_NONE)
          {
+             if (gContext.mbUsing == false)
+             {
+                 gContext.mFinishedDragMatrix.SetToIdentity();
+             }
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.mActualID;
             gContext.mCurrentOperation = type;
@@ -2236,6 +2265,10 @@ namespace IMGUIZMO_NAMESPACE
 
          if (!io.MouseDown[0])
          {
+            if (gContext.mbUsing == true)
+            {
+                gContext.mFinishedDragging = true;
+            }
             gContext.mbUsing = false;
             gContext.mScale.Set(1.f, 1.f, 1.f);
          }
@@ -2258,7 +2291,7 @@ namespace IMGUIZMO_NAMESPACE
       if (!gContext.mbUsing)
       {
          type = GetRotateType(op);
-#ifdef IMGUIZMO_MOUSE_CAPTURE_ON_HOVER
+#ifndef IMGUIZMO_NO_MOUSE_CAPTURE_ON_HOVER
          if (type != MT_NONE)
          {
             ImGui::CaptureMouseFromApp();
@@ -2271,6 +2304,10 @@ namespace IMGUIZMO_NAMESPACE
 
          if (CanActivate() && type != MT_NONE)
          {
+            if (gContext.mbUsing == false)
+            {
+               gContext.mFinishedDragMatrix.SetToIdentity();
+            }
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.mActualID;
             gContext.mCurrentOperation = type;
@@ -2338,6 +2375,10 @@ namespace IMGUIZMO_NAMESPACE
 
          if (!io.MouseDown[0])
          {
+            if (gContext.mbUsing == true)
+            {
+               gContext.mFinishedDragging = true;
+            }
             gContext.mbUsing = false;
             gContext.mEditingID = -1;
          }
@@ -2411,9 +2452,17 @@ namespace IMGUIZMO_NAMESPACE
       ComputeContext(view, projection, matrix, (operation & SCALE) ? LOCAL : mode);
 
       // set delta to identity
-      if (deltaMatrix)
+      if (!deltaMatrix)
       {
-         ((matrix_t*)deltaMatrix)->SetToIdentity();
+          static matrix_t sDeltaMatrix;
+          deltaMatrix = sDeltaMatrix;
+      }
+      ((matrix_t*)deltaMatrix)->SetToIdentity();
+
+      // last drag state is only avialable for 1 frame
+      if (gContext.mFinishedDragging)
+      {
+          gContext.mFinishedDragging = false;
       }
 
       // behind camera
@@ -2434,6 +2483,10 @@ namespace IMGUIZMO_NAMESPACE
             manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap) ||
                           HandleScale(matrix, deltaMatrix, operation, type, snap) ||
                           HandleRotation(matrix, deltaMatrix, operation, type, snap);
+            if (manipulated)
+            {
+                gContext.mFinishedDragMatrix.Multiply(*(matrix_t*)deltaMatrix);
+            }
          }
       }
 
