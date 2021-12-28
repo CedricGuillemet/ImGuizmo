@@ -2428,7 +2428,7 @@ namespace IMGUIZMO_NAMESPACE
 
       // behind camera
       vec_t camSpacePosition;
-      camSpacePosition.TransformPoint(makeVect(0.f, 0.f, 0.f), gContext.mModel * gContext.mViewMat);
+      camSpacePosition.TransformPoint(makeVect(0.f, 0.f, 0.f), gContext.mMVP);
       if (!gContext.mIsOrthographic && camSpacePosition.z < 0.001f)
       {
          return false;
