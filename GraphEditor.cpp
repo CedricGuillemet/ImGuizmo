@@ -543,6 +543,7 @@ static bool DrawNode(ImDrawList* drawList,
 {
     ImGuiIO& io = ImGui::GetIO();
     const auto node = delegate.GetNode(nodeIndex);
+    IM_ASSERT((node.mRect.GetWidth() != 0.f) && (node.mRect.GetHeight() != 0.f) && "Nodes must have a non-zero rect.");
     const auto nodeTemplate = delegate.GetTemplate(node.mTemplateIndex);
     const ImVec2 nodeRectangleMin = offset + node.mRect.Min * factor;
 
