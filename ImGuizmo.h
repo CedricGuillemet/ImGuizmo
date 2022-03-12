@@ -115,6 +115,8 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 #define IMGUIZMO_NAMESPACE ImGuizmo
 #endif
 
+//#define IMGUIZMO_NO_MOUSE_CAPTURE_ON_HOVER
+
 namespace IMGUIZMO_NAMESPACE
 {
    // call inside your own window and before Manipulate() in order to draw gizmo to that window.
@@ -135,6 +137,13 @@ namespace IMGUIZMO_NAMESPACE
 
    // return true if mouse IsOver or if the gizmo is in moving state
    IMGUI_API bool IsUsing();
+
+   // return true if a dragging event is finished
+   // this will only be set for the one frame it has finished
+   bool FinishedDragging();
+
+   // get the transformation matrix for the finished drag
+   void GetFinishedDragMatrix(float* dragMatrix);
 
    // enable/disable the gizmo. Stay in the state until next call to Enable.
    // gizmo is rendered with gray half transparent color when disabled
