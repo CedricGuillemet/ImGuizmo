@@ -246,7 +246,7 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
       }
       if (ImGui::IsKeyPressed(83))
          useSnap = !useSnap;
-      ImGui::Checkbox("", &useSnap);
+      ImGui::Checkbox("##UseSnap", &useSnap);
       ImGui::SameLine();
 
       switch (mCurrentGizmoOperation)
@@ -265,7 +265,7 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
       if (boundSizing)
       {
          ImGui::PushID(3);
-         ImGui::Checkbox("", &boundSizingSnap);
+         ImGui::Checkbox("##BoundSizing", &boundSizingSnap);
          ImGui::SameLine();
          ImGui::InputFloat3("Snap", boundsSnap);
          ImGui::PopID();
