@@ -41,6 +41,7 @@
 #elif defined(__ANDROID__)
 #  define glGetProcAddress(name) NULL /* TODO */
 #else /* __linux */
+typedef unsigned char	GLubyte;	/* 1-byte unsigned */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -2604,7 +2605,7 @@ typedef float GLfloat;
 #ifndef IMAPP_IMPL
 #define GLEXTERN extern
 #else
-#define GLEXTERN 
+#define GLEXTERN
 #endif
 #ifdef _WIN32
 GLEXTERN void(APIENTRY* glActiveTexture) (GLenum texture);
@@ -2906,7 +2907,7 @@ namespace ImApp
       int WindowInit(WININFO* info)
       {
          unsigned int    PixelFormat;
-         
+
          DWORD            dwExStyle, dwStyle;
          DEVMODE            dmScreenSettings;
          RECT            rec;
@@ -2952,7 +2953,7 @@ namespace ImApp
             //dwStyle = WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_OVERLAPPED;
             dwStyle = WS_VISIBLE | WS_OVERLAPPEDWINDOW | WS_POPUP;
          }
-         
+
          rec.left = 0;
          rec.top = 0;
          rec.right = mConfig.mWidth;
@@ -2964,7 +2965,7 @@ namespace ImApp
             (GetSystemMetrics(SM_CYSCREEN) - rec.bottom + rec.top) >> 1,
             rec.right - rec.left, rec.bottom - rec.top,
             0, 0, info->hInstance, 0);
-            
+
          if (!info->hWnd)
             return(0);
 
@@ -3176,7 +3177,7 @@ namespace ImApp
          return 0;
       }
       // This is the main rendering function that you have to implement and provide to ImGui (via setting up 'RenderDrawListsFn' in the ImGuiIO structure)
-      // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so. 
+      // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so.
       // If text or lines are blurry when integrating ImGui in your engine: in your Render function, try translating your projection matrix by (0.5f,0.5f) or (0.375f,0.375f)
       static void ImGui_RenderDrawLists(ImDrawData* draw_data)
       {
