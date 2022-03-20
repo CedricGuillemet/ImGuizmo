@@ -54,8 +54,8 @@ namespace ImSequencer
    {
       bool ret = false;
       ImGuiIO& io = ImGui::GetIO();
-      int cx = (int)(io.MousePos.x);
-      int cy = (int)(io.MousePos.y);
+      int cx = (io.MousePos.x != -FLT_MAX) ? (int)(io.MousePos.x) : 0;
+      int cy = (io.MousePos.y != -FLT_MAX) ? (int)(io.MousePos.y) : 0;
       static float framePixelWidth = 10.f;
       static float framePixelWidthTarget = 10.f;
       int legendWidth = 200;
