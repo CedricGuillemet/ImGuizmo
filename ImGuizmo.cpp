@@ -2720,6 +2720,7 @@ namespace IMGUIZMO_NAMESPACE
 
       // tag faces
       bool boxes[27]{};
+      static int overBox = -1;
       for (int iPass = 0; iPass < 2; iPass++)
       {
          for (int iFace = 0; iFace < 6; iFace++)
@@ -2789,40 +2790,10 @@ namespace IMGUIZMO_NAMESPACE
                   {
                      gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, IM_COL32(0xF0, 0xA0, 0x60, 0x80));
 
-                     if (!io.MouseDown[0] && !isDraging && isClicking)
-                     {
-                        // apply new view direction
-                        int cx = boxCoordInt / 9;
-                        int cy = (boxCoordInt - cx * 9) / 3;
-                        int cz = boxCoordInt % 3;
-                        interpolationDir = makeVect(1.f - (float)cx, 1.f - (float)cy, 1.f - (float)cz);
-                        interpolationDir.Normalize();
-
-                        if (fabsf(Dot(interpolationDir, referenceUp)) > 1.0f - 0.01f)
-                        {
-                           vec_t right = viewInverse.v.right;
-                           if (fabsf(right.x) > fabsf(right.z))
-                           {
-                              right.z = 0.f;
-                           }
-                           else
-                           {
-                              right.x = 0.f;
-                           }
-                           right.Normalize();
-                           interpolationUp = Cross(interpolationDir, right);
-                           interpolationUp.Normalize();
-                        }
-                        else
-                        {
-                           interpolationUp = referenceUp;
-                        }
-                        interpolationFrames = 40;
-                        isClicking = false;
-                     }
-                     if (io.MouseClicked[0] && !isDraging)
-                     {
+                     if (io.MouseDown[0] && !isClicking && !isDraging) {
+                        overBox = boxCoordInt;
                         isClicking = true;
+                        isDraging = true;
                      }
                   }
                }
@@ -2846,7 +2817,7 @@ namespace IMGUIZMO_NAMESPACE
       isInside = gContext.mbMouseOver && ImRect(position, position + size).Contains(io.MousePos);
 
       // drag view
-      if (!isDraging && io.MouseClicked[0] && isInside)
+      /*if (!isDraging && io.MouseClicked[0] && isInside && (fabsf(io.MouseDelta[0]) || fabsf(io.MouseDelta[1])))
       {
          isDraging = true;
          isClicking = false;
@@ -2854,7 +2825,49 @@ namespace IMGUIZMO_NAMESPACE
       else if (isDraging && !io.MouseDown[0])
       {
          isDraging = false;
+      }*/
+      if (io.MouseDown[0] && (fabsf(io.MouseDelta[0]) || fabsf(io.MouseDelta[1])) && isClicking)
+      {
+         isClicking = false;
       }
+
+      if (!io.MouseDown[0])
+      {
+         if (isClicking)
+         {
+            // apply new view direction
+            int cx = overBox / 9;
+            int cy = (overBox - cx * 9) / 3;
+            int cz = overBox % 3;
+            interpolationDir = makeVect(1.f - (float)cx, 1.f - (float)cy, 1.f - (float)cz);
+            interpolationDir.Normalize();
+
+            if (fabsf(Dot(interpolationDir, referenceUp)) > 1.0f - 0.01f)
+            {
+               vec_t right = viewInverse.v.right;
+               if (fabsf(right.x) > fabsf(right.z))
+               {
+                  right.z = 0.f;
+               }
+               else
+               {
+                  right.x = 0.f;
+               }
+               right.Normalize();
+               interpolationUp = Cross(interpolationDir, right);
+               interpolationUp.Normalize();
+            }
+            else
+            {
+               interpolationUp = referenceUp;
+            }
+            interpolationFrames = 40;
+            
+         }
+         isClicking = false;
+         isDraging = false;
+      }
+
 
       if (isDraging)
       {
