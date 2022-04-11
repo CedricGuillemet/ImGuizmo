@@ -2816,16 +2816,6 @@ namespace IMGUIZMO_NAMESPACE
       }
       isInside = gContext.mbMouseOver && ImRect(position, position + size).Contains(io.MousePos);
 
-      // drag view
-      /*if (!isDraging && io.MouseClicked[0] && isInside && (fabsf(io.MouseDelta[0]) || fabsf(io.MouseDelta[1])))
-      {
-         isDraging = true;
-         isClicking = false;
-      }
-      else if (isDraging && !io.MouseDown[0])
-      {
-         isDraging = false;
-      }*/
       if (io.MouseDown[0] && (fabsf(io.MouseDelta[0]) || fabsf(io.MouseDelta[1])) && isClicking)
       {
          isClicking = false;
