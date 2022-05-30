@@ -2669,6 +2669,13 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
+   void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
+   {
+      // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
+      ComputeContext(view, projection, matrix, (operation & SCALE) ? LOCAL : mode);
+      ViewManipulate(view, length, position, size, backgroundColor);
+   }
+
    void ViewManipulate(float* view, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor)
    {
       static bool isDraging = false;
