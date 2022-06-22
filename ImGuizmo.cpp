@@ -264,7 +264,7 @@ namespace IMGUIZMO_NAMESPACE
 
       float& operator [] (size_t index) { return ((float*)&x)[index]; }
       const float& operator [] (size_t index) const { return ((float*)&x)[index]; }
-      bool operator!=(const vec_t& other) const { return memcmp(this, &other, sizeof(vec_t)); }
+      bool operator!=(const vec_t& other) const { return memcmp(this, &other, sizeof(vec_t)) != 0; }
    };
 
    vec_t makeVect(float _x, float _y, float _z = 0.f, float _w = 0.f) { vec_t res; res.x = _x; res.y = _y; res.z = _z; res.w = _w; return res; }
@@ -2035,7 +2035,11 @@ namespace IMGUIZMO_NAMESPACE
       // move
       if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsTranslateType(gContext.mCurrentOperation))
       {
+#if IMGUI_VERSION_NUM >= 18723
+         ImGui::SetNextFrameWantCaptureMouse(true);
+#else
          ImGui::CaptureMouseFromApp();
+#endif
          const float signedLength = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
          const float len = fabsf(signedLength); // near plan
          const vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
@@ -2106,7 +2110,11 @@ namespace IMGUIZMO_NAMESPACE
          type = GetMoveType(op, &gizmoHitProportion);
          if (type != MT_NONE)
          {
+#if IMGUI_VERSION_NUM >= 18723
+            ImGui::SetNextFrameWantCaptureMouse(true);
+#else
             ImGui::CaptureMouseFromApp();
+#endif
          }
          if (CanActivate() && type != MT_NONE)
          {
@@ -2151,7 +2159,11 @@ namespace IMGUIZMO_NAMESPACE
          type = GetScaleType(op);
          if (type != MT_NONE)
          {
+#if IMGUI_VERSION_NUM >= 18723
+            ImGui::SetNextFrameWantCaptureMouse(true);
+#else
             ImGui::CaptureMouseFromApp();
+#endif
          }
          if (CanActivate() && type != MT_NONE)
          {
@@ -2174,7 +2186,11 @@ namespace IMGUIZMO_NAMESPACE
       // scale
       if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsScaleType(gContext.mCurrentOperation))
       {
+#if IMGUI_VERSION_NUM >= 18723
+         ImGui::SetNextFrameWantCaptureMouse(true);
+#else
          ImGui::CaptureMouseFromApp();
+#endif
          const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
          vec_t newPos = gContext.mRayOrigin + gContext.mRayVector * len;
          vec_t newOrigin = newPos - gContext.mRelativeOrigin * gContext.mScreenFactor;
@@ -2265,7 +2281,11 @@ namespace IMGUIZMO_NAMESPACE
 
          if (type != MT_NONE)
          {
+#if IMGUI_VERSION_NUM >= 18723
+            ImGui::SetNextFrameWantCaptureMouse(true);
+#else
             ImGui::CaptureMouseFromApp();
+#endif
          }
 
          if (type == MT_ROTATE_SCREEN)
@@ -2299,7 +2319,11 @@ namespace IMGUIZMO_NAMESPACE
       // rotation
       if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsRotateType(gContext.mCurrentOperation))
       {
+#if IMGUI_VERSION_NUM >= 18723
+         ImGui::SetNextFrameWantCaptureMouse(true);
+#else
          ImGui::CaptureMouseFromApp();
+#endif
          gContext.mRotationAngle = ComputeAngleOnPlan();
          if (snap)
          {
