@@ -223,4 +223,42 @@ namespace IMGUIZMO_NAMESPACE
    // When true (default), the guizmo axis flip for better visibility
    // When false, they always stay along the positive world/local axis
    IMGUI_API void AllowAxisFlip(bool value);
+
+   enum COLOR
+   {
+      DIRECTION_X,      // directionColor[0]
+      DIRECTION_Y,      // directionColor[1]
+      DIRECTION_Z,      // directionColor[2]
+      PLANE_X,          // planeColor[0]
+      PLANE_Y,          // planeColor[1]
+      PLANE_Z,          // planeColor[2]
+      SELECTION,        // selectionColor
+      INACTIVE,         // inactiveColor
+      TRANSLATION_LINE, // translationLineColor
+      SCALE_LINE,
+      ROTATION_USING_BORDER,
+      ROTATION_USING_FILL,
+      HATCHED_AXIS_LINES,
+      TEXT,
+      TEXT_SHADOW,
+      COUNT
+   };
+
+   struct Style
+   {
+      IMGUI_API Style();
+
+      float TranslationLineThickness;   // Thickness of lines for translation gizmo
+      float TranslationLineArrowSize;   // Size of arrow at the end of lines for translation gizmo
+      float RotationLineThickness;      // Thickness of lines for rotation gizmo
+      float RotationOuterLineThickness; // Thickness of line surrounding the rotation gizmo
+      float ScaleLineThickness;         // Thickness of lines for scale gizmo
+      float ScaleLineCircleSize;        // Size of circle at the end of lines for scale gizmo
+      float HatchedAxisLineThickness;   // Thickness of hatched axis lines
+      float CenterCircleSize;           // Size of circle at the center of the translate/scale gizmo
+
+      ImVec4 Colors[COLOR::COUNT];
+   };
+
+   IMGUI_API Style& GetStyle();
 }
