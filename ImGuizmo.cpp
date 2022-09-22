@@ -1239,7 +1239,7 @@ namespace IMGUIZMO_NAMESPACE
       {
          matrix_t viewInverse;
          viewInverse.Inverse(*(matrix_t*)&gContext.mViewMat);
-         cameraToModelNormalized = viewInverse.v.dir;
+         cameraToModelNormalized = -viewInverse.v.dir;
       }
       else
       {
