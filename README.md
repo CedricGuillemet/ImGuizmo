@@ -182,7 +182,7 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 ImGuizmo can be installed via [vcpkg](https://github.com/microsoft/vcpkg) and used cmake
 
 ```bash
-vcpkg install vcpkg
+vcpkg install imguizmo
 ```
 
 See the [vcpkg example](/vcpkg-example) for more details
