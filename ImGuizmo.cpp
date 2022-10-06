@@ -1059,8 +1059,8 @@ namespace IMGUIZMO_NAMESPACE
 
       // projection reverse
        vec_t nearPos, farPos;
-       nearPos.Transform(makeVect(0, 0, 1.f, 1.f), gContext.mProjectionMat);
-       farPos.Transform(makeVect(0, 0, 2.f, 1.f), gContext.mProjectionMat);
+       nearPos.Transform(makeVect(1.f, 1.f, 1.f, 1.f), gContext.mProjectionMat);
+       farPos.Transform(makeVect(2.f, 2.f, 2.f, 1.f), gContext.mProjectionMat);
 
        gContext.mReversed = (nearPos.z/nearPos.w) > (farPos.z / farPos.w);
 
