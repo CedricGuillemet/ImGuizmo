@@ -645,6 +645,7 @@ namespace IMGUIZMO_NAMESPACE
       ScaleLineCircleSize        = 6.0f;
       HatchedAxisLineThickness   = 6.0f;
       CenterCircleSize           = 6.0f;
+      RenderBoundsOnUsing        = false;
 
       // initialize default colors
       Colors[DIRECTION_X]           = ImVec4(0.666f, 0.000f, 0.000f, 1.000f);
@@ -1600,7 +1601,7 @@ namespace IMGUIZMO_NAMESPACE
       return false;
    }
 
-   static void HandleAndDrawLocalBounds(const float* bounds, matrix_t* matrix, const float* snapValues, OPERATION operation)
+   static void HandleAndDrawLocalBounds(const float* bounds, matrix_t* matrix, const float* snapValues, OPERATION operation, bool interactive)
    {
       ImGuiIO& io = ImGui::GetIO();
       ImDrawList* drawList = gContext.mDrawList;
@@ -1708,82 +1709,85 @@ namespace IMGUIZMO_NAMESPACE
                //drawList->AddLine(worldBoundSS1, worldBoundSS2, IM_COL32(0, 0, 0, 0) + anchorAlpha, 3.f);
                drawList->AddLine(worldBoundSS1, worldBoundSS2, IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha, 2.f);
             }
-            vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4]) * 0.5f;
-            ImVec2 midBound = worldToPos(midPoint, boundsMVP);
-            static const float AnchorBigRadius = 8.f;
-            static const float AnchorSmallRadius = 6.f;
-            bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
-            bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
-
-            int type = MT_NONE;
-            vec_t gizmoHitProportion;
-
-            if(Intersects(operation, TRANSLATE))
+            if (interactive)
             {
-               type = GetMoveType(operation, &gizmoHitProportion);
-            }
-            if(Intersects(operation, ROTATE) && type == MT_NONE)
-            {
-               type = GetRotateType(operation);
-            }
-            if(Intersects(operation, SCALE) && type == MT_NONE)
-            {
-               type = GetScaleType(operation);
-            }
+                vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4]) * 0.5f;
+                ImVec2 midBound = worldToPos(midPoint, boundsMVP);
+                static const float AnchorBigRadius = 8.f;
+                static const float AnchorSmallRadius = 6.f;
+                bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
+                bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
 
-            if (type != MT_NONE)
-            {
-               overBigAnchor = false;
-               overSmallAnchor = false;
-            }
+                int type = MT_NONE;
+                vec_t gizmoHitProportion;
 
-            ImU32 selectionColor = GetColorU32(SELECTION);
+                if(Intersects(operation, TRANSLATE))
+                {
+                   type = GetMoveType(operation, &gizmoHitProportion);
+                }
+                if(Intersects(operation, ROTATE) && type == MT_NONE)
+                {
+                   type = GetRotateType(operation);
+                }
+                if(Intersects(operation, SCALE) && type == MT_NONE)
+                {
+                   type = GetScaleType(operation);
+                }
 
-            unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha);
-            unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha);
+                if (type != MT_NONE)
+                {
+                   overBigAnchor = false;
+                   overSmallAnchor = false;
+                }
 
-            drawList->AddCircleFilled(worldBound1, AnchorBigRadius, IM_COL32_BLACK);
-            drawList->AddCircleFilled(worldBound1, AnchorBigRadius - 1.2f, bigAnchorColor);
+                ImU32 selectionColor = GetColorU32(SELECTION);
 
-            drawList->AddCircleFilled(midBound, AnchorSmallRadius, IM_COL32_BLACK);
-            drawList->AddCircleFilled(midBound, AnchorSmallRadius - 1.2f, smallAnchorColor);
-            int oppositeIndex = (i + 2) % 4;
-            // big anchor on corners
-            if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && CanActivate())
-            {
-               gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
-               gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
-               gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
-               gContext.mBoundsBestAxis = bestAxis;
-               gContext.mBoundsAxis[0] = secondAxis;
-               gContext.mBoundsAxis[1] = thirdAxis;
+                unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha);
+                unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha);
 
-               gContext.mBoundsLocalPivot.Set(0.f);
-               gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
-               gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
+                drawList->AddCircleFilled(worldBound1, AnchorBigRadius, IM_COL32_BLACK);
+                drawList->AddCircleFilled(worldBound1, AnchorBigRadius - 1.2f, bigAnchorColor);
 
-               gContext.mbUsingBounds = true;
-               gContext.mEditingID = gContext.mActualID;
-               gContext.mBoundsMatrix = gContext.mModelSource;
-            }
-            // small anchor on middle of segment
-            if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && CanActivate())
-            {
-               vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
-               gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
-               gContext.mBoundsAnchor.TransformPoint(midPoint, gContext.mModelSource);
-               gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
-               gContext.mBoundsBestAxis = bestAxis;
-               int indices[] = { secondAxis , thirdAxis };
-               gContext.mBoundsAxis[0] = indices[i % 2];
-               gContext.mBoundsAxis[1] = -1;
+                drawList->AddCircleFilled(midBound, AnchorSmallRadius, IM_COL32_BLACK);
+                drawList->AddCircleFilled(midBound, AnchorSmallRadius - 1.2f, smallAnchorColor);
+                int oppositeIndex = (i + 2) % 4;
+                // big anchor on corners
+                if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && CanActivate())
+                {
+                   gContext.mBoundsPivot.TransformPoint(aabb[(i + 2) % 4], gContext.mModelSource);
+                   gContext.mBoundsAnchor.TransformPoint(aabb[i], gContext.mModelSource);
+                   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
+                   gContext.mBoundsBestAxis = bestAxis;
+                   gContext.mBoundsAxis[0] = secondAxis;
+                   gContext.mBoundsAxis[1] = thirdAxis;
 
-               gContext.mBoundsLocalPivot.Set(0.f);
-               gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
+                   gContext.mBoundsLocalPivot.Set(0.f);
+                   gContext.mBoundsLocalPivot[secondAxis] = aabb[oppositeIndex][secondAxis];
+                   gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
 
-               gContext.mbUsingBounds = true;
-               gContext.mEditingID = gContext.mActualID;
-               gContext.mBoundsMatrix = gContext.mModelSource;
+                   gContext.mbUsingBounds = true;
+                   gContext.mEditingID = gContext.mActualID;
+                   gContext.mBoundsMatrix = gContext.mModelSource;
+                }
+                // small anchor on middle of segment
+                if (!gContext.mbUsingBounds && gContext.mbEnable && overSmallAnchor && CanActivate())
+                {
+                   vec_t midPointOpposite = (aabb[(i + 2) % 4] + aabb[(i + 3) % 4]) * 0.5f;
+                   gContext.mBoundsPivot.TransformPoint(midPointOpposite, gContext.mModelSource);
+                   gContext.mBoundsAnchor.TransformPoint(midPoint, gContext.mModelSource);
+                   gContext.mBoundsPlan = BuildPlan(gContext.mBoundsAnchor, bestAxisWorldDirection);
+                   gContext.mBoundsBestAxis = bestAxis;
+                   int indices[] = { secondAxis , thirdAxis };
+                   gContext.mBoundsAxis[0] = indices[i % 2];
+                   gContext.mBoundsAxis[1] = -1;
+
+                   gContext.mBoundsLocalPivot.Set(0.f);
+                   gContext.mBoundsLocalPivot[gContext.mBoundsAxis[0]] = aabb[oppositeIndex][indices[i % 2]];// bounds[gContext.mBoundsAxis[0]] * (((i + 1) & 2) ? 1.f : -1.f);
+
+                   gContext.mbUsingBounds = true;
+                   gContext.mEditingID = gContext.mActualID;
+                   gContext.mBoundsMatrix = gContext.mModelSource;
+                }
             }
          }
 
@@ -2508,9 +2512,16 @@ namespace IMGUIZMO_NAMESPACE
          }
       }
 
-      if (localBounds && !gContext.mbUsing)
+      if (localBounds)
       {
-         HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation);
+         if (gContext.mbUsing && GetStyle().RenderBoundsOnUsing)
+         {
+             HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation, false);
+         }
+         else if (!gContext.mbUsing)
+         {
+             HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation, true);
+         }
       }
 
       gContext.mOperation = operation;

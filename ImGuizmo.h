@@ -256,6 +256,7 @@ namespace IMGUIZMO_NAMESPACE
       float ScaleLineCircleSize;        // Size of circle at the end of lines for scale gizmo
       float HatchedAxisLineThickness;   // Thickness of hatched axis lines
       float CenterCircleSize;           // Size of circle at the center of the translate/scale gizmo
+      bool RenderBoundsOnUsing;         // If the bounds are given, show them even if we are executing another action
 
       ImVec4 Colors[COLOR::COUNT];
    };
