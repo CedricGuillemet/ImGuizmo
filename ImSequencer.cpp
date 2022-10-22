@@ -40,14 +40,17 @@ namespace ImSequencer
       ImGuiIO& io = ImGui::GetIO();
       ImRect btnRect(pos, ImVec2(pos.x + 16, pos.y + 16));
       bool overBtn = btnRect.Contains(io.MousePos);
-      int btnColor = overBtn ? 0xFFAAAAAA : 0x77A3B2AA;
+      bool containedClick = overBtn && btnRect.Contains(io.MouseClickedPos[0]);
+      bool clickedBtn = containedClick && io.MouseReleased[0];
+      int btnColor = overBtn ? 0xAAEAFFAA : 0x77A3B2AA;
+
       float midy = pos.y + 16 / 2 - 0.5f;
       float midx = pos.x + 16 / 2 - 0.5f;
       draw_list->AddRect(btnRect.Min, btnRect.Max, btnColor, 4);
       draw_list->AddLine(ImVec2(btnRect.Min.x + 3, midy), ImVec2(btnRect.Max.x - 3, midy), btnColor, 2);
       if (add)
          draw_list->AddLine(ImVec2(midx, btnRect.Min.y + 3), ImVec2(midx, btnRect.Max.y - 3), btnColor, 2);
-      return overBtn;
+      return clickedBtn;
    }
 
    bool Sequencer(SequenceInterface* sequence, int* currentFrame, bool* expanded, int* selectedEntry, int* firstFrame, int sequenceOptions)
@@ -193,7 +196,7 @@ namespace ImSequencer
          draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
          if (sequenceOptions & SEQUENCER_ADD)
          {
-            if (SequencerAddDelButton(draw_list, ImVec2(canvas_pos.x + legendWidth - ItemHeight, canvas_pos.y + 2), true) && io.MouseReleased[0])
+            if (SequencerAddDelButton(draw_list, ImVec2(canvas_pos.x + legendWidth - ItemHeight, canvas_pos.y + 2), true))
                ImGui::OpenPopup("addEntry");
 
             if (ImGui::BeginPopup("addEntry"))
@@ -280,12 +283,10 @@ namespace ImSequencer
 
             if (sequenceOptions & SEQUENCER_DEL)
             {
-               bool overDel = SequencerAddDelButton(draw_list, ImVec2(contentMin.x + legendWidth - ItemHeight + 2 - 10, tpos.y + 2), false);
-               if (overDel && io.MouseReleased[0])
+               if (SequencerAddDelButton(draw_list, ImVec2(contentMin.x + legendWidth - ItemHeight + 2 - 10, tpos.y + 2), false))
                   delEntry = i;
 
-               bool overDup = SequencerAddDelButton(draw_list, ImVec2(contentMin.x + legendWidth - ItemHeight - ItemHeight + 2 - 10, tpos.y + 2), true);
-               if (overDup && io.MouseReleased[0])
+               if (SequencerAddDelButton(draw_list, ImVec2(contentMin.x + legendWidth - ItemHeight - ItemHeight + 2 - 10, tpos.y + 2), true))
                   dupEntry = i;
             }
             customHeight += sequence->GetCustomHeight(i);
@@ -675,8 +676,7 @@ namespace ImSequencer
 
       if (expanded)
       {
-         bool overExpanded = SequencerAddDelButton(draw_list, ImVec2(canvas_pos.x + 2, canvas_pos.y + 2), !*expanded);
-         if (overExpanded && io.MouseReleased[0])
+         if (SequencerAddDelButton(draw_list, ImVec2(canvas_pos.x + 2, canvas_pos.y + 2), !*expanded))
             *expanded = !*expanded;
       }
 
