@@ -43,6 +43,8 @@ namespace ImSequencer
       bool containedClick = overBtn && btnRect.Contains(io.MouseClickedPos[0]);
       bool clickedBtn = containedClick && io.MouseReleased[0];
       int btnColor = overBtn ? 0xAAEAFFAA : 0x77A3B2AA;
+      if (containedClick && io.MouseDownDuration[0] > 0)
+         btnRect.Expand(2.0f);
 
       float midy = pos.y + 16 / 2 - 0.5f;
       float midx = pos.x + 16 / 2 - 0.5f;
