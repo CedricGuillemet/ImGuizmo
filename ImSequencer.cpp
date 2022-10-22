@@ -38,16 +38,16 @@ namespace ImSequencer
    static bool SequencerAddDelButton(ImDrawList* draw_list, ImVec2 pos, bool add = true)
    {
       ImGuiIO& io = ImGui::GetIO();
-      ImRect delRect(pos, ImVec2(pos.x + 16, pos.y + 16));
-      bool overDel = delRect.Contains(io.MousePos);
-      int delColor = overDel ? 0xFFAAAAAA : 0x77A3B2AA;
+      ImRect btnRect(pos, ImVec2(pos.x + 16, pos.y + 16));
+      bool overBtn = btnRect.Contains(io.MousePos);
+      int btnColor = overBtn ? 0xFFAAAAAA : 0x77A3B2AA;
       float midy = pos.y + 16 / 2 - 0.5f;
       float midx = pos.x + 16 / 2 - 0.5f;
-      draw_list->AddRect(delRect.Min, delRect.Max, delColor, 4);
-      draw_list->AddLine(ImVec2(delRect.Min.x + 3, midy), ImVec2(delRect.Max.x - 3, midy), delColor, 2);
+      draw_list->AddRect(btnRect.Min, btnRect.Max, btnColor, 4);
+      draw_list->AddLine(ImVec2(btnRect.Min.x + 3, midy), ImVec2(btnRect.Max.x - 3, midy), btnColor, 2);
       if (add)
-         draw_list->AddLine(ImVec2(midx, delRect.Min.y + 3), ImVec2(midx, delRect.Max.y - 3), delColor, 2);
-      return overDel;
+         draw_list->AddLine(ImVec2(midx, btnRect.Min.y + 3), ImVec2(midx, btnRect.Max.y - 3), btnColor, 2);
+      return overBtn;
    }
 
    bool Sequencer(SequenceInterface* sequence, int* currentFrame, bool* expanded, int* selectedEntry, int* firstFrame, int sequenceOptions)
