@@ -272,7 +272,7 @@ namespace ImSequencer
                   */
                   // clip content
 
-         draw_list->PushClipRect(childFramePos, childFramePos + childFrameSize);
+         draw_list->PushClipRect(childFramePos, childFramePos + childFrameSize, true);
 
          // draw item names in the legend rect on the left
          size_t customHeight = 0;
@@ -294,9 +294,6 @@ namespace ImSequencer
             customHeight += sequence->GetCustomHeight(i);
          }
 
-         // clipping rect so items bars are not visible in the legend on the left when scrolled
-         //
-
          // slots background
          customHeight = 0;
          for (int i = 0; i < sequenceCount; i++)
@@ -315,7 +312,7 @@ namespace ImSequencer
             customHeight += localCustomHeight;
          }
 
-         draw_list->PushClipRect(childFramePos + ImVec2(float(legendWidth), 0.f), childFramePos + childFrameSize);
+         draw_list->PushClipRect(childFramePos + ImVec2(float(legendWidth), 0.f), childFramePos + childFrameSize, true);
 
          // vertical frame lines in content area
          for (int i = sequence->GetFrameMin(); i <= sequence->GetFrameMax(); i += frameStep)
@@ -331,7 +328,7 @@ namespace ImSequencer
          {
             customHeight = 0;
             for (int i = 0; i < *selectedEntry; i++)
-               customHeight += sequence->GetCustomHeight(i);;
+               customHeight += sequence->GetCustomHeight(i);
             draw_list->AddRectFilled(ImVec2(contentMin.x, contentMin.y + ItemHeight * *selectedEntry + customHeight), ImVec2(contentMin.x + canvas_size.x, contentMin.y + ItemHeight * (*selectedEntry + 1) + customHeight), 0x801080FF, 1.f);
          }
 
