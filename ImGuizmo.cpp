@@ -2872,7 +2872,7 @@ namespace IMGUIZMO_NAMESPACE
                   {
                      gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, IM_COL32(0xF0, 0xA0, 0x60, 0x80));
 
-                     if (io.MouseDown[0] && !isClicking && !isDraging) {
+                     if (io.MouseDown[0] && !isClicking && !isDraging && GImGui->ActiveId == 0) {
                         overBox = boxCoordInt;
                         isClicking = true;
                         isDraging = true;
