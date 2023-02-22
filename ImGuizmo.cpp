@@ -982,7 +982,7 @@ namespace IMGUIZMO_NAMESPACE
 
    bool IsUsing()
    {
-      return gContext.mbUsing || gContext.mbUsingBounds;
+      return (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID)) || gContext.mbUsingBounds;
    }
 
    bool IsOver()
