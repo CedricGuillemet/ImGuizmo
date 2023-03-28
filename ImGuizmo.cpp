@@ -1150,7 +1150,7 @@ namespace IMGUIZMO_NAMESPACE
       else
       {
          // new method
-         float scale_factor = (gContext.mViewMat.m16)[0];
+         float scale_factor = std::hypot((gContext.mViewMat.m16)[axisIndex * 4 + 0], std::hypot((gContext.mViewMat.m16)[axisIndex * 4 + 1], (gContext.mViewMat.m16)[axisIndex * 4 + 2]));
          float lenDir = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirAxis, localCoordinates);
          float lenDirMinus = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), -dirAxis, localCoordinates);
 
