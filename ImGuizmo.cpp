@@ -24,6 +24,8 @@
 // SOFTWARE.
 //
 
+#include <iostream>
+
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
@@ -1129,7 +1131,7 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
-   static void ComputeTripodAxisAndVisibility(const int axisIndex, vec_t& dirAxis, vec_t& dirPlaneX, vec_t& dirPlaneY, bool& belowAxisLimit, bool& belowPlaneLimit, const bool localCoordinates = false)
+   static void ComputeTripodAxisAndVisibility(const int axisIndex, vec_t& dirAxis, vec_t& dirPlaneX, vec_t& dirPlaneY, bool& belowAxisLimit, bool& belowPlaneLimit, const bool localCoordinates = false, CONSTANCY constancy = SCALE_CONST)
    {
       dirAxis = directionUnary[axisIndex];
       dirPlaneX = directionUnary[(axisIndex + 1) % 3];
@@ -1156,6 +1158,8 @@ namespace IMGUIZMO_NAMESPACE
 
          float lenDirPlaneY = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirPlaneY, localCoordinates);
          float lenDirMinusPlaneY = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), -dirPlaneY, localCoordinates);
+
+         std::cout << lenDir << " " << lenDirMinus << " " << lenDirPlaneX << " " << lenDirMinusPlaneX << " " << lenDirPlaneY << " " << lenDirMinusPlaneY << std::endl;
 
          // For readability
          bool & allowFlip = gContext.mAllowAxisFlip;
@@ -1500,7 +1504,7 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
-   static void DrawTranslationGizmo(OPERATION op, int type)
+   static void DrawTranslationGizmo(OPERATION op, int type, CONSTANCY constancy)
    {
       ImDrawList* drawList = gContext.mDrawList;
       if (!drawList)
@@ -2481,7 +2485,7 @@ namespace IMGUIZMO_NAMESPACE
      gContext.mAllowAxisFlip = value;
    }
 
-   bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
+   bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap, CONSTANCY constancy)
    {
       // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
       ComputeContext(view, projection, matrix, (operation & SCALE) ? LOCAL : mode);
@@ -2522,7 +2526,7 @@ namespace IMGUIZMO_NAMESPACE
       if (!gContext.mbUsingBounds)
       {
          DrawRotationGizmo(operation, type);
-         DrawTranslationGizmo(operation, type);
+         DrawTranslationGizmo(operation, type, constancy);
          DrawScaleGizmo(operation, type);
          DrawScaleUniveralGizmo(operation, type);
       }
