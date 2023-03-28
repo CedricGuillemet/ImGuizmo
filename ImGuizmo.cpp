@@ -1150,7 +1150,12 @@ namespace IMGUIZMO_NAMESPACE
       else
       {
          // new method
-         float scale_factor = std::hypot((gContext.mViewMat.m16)[axisIndex * 4 + 0], std::hypot((gContext.mViewMat.m16)[axisIndex * 4 + 1], (gContext.mViewMat.m16)[axisIndex * 4 + 2]));
+         float scale_factor = 1.0f;
+         if (constancy == DISPLAY_CONST)
+         {
+            float scale_factor = std::hypot((gContext.mViewMat.m16)[axisIndex * 4 + 0], std::hypot((gContext.mViewMat.m16)[axisIndex * 4 + 1], (gContext.mViewMat.m16)[axisIndex * 4 + 2]));
+         }
+
          float lenDir = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirAxis, localCoordinates);
          float lenDirMinus = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), -dirAxis, localCoordinates);
 
@@ -1168,8 +1173,6 @@ namespace IMGUIZMO_NAMESPACE
          dirAxis *= mulAxis / scale_factor;
          dirPlaneX *= mulAxisX / scale_factor;
          dirPlaneY *= mulAxisY / scale_factor;
-
-         std::cout << gContext.mScreenFactor << std::endl;
 
          // for axis
          float axisLengthInClipSpace = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirAxis * gContext.mScreenFactor, localCoordinates);
@@ -1227,7 +1230,7 @@ namespace IMGUIZMO_NAMESPACE
       return angle;
    }
 
-   static void DrawRotationGizmo(OPERATION op, int type)
+   static void DrawRotationGizmo(OPERATION op, int type, CONSTANCY constancy = SCALE_CONST)
    {
       if(!Intersects(op, ROTATE))
       {
@@ -1333,7 +1336,7 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
-   static void DrawScaleGizmo(OPERATION op, int type)
+   static void DrawScaleGizmo(OPERATION op, int type, CONSTANCY constancy = SCALE_CONST)
    {
       ImDrawList* drawList = gContext.mDrawList;
 
@@ -1365,7 +1368,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             vec_t dirPlaneX, dirPlaneY, dirAxis;
             bool belowAxisLimit, belowPlaneLimit;
-            ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true);
+            ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true, constancy);
 
             // draw axis
             if (belowAxisLimit)
@@ -1421,7 +1424,7 @@ namespace IMGUIZMO_NAMESPACE
    }
 
 
-   static void DrawScaleUniveralGizmo(OPERATION op, int type)
+   static void DrawScaleUniveralGizmo(OPERATION op, int type, CONSTANCY constancy = SCALE_CONST)
    {
       ImDrawList* drawList = gContext.mDrawList;
 
@@ -1453,7 +1456,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             vec_t dirPlaneX, dirPlaneY, dirAxis;
             bool belowAxisLimit, belowPlaneLimit;
-            ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true);
+            ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true, constancy);
 
             // draw axis
             if (belowAxisLimit)
@@ -1505,7 +1508,7 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
-   static void DrawTranslationGizmo(OPERATION op, int type, CONSTANCY constancy)
+   static void DrawTranslationGizmo(OPERATION op, int type, CONSTANCY constancy = SCALE_CONST)
    {
       ImDrawList* drawList = gContext.mDrawList;
       if (!drawList)
@@ -1530,7 +1533,7 @@ namespace IMGUIZMO_NAMESPACE
       for (int i = 0; i < 3; ++i)
       {
          vec_t dirPlaneX, dirPlaneY, dirAxis;
-         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
+         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, false, constancy);
 
          if (!gContext.mbUsing || (gContext.mbUsing && type == MT_MOVE_X + i))
          {
@@ -2526,10 +2529,10 @@ namespace IMGUIZMO_NAMESPACE
       gContext.mOperation = operation;
       if (!gContext.mbUsingBounds)
       {
-         DrawRotationGizmo(operation, type);
+         DrawRotationGizmo(operation, type, constancy);
          DrawTranslationGizmo(operation, type, constancy);
-         DrawScaleGizmo(operation, type);
-         DrawScaleUniveralGizmo(operation, type);
+         DrawScaleGizmo(operation, type, constancy);
+         DrawScaleUniveralGizmo(operation, type, constancy);
       }
       return manipulated;
    }
