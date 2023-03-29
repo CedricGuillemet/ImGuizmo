@@ -2063,16 +2063,12 @@ namespace IMGUIZMO_NAMESPACE
             type = MT_MOVE_X + i;
          }
 
+         // Reverse the ratio of dirPlane by 1 so that selected point could be at the right place.
          float ratio_x = dirPlaneX.Length();
          float ratio_y = dirPlaneY.Length();
-         const float dx = dirPlaneX.Normalize().Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / (gContext.mScreenFactor * ratio_x)));
-         const float dy = dirPlaneY.Normalize().Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / (gContext.mScreenFactor * ratio_y)));
+         const float dx = dirPlaneX.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / (gContext.mScreenFactor * ratio_x * ratio_x)));
+         const float dy = dirPlaneY.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / (gContext.mScreenFactor * ratio_y * ratio_y)));
          
-         std::cout << dirPlaneX.x << " " << dirPlaneX.y << " " << dirPlaneX.z << std::endl;
-         std::cout << dirPlaneY.x << " " << dirPlaneY.y << " " << dirPlaneY.z << std::endl;
-         std::cout <<(posOnPlan - gContext.mModel.v.position).x << " " << (posOnPlan - gContext.mModel.v.position).y << " " << (posOnPlan - gContext.mModel.v.position).z << std::endl;
-         std::cout << dx << " " << dy << std::endl << "---------" << std::endl;
-
          if (belowPlaneLimit && dx >= quadUV[0] && dx <= quadUV[4] && dy >= quadUV[1] && dy <= quadUV[3] && Contains(op, TRANSLATE_PLANS[i]))
          {
             type = MT_MOVE_YZ + i;
