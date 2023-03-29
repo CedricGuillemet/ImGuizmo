@@ -779,9 +779,9 @@ namespace IMGUIZMO_NAMESPACE
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
-   static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion);
-   static int GetRotateType(OPERATION op);
-   static int GetScaleType(OPERATION op);
+   static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion, CONSTANCY constancy = SCALE_CONST);
+   static int GetRotateType(OPERATION op, CONSTANCY constancy = SCALE_CONST);
+   static int GetScaleType(OPERATION op, CONSTANCY constancy = SCALE_CONST);
 
    Style& GetStyle()
    {
@@ -987,28 +987,28 @@ namespace IMGUIZMO_NAMESPACE
       return (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID)) || gContext.mbUsingBounds;
    }
 
-   bool IsOver()
+   bool IsOver(CONSTANCY constancy = SCALE_CONST)
    {
-      return (Intersects(gContext.mOperation, TRANSLATE) && GetMoveType(gContext.mOperation, NULL) != MT_NONE) ||
-         (Intersects(gContext.mOperation, ROTATE) && GetRotateType(gContext.mOperation) != MT_NONE) ||
-         (Intersects(gContext.mOperation, SCALE) && GetScaleType(gContext.mOperation) != MT_NONE) || IsUsing();
+      return (Intersects(gContext.mOperation, TRANSLATE) && GetMoveType(gContext.mOperation, NULL, constancy) != MT_NONE) ||
+         (Intersects(gContext.mOperation, ROTATE) && GetRotateType(gContext.mOperation, constancy) != MT_NONE) ||
+         (Intersects(gContext.mOperation, SCALE) && GetScaleType(gContext.mOperation, constancy) != MT_NONE) || IsUsing();
    }
 
-   bool IsOver(OPERATION op)
+   bool IsOver(OPERATION op, CONSTANCY constancy = SCALE_CONST)
    {
       if(IsUsing())
       {
          return true;
       }
-      if(Intersects(op, SCALE) && GetScaleType(op) != MT_NONE)
+      if(Intersects(op, SCALE) && GetScaleType(op, constancy) != MT_NONE)
       {
          return true;
       }
-      if(Intersects(op, ROTATE) && GetRotateType(op) != MT_NONE)
+      if(Intersects(op, ROTATE) && GetRotateType(op, constancy) != MT_NONE)
       {
          return true;
       }
-      if(Intersects(op, TRANSLATE) && GetMoveType(op, NULL) != MT_NONE)
+      if(Intersects(op, TRANSLATE) && GetMoveType(op, NULL, constancy) != MT_NONE)
       {
          return true;
       }
@@ -1613,7 +1613,7 @@ namespace IMGUIZMO_NAMESPACE
       return false;
    }
 
-   static void HandleAndDrawLocalBounds(const float* bounds, matrix_t* matrix, const float* snapValues, OPERATION operation)
+   static void HandleAndDrawLocalBounds(const float* bounds, matrix_t* matrix, const float* snapValues, OPERATION operation, CONSTANCY constancy = SCALE_CONST)
    {
       ImGuiIO& io = ImGui::GetIO();
       ImDrawList* drawList = gContext.mDrawList;
@@ -1733,15 +1733,15 @@ namespace IMGUIZMO_NAMESPACE
 
             if(Intersects(operation, TRANSLATE))
             {
-               type = GetMoveType(operation, &gizmoHitProportion);
+               type = GetMoveType(operation, &gizmoHitProportion, constancy);
             }
             if(Intersects(operation, ROTATE) && type == MT_NONE)
             {
-               type = GetRotateType(operation);
+               type = GetRotateType(operation, constancy);
             }
             if(Intersects(operation, SCALE) && type == MT_NONE)
             {
-               type = GetScaleType(operation);
+               type = GetScaleType(operation, constancy);
             }
 
             if (type != MT_NONE)
@@ -1877,7 +1877,7 @@ namespace IMGUIZMO_NAMESPACE
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
 
-   static int GetScaleType(OPERATION op)
+   static int GetScaleType(OPERATION op, CONSTANCY constancy)
    {
       if (gContext.mbUsing)
       {
@@ -1903,7 +1903,7 @@ namespace IMGUIZMO_NAMESPACE
          }
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
-         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true);
+         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true, constancy);
          dirAxis.TransformVector(gContext.mModelLocal);
          dirPlaneX.TransformVector(gContext.mModelLocal);
          dirPlaneY.TransformVector(gContext.mModelLocal);
@@ -1943,7 +1943,7 @@ namespace IMGUIZMO_NAMESPACE
 
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
-         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true);
+         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true, constancy);
 
          // draw axis
          if (belowAxisLimit)
@@ -1964,7 +1964,7 @@ namespace IMGUIZMO_NAMESPACE
       return type;
    }
 
-   static int GetRotateType(OPERATION op)
+   static int GetRotateType(OPERATION op, CONSTANCY constancy)
    {
       if (gContext.mbUsing)
       {
@@ -2022,7 +2022,7 @@ namespace IMGUIZMO_NAMESPACE
       return type;
    }
 
-   static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion)
+   static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion, CONSTANCY constancy)
    {
       if(!Intersects(op, TRANSLATE) || gContext.mbUsing || !gContext.mbMouseOver)
       {
@@ -2046,7 +2046,7 @@ namespace IMGUIZMO_NAMESPACE
       {
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
-         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
+         ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, false, constancy);
          dirAxis.TransformVector(gContext.mModel);
          dirPlaneX.TransformVector(gContext.mModel);
          dirPlaneY.TransformVector(gContext.mModel);
@@ -2078,7 +2078,7 @@ namespace IMGUIZMO_NAMESPACE
       return type;
    }
 
-   static bool HandleTranslation(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap)
+   static bool HandleTranslation(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap, CONSTANCY constancy = SCALE_CONST)
    {
       if(!Intersects(op, TRANSLATE) || type != MT_NONE)
       {
@@ -2163,7 +2163,7 @@ namespace IMGUIZMO_NAMESPACE
       {
          // find new possible way to move
          vec_t gizmoHitProportion;
-         type = GetMoveType(op, &gizmoHitProportion);
+         type = GetMoveType(op, &gizmoHitProportion, constancy);
          if (type != MT_NONE)
          {
 #if IMGUI_VERSION_NUM >= 18723
@@ -2200,7 +2200,7 @@ namespace IMGUIZMO_NAMESPACE
       return modified;
    }
 
-   static bool HandleScale(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap)
+   static bool HandleScale(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap, CONSTANCY constancy = SCALE_CONST)
    {
       if((!Intersects(op, SCALE) && !Intersects(op, SCALEU)) || type != MT_NONE || !gContext.mbMouseOver)
       {
@@ -2212,7 +2212,7 @@ namespace IMGUIZMO_NAMESPACE
       if (!gContext.mbUsing)
       {
          // find new possible way to scale
-         type = GetScaleType(op);
+         type = GetScaleType(op, constancy);
          if (type != MT_NONE)
          {
 #if IMGUI_VERSION_NUM >= 18723
@@ -2321,7 +2321,7 @@ namespace IMGUIZMO_NAMESPACE
       return modified;
    }
 
-   static bool HandleRotation(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap)
+   static bool HandleRotation(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap, CONSTANCY constancy = SCALE_CONST)
    {
       if(!Intersects(op, ROTATE) || type != MT_NONE || !gContext.mbMouseOver)
       {
@@ -2333,7 +2333,7 @@ namespace IMGUIZMO_NAMESPACE
 
       if (!gContext.mbUsing)
       {
-         type = GetRotateType(op);
+         type = GetRotateType(op, constancy);
 
          if (type != MT_NONE)
          {
@@ -2515,15 +2515,15 @@ namespace IMGUIZMO_NAMESPACE
       {
          if (!gContext.mbUsingBounds)
          {
-            manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap) ||
-                          HandleScale(matrix, deltaMatrix, operation, type, snap) ||
-                          HandleRotation(matrix, deltaMatrix, operation, type, snap);
+            manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap, constancy) ||
+                          HandleScale(matrix, deltaMatrix, operation, type, snap, constancy) ||
+                          HandleRotation(matrix, deltaMatrix, operation, type, snap, constancy);
          }
       }
 
       if (localBounds && !gContext.mbUsing)
       {
-         HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation);
+         HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation, constancy);
       }
 
       gContext.mOperation = operation;
