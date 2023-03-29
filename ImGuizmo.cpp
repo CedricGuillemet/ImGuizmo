@@ -2063,8 +2063,8 @@ namespace IMGUIZMO_NAMESPACE
             type = MT_MOVE_X + i;
          }
 
-         const float dx = dirPlaneX.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
-         const float dy = dirPlaneY.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
+         const float dx = dirPlaneX.Normalize().Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
+         const float dy = dirPlaneY.Normalize().Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
          
          std::cout << dirPlaneX.x << " " << dirPlaneX.y << " " << dirPlaneX.z << std::endl;
          std::cout << dirPlaneY.x << " " << dirPlaneY.y << " " << dirPlaneY.z << std::endl;
