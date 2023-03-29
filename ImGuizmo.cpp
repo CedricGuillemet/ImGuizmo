@@ -2065,6 +2065,12 @@ namespace IMGUIZMO_NAMESPACE
 
          const float dx = dirPlaneX.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
          const float dy = dirPlaneY.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
+         
+         std::cout << dirPlaneX.x << " " << dirPlaneX.y << " " << dirPlaneX.z << std::endl;
+         std::cout << dirPlaneY.x << " " << dirPlaneY.y << " " << dirPlaneY.z << std::endl;
+         std::cout <<(posOnPlan - gContext.mModel.v.position).x << " " << (posOnPlan - gContext.mModel.v.position).y << " " << (posOnPlan - gContext.mModel.v.position).z << std::endl;
+         std::cout << dx << " " << dy << std::endl << "---------" << std::endl;
+
          if (belowPlaneLimit && dx >= quadUV[0] && dx <= quadUV[4] && dy >= quadUV[1] && dy <= quadUV[3] && Contains(op, TRANSLATE_PLANS[i]))
          {
             type = MT_MOVE_YZ + i;
