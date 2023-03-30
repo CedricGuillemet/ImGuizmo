@@ -2017,9 +2017,15 @@ namespace IMGUIZMO_NAMESPACE
 
          //gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, IM_COL32_WHITE);
          const ImVec2 distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
-         std::cout << distanceOnScreen.x << " " << distanceOnScreen.y << std::endl;
 
-         const float distance = makeVect(distanceOnScreen).Length();
+         float scale_factor = 1.0f;
+         if (constancy == DISPLAY_CONST)
+         {
+            scale_factor = std::hypot((gContext.mViewMat.m16)[i * 4 + 0], std::hypot((gContext.mViewMat.m16)[i * 4 + 1], (gContext.mViewMat.m16)[i * 4 + 2]));
+         }
+
+         const float distance = makeVect(distanceOnScreen).Length() / (scale_factor * scale_factor);
+         std::cout << distance << std::endl;
          if (distance < 8.f) // pixel size
          {
             type = MT_ROTATE_X + i;
