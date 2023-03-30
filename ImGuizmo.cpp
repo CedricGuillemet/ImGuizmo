@@ -2024,7 +2024,7 @@ namespace IMGUIZMO_NAMESPACE
             scale_factor = std::hypot((gContext.mViewMat.m16)[i * 4 + 0], std::hypot((gContext.mViewMat.m16)[i * 4 + 1], (gContext.mViewMat.m16)[i * 4 + 2]));
          }
 
-         const float distance = makeVect(distanceOnScreen).Length() / (scale_factor * scale_factor);
+         const float distance = makeVect(distanceOnScreen).Length() * scale_factor;
          std::cout << distance << std::endl;
          if (distance < 8.f) // pixel size
          {
