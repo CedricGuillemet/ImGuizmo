@@ -1268,6 +1268,12 @@ namespace IMGUIZMO_NAMESPACE
          const bool usingAxis = (gContext.mbUsing && type == MT_ROTATE_Z - axis);
          const int circleMul = (hasRSC && !usingAxis ) ? 1 : 2;
 
+         float scale_factor = 1.0f;
+         if (constancy == DISPLAY_CONST)
+         {
+            scale_factor = std::hypot((gContext.mViewMat.m16)[axis * 4 + 0], std::hypot((gContext.mViewMat.m16)[axis * 4 + 1], (gContext.mViewMat.m16)[axis * 4 + 2]));
+         }
+
          ImVec2* circlePos = (ImVec2*)alloca(sizeof(ImVec2) * (circleMul * halfCircleSegmentCount + 1));
 
          float angleStart = atan2f(cameraToModelNormalized[(4 - axis) % 3], cameraToModelNormalized[(3 - axis) % 3]) + ZPI * 0.5f;
@@ -1275,7 +1281,7 @@ namespace IMGUIZMO_NAMESPACE
          for (int i = 0; i < circleMul * halfCircleSegmentCount + 1; i++)
          {
             float ng = angleStart + (float)circleMul * ZPI * ((float)i / (float)halfCircleSegmentCount);
-            vec_t axisPos = makeVect(cosf(ng), sinf(ng), 0.f);
+            vec_t axisPos = makeVect(cosf(ng), sinf(ng), 0.f) * scale_factor;
             vec_t pos = makeVect(axisPos[axis], axisPos[(axis + 1) % 3], axisPos[(axis + 2) % 3]) * gContext.mScreenFactor * rotationDisplayFactor;
             circlePos[i] = worldToPos(pos, gContext.mMVP);
          }
