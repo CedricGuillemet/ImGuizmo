@@ -2010,22 +2010,21 @@ namespace IMGUIZMO_NAMESPACE
             continue;
          }
 
-         const vec_t localPos = intersectWorldPos - gContext.mModel.v.position;
-         vec_t idealPosOnCircle = Normalized(localPos);
-         idealPosOnCircle.TransformVector(gContext.mModelInverse);
-         const ImVec2 idealPosOnCircleScreen = worldToPos(idealPosOnCircle * rotationDisplayFactor * gContext.mScreenFactor, gContext.mMVP);
-
-         //gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, IM_COL32_WHITE);
-         const ImVec2 distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
-
          float scale_factor = 1.0f;
          if (constancy == DISPLAY_CONST)
          {
             scale_factor = std::hypot((gContext.mViewMat.m16)[i * 4 + 0], std::hypot((gContext.mViewMat.m16)[i * 4 + 1], (gContext.mViewMat.m16)[i * 4 + 2]));
          }
 
+         const vec_t localPos = intersectWorldPos - gContext.mModel.v.position;
+         vec_t idealPosOnCircle = Normalized(localPos);
+         idealPosOnCircle.TransformVector(gContext.mModelInverse);
+         const ImVec2 idealPosOnCircleScreen = worldToPos(idealPosOnCircle * rotationDisplayFactor * gContext.mScreenFactor * (1.0f / scale_factor), gContext.mMVP);
+
+         //gContext.mDrawList->AddCircle(idealPosOnCircleScreen, 5.f, IM_COL32_WHITE);
+         const ImVec2 distanceOnScreen = idealPosOnCircleScreen - io.MousePos;
+
          const float distance = makeVect(distanceOnScreen).Length();
-         std::cout << distance << std::endl;
          if (distance < 8.f) // pixel size
          {
             type = MT_ROTATE_X + i;
