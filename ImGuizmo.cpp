@@ -845,7 +845,10 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       vec_t clipSpaceAxis = endOfSegment - startOfSegment;
-      clipSpaceAxis.y /= gContext.mDisplayRatio;
+      if (gContext.mDisplayRatio < 1.0)
+         clipSpaceAxis.x *= gContext.mDisplayRatio;
+      else
+         clipSpaceAxis.y /= gContext.mDisplayRatio;
       float segmentLengthInClipSpace = sqrtf(clipSpaceAxis.x * clipSpaceAxis.x + clipSpaceAxis.y * clipSpaceAxis.y);
       return segmentLengthInClipSpace;
    }
