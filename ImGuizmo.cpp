@@ -729,6 +729,9 @@ namespace IMGUIZMO_NAMESPACE
       bool mBelowPlaneLimit[3];
       float mAxisFactor[3];
 
+      float mAxisLimit=0.0025f;
+      float mPlaneLimit=0.02f;
+
       // bounds stretching
       vec_t mBoundsPivot;
       vec_t mBoundsAnchor;
@@ -1173,8 +1176,8 @@ namespace IMGUIZMO_NAMESPACE
          float axisLengthInClipSpace = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirAxis * gContext.mScreenFactor, localCoordinates);
 
          float paraSurf = GetParallelogram(makeVect(0.f, 0.f, 0.f), dirPlaneX * gContext.mScreenFactor, dirPlaneY * gContext.mScreenFactor);
-         belowPlaneLimit = (paraSurf > 0.0025f);
-         belowAxisLimit = (axisLengthInClipSpace > 0.02f);
+         belowPlaneLimit = (paraSurf > gContext.mAxisLimit);
+         belowAxisLimit = (axisLengthInClipSpace > gContext.mPlaneLimit);
 
          // and store values
          gContext.mAxisFactor[axisIndex] = mulAxis;
@@ -2482,6 +2485,16 @@ namespace IMGUIZMO_NAMESPACE
    void AllowAxisFlip(bool value)
    {
      gContext.mAllowAxisFlip = value;
+   }
+
+   void SetAxisLimit(float value)
+   {
+     gContext.mAxisLimit=value;
+   }
+
+   void SetPlaneLimit(float value)
+   {
+     gContext.mPlaneLimit = value;
    }
 
    bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
