@@ -224,6 +224,11 @@ namespace IMGUIZMO_NAMESPACE
    // When false, they always stay along the positive world/local axis
    IMGUI_API void AllowAxisFlip(bool value);
 
+   // Configure the limit where axis are hidden
+   IMGUI_API void SetAxisLimit(float value);
+   // Configure the limit where planes are hiden
+   IMGUI_API void SetPlaneLimit(float value);
+
    enum COLOR
    {
       DIRECTION_X,      // directionColor[0]
