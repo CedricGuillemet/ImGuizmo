@@ -990,6 +990,11 @@ namespace IMGUIZMO_NAMESPACE
    {
       return (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID)) || gContext.mbUsingBounds;
    }
+   
+   bool IsUsingAny()
+   {
+      return gContext.mbUsing || gContext.mbUsingBounds;
+   }
 
    bool IsOver()
    {
