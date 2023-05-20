@@ -136,6 +136,9 @@ namespace IMGUIZMO_NAMESPACE
    // return true if mouse IsOver or if the gizmo is in moving state
    IMGUI_API bool IsUsing();
 
+   // return true if any gizmo is in moving state
+   IMGUI_API bool IsUsingAny();
+
    // enable/disable the gizmo. Stay in the state until next call to Enable.
    // gizmo is rendered with gray half transparent color when disabled
    IMGUI_API void Enable(bool enable);
