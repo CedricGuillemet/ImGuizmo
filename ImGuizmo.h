@@ -117,6 +117,12 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 
 namespace IMGUIZMO_NAMESPACE
 {
+   enum CONSTANCY
+   {
+      SCALE_CONST = (1u << 0),
+      DISPLAY_CONST
+   };
+
    // call inside your own window and before Manipulate() in order to draw gizmo to that window.
    // Or pass a specific ImDrawList to draw to (e.g. ImGui::GetForegroundDrawList()).
    IMGUI_API void SetDrawlist(ImDrawList* drawlist = nullptr);
@@ -131,7 +137,7 @@ namespace IMGUIZMO_NAMESPACE
    IMGUI_API void SetImGuiContext(ImGuiContext* ctx);
 
    // return true if mouse cursor is over any gizmo control (axis, plan or screen component)
-   IMGUI_API bool IsOver();
+   IMGUI_API bool IsOver(CONSTANCY constancy = SCALE_CONST);
 
    // return true if mouse IsOver or if the gizmo is in moving state
    IMGUI_API bool IsUsing();
@@ -202,12 +208,6 @@ namespace IMGUIZMO_NAMESPACE
       WORLD
    };
 
-   enum CONSTANCY
-   {
-      SCALE_CONST = (1u << 0),
-      DISPLAY_CONST
-   };
-
    IMGUI_API bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL, CONSTANCY constancy = SCALE_CONST);
    //
    // Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en
@@ -222,7 +222,7 @@ namespace IMGUIZMO_NAMESPACE
    IMGUI_API void SetID(int id);
 
    // return true if the cursor is over the operation's gizmo
-   IMGUI_API bool IsOver(OPERATION op);
+   IMGUI_API bool IsOver(OPERATION op, CONSTANCY constancy = SCALE_CONST);
    IMGUI_API void SetGizmoSizeClipSpace(float value);
 
    // Allow axis to flip

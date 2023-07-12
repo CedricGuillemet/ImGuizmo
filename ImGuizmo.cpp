@@ -985,14 +985,14 @@ namespace IMGUIZMO_NAMESPACE
       return (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID)) || gContext.mbUsingBounds;
    }
 
-   bool IsOver(CONSTANCY constancy = SCALE_CONST)
+   bool IsOver(CONSTANCY constancy)
    {
       return (Intersects(gContext.mOperation, TRANSLATE) && GetMoveType(gContext.mOperation, NULL, constancy) != MT_NONE) ||
          (Intersects(gContext.mOperation, ROTATE) && GetRotateType(gContext.mOperation, constancy) != MT_NONE) ||
          (Intersects(gContext.mOperation, SCALE) && GetScaleType(gContext.mOperation, constancy) != MT_NONE) || IsUsing();
    }
 
-   bool IsOver(OPERATION op, CONSTANCY constancy = SCALE_CONST)
+   bool IsOver(OPERATION op, CONSTANCY constancy)
    {
       if(IsUsing())
       {
