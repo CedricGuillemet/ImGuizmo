@@ -67,7 +67,6 @@ install(FILES
 # Install the config, configversion and custom find modules
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
     DESTINATION ${INSTALL_CONFIGDIR}
 )
 
