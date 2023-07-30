@@ -34,7 +34,7 @@ Check the sample for the documentation. More to come...
 ### Graph Editor
 
 Nodes + connections. Custom draw inside nodes is possible with the delegate system in place.
-![Image of GraphEditor](Images/nodeeditor.jpg)
+![Image of GraphEditor](images/nodeeditor.jpg)
 
 ### API doc
 
