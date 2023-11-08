@@ -726,6 +726,7 @@ namespace IMGUIZMO_NAMESPACE
 
       // save axis factor when using gizmo
       bool mBelowAxisLimit[3];
+      int mAxisMask = 0;
       bool mBelowPlaneLimit[3];
       float mAxisFactor[3];
 
@@ -1149,8 +1150,10 @@ namespace IMGUIZMO_NAMESPACE
       if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID))
       {
          // when using, use stored factors so the gizmo doesn't flip when we translate
-         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex];
-         belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex];
+
+         // Apply axis mask to axes and planes
+         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex] && ((1<<axisIndex)&gContext.mAxisMask);
+         belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex] && (((1<<axisIndex)&gContext.mAxisMask) && !(gContext.mAxisMask & (gContext.mAxisMask - 1)) || !gContext.mAxisMask);
 
          dirAxis *= gContext.mAxisFactor[axisIndex];
          dirPlaneX *= gContext.mAxisFactor[(axisIndex + 1) % 3];
@@ -1181,8 +1184,9 @@ namespace IMGUIZMO_NAMESPACE
          float axisLengthInClipSpace = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirAxis * gContext.mScreenFactor, localCoordinates);
 
          float paraSurf = GetParallelogram(makeVect(0.f, 0.f, 0.f), dirPlaneX * gContext.mScreenFactor, dirPlaneY * gContext.mScreenFactor);
-         belowPlaneLimit = (paraSurf > gContext.mAxisLimit);
-         belowAxisLimit = (axisLengthInClipSpace > gContext.mPlaneLimit);
+         // Apply axis mask to axes and planes
+         belowPlaneLimit = (paraSurf > gContext.mAxisLimit) && (((1<<axisIndex)&gContext.mAxisMask) && !(gContext.mAxisMask & (gContext.mAxisMask - 1)) || !gContext.mAxisMask);
+         belowAxisLimit = (axisLengthInClipSpace > gContext.mPlaneLimit) && !((1<<axisIndex)&gContext.mAxisMask);
 
          // and store values
          gContext.mAxisFactor[axisIndex] = mulAxis;
@@ -2495,6 +2499,11 @@ namespace IMGUIZMO_NAMESPACE
    void SetAxisLimit(float value)
    {
      gContext.mAxisLimit=value;
+   }
+
+   void SetAxisMask(bool x, bool y, bool z)
+   {
+      gContext.mAxisMask = (x ? 1 : 0) + (y ? 2 : 0) + (z ? 4 : 0);
    }
 
    void SetPlaneLimit(float value)
