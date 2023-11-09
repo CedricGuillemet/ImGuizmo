@@ -1276,7 +1276,7 @@ namespace IMGUIZMO_NAMESPACE
             continue;
          }
 
-         bool isAxisMasked = (1 << 2 - axis) & gContext.mAxisMask;
+         bool isAxisMasked = (1 << (2 - axis)) & gContext.mAxisMask;
 
          if ((!isAxisMasked || isMultipleAxesMasked) && !isNoAxesMasked)
          {
