@@ -1283,7 +1283,7 @@ namespace IMGUIZMO_NAMESPACE
             continue;
          }
          const bool usingAxis = (gContext.mbUsing && type == MT_ROTATE_Z - axis);
-         const int circleMul = (hasRSC && !usingAxis && (isMultipleAxesMasked || isNoAxesMasked)) ? 1 : 2;
+         const int circleMul = (hasRSC && !usingAxis) ? 1 : 2;
 
          ImVec2* circlePos = (ImVec2*)alloca(sizeof(ImVec2) * (circleMul * halfCircleSegmentCount + 1));
 
@@ -2069,10 +2069,7 @@ namespace IMGUIZMO_NAMESPACE
          io.MousePos.y >= gContext.mScreenSquareMin.y && io.MousePos.y <= gContext.mScreenSquareMax.y &&
          Contains(op, TRANSLATE))
       {
-         if (!isNoAxesMasked)
-            type = MT_MOVE_YZ + (gContext.mAxisMask >> 1);
-         else
-            type = MT_MOVE_SCREEN;
+         type = MT_MOVE_SCREEN;
       }
 
       const vec_t screenCoord = makeVect(io.MousePos - ImVec2(gContext.mX, gContext.mY));
