@@ -1782,7 +1782,7 @@ namespace IMGUIZMO_NAMESPACE
                gContext.mBoundsLocalPivot[thirdAxis] = aabb[oppositeIndex][thirdAxis];
 
                gContext.mbUsingBounds = true;
-               gContext.mEditingID = gContext.mIDStack.front();
+               gContext.mEditingID = gContext.GetCurrentID();
                gContext.mBoundsMatrix = gContext.mModelSource;
             }
             // small anchor on middle of segment
