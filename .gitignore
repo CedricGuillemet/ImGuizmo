@@ -1,2 +1,13 @@
 build/
 .*/
+/example/x64/Debug/ImGuizmoSample.exe
+/example/x64/Debug/ImGuizmoSample.pdb
+/example/ImGuizmoSample/x64/Debug/ImGuizmoSample.ilk
+/example/ImGuizmoSample/x64/Debug/main.obj
+/example/ImGuizmoSample/x64/Debug/vc143.idb
+/example/ImGuizmoSample/x64/Debug/vc143.pdb
+/example/x64/Debug/ImGuizmoSample.exe
+/example/ImGuizmoSample/x64/Debug/ImGuizmoSample.ilk
+/example/ImGuizmoSample/x64/Debug/main.obj
+/example/ImGuizmoSample/x64/Debug/vc143.idb
+/example/ImGuizmoSample/x64/Debug/vc143.pdb
