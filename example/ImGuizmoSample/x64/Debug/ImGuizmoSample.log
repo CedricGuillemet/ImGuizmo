@@ -1,4 +1,30 @@
 ﻿  main.cpp
+C:\Repos\ImGuizmo\example\main.cpp(828,69): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Repos\ImGuizmo\example\main.cpp(1112,75): warning C4305: 'initializing': truncation from 'double' to '_Ty'
+C:\Repos\ImGuizmo\example\main.cpp(1112,75): warning C4305:         with
+C:\Repos\ImGuizmo\example\main.cpp(1112,75): warning C4305:         [
+C:\Repos\ImGuizmo\example\main.cpp(1112,75): warning C4305:             _Ty=float
+C:\Repos\ImGuizmo\example\main.cpp(1112,75): warning C4305:         ]
+C:\Repos\ImGuizmo\example\main.cpp(1115,74): warning C4305: 'initializing': truncation from 'double' to '_Ty'
+C:\Repos\ImGuizmo\example\main.cpp(1115,74): warning C4305:         with
+C:\Repos\ImGuizmo\example\main.cpp(1115,74): warning C4305:         [
+C:\Repos\ImGuizmo\example\main.cpp(1115,74): warning C4305:             _Ty=float
+C:\Repos\ImGuizmo\example\main.cpp(1115,74): warning C4305:         ]
+C:\Repos\ImGuizmo\example\main.cpp(1118,76): warning C4305: 'initializing': truncation from 'double' to '_Ty'
+C:\Repos\ImGuizmo\example\main.cpp(1118,76): warning C4305:         with
+C:\Repos\ImGuizmo\example\main.cpp(1118,76): warning C4305:         [
+C:\Repos\ImGuizmo\example\main.cpp(1118,76): warning C4305:             _Ty=float
+C:\Repos\ImGuizmo\example\main.cpp(1118,76): warning C4305:         ]
+C:\Repos\ImGuizmo\example\main.cpp(1121,75): warning C4305: 'initializing': truncation from 'double' to '_Ty'
+C:\Repos\ImGuizmo\example\main.cpp(1121,75): warning C4305:         with
+C:\Repos\ImGuizmo\example\main.cpp(1121,75): warning C4305:         [
+C:\Repos\ImGuizmo\example\main.cpp(1121,75): warning C4305:             _Ty=float
+C:\Repos\ImGuizmo\example\main.cpp(1121,75): warning C4305:         ]
+C:\Repos\ImGuizmo\example\main.cpp(1121,87): warning C4305: 'initializing': truncation from 'double' to '_Ty'
+C:\Repos\ImGuizmo\example\main.cpp(1121,87): warning C4305:         with
+C:\Repos\ImGuizmo\example\main.cpp(1121,87): warning C4305:         [
+C:\Repos\ImGuizmo\example\main.cpp(1121,87): warning C4305:             _Ty=float
+C:\Repos\ImGuizmo\example\main.cpp(1121,87): warning C4305:         ]
   ImGuizmoSample.vcxproj -> C:\Repos\ImGuizmo\example\x64\Debug\ImGuizmoSample.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.

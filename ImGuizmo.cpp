@@ -2708,6 +2708,241 @@ namespace IMGUIZMO_NAMESPACE
       _freea(faces);
    }
 
+   void DrawSpheres(const float* view, const float* projection, const float* matrices, int matrixCount)
+   {
+      matrix_t viewInverse;
+      viewInverse.Inverse(*(matrix_t*)view);
+
+      // Define the number of segments for latitude and longitude (higher = more detailed sphere)
+      const int latSegments = 16; // Latitude segments
+      const int lonSegments = 16; // Longitude segments
+
+      struct SphereFace
+      {
+         float z;
+         ImVec2 faceCoordsScreen[3]; // Using triangles for the sphere surface
+         ImU32 color;
+      };
+      int maxFaces = matrixCount * latSegments * lonSegments * 2; // Two triangles per quad
+      SphereFace* faces = (SphereFace*)_malloca(sizeof(SphereFace) * maxFaces);
+
+      if (!faces)
+      {
+         return;
+      }
+
+      vec_t frustum[6];
+      matrix_t viewProjection = *(matrix_t*)view * *(matrix_t*)projection;
+      ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+      int faceCount = 0;
+      for (int sphere = 0; sphere < matrixCount; sphere++)
+      {
+         const float* matrix = &matrices[sphere * 16];
+
+         matrix_t res = *(matrix_t*)matrix * *(matrix_t*)view * *(matrix_t*)projection;
+
+         // Iterate over latitude and longitude to create vertices of the sphere
+         for (int lat = 0; lat < latSegments; lat++)
+         {
+            float theta1 = (lat * ZPI) / latSegments;
+            float theta2 = ((lat + 1) * ZPI) / latSegments;
+
+            for (int lon = 0; lon < lonSegments; lon++)
+            {
+               float phi1 = (lon * 2 * ZPI) / lonSegments;
+               float phi2 = ((lon + 1) * 2 * ZPI) / lonSegments;
+
+               vec_t vertex[4];
+
+               // Calculate the four vertices for the quad on the sphere
+               vertex[0].Set(sin(theta1) * cos(phi1), cos(theta1), sin(theta1) * sin(phi1), 1.0f);
+               vertex[1].Set(sin(theta2) * cos(phi1), cos(theta2), sin(theta2) * sin(phi1), 1.0f);
+               vertex[2].Set(sin(theta2) * cos(phi2), cos(theta2), sin(theta2) * sin(phi2), 1.0f);
+               vertex[3].Set(sin(theta1) * cos(phi2), cos(theta1), sin(theta1) * sin(phi2), 1.0f);
+
+               // Project vertices to screen and draw two triangles (one quad)
+               for (int i = 0; i < 4; i++)
+               {
+                  vertex[i].TransformPoint(vertex[i], *(matrix_t*)matrix);
+               }
+
+               // Add triangles for the quad (two per face)
+               SphereFace& face1 = faces[faceCount++];
+               face1.faceCoordsScreen[0] = worldToPos(vertex[0], res);
+               face1.faceCoordsScreen[1] = worldToPos(vertex[1], res);
+               face1.faceCoordsScreen[2] = worldToPos(vertex[2], res);
+               face1.z = (vertex[0].z + vertex[1].z + vertex[2].z) / 3.0f;
+               face1.color = IM_COL32(200, 200, 255, 255); // Color of sphere
+
+               SphereFace& face2 = faces[faceCount++];
+               face2.faceCoordsScreen[0] = worldToPos(vertex[2], res);
+               face2.faceCoordsScreen[1] = worldToPos(vertex[3], res);
+               face2.faceCoordsScreen[2] = worldToPos(vertex[0], res);
+               face2.z = (vertex[2].z + vertex[3].z + vertex[0].z) / 3.0f;
+               face2.color = IM_COL32(200, 200, 255, 255);
+            }
+         }
+      }
+
+      // Sort faces by depth
+      qsort(faces, faceCount, sizeof(SphereFace), [](void const* _a, void const* _b) {
+         SphereFace* a = (SphereFace*)_a;
+         SphereFace* b = (SphereFace*)_b;
+         if (a->z < b->z)
+         {
+            return 1;
+         }
+         return -1;
+         });
+
+      // Draw the faces
+      for (int iFace = 0; iFace < faceCount; iFace++)
+      {
+         const SphereFace& face = faces[iFace];
+         gContext.mDrawList->AddConvexPolyFilled(face.faceCoordsScreen, 3, face.color);
+      }
+
+      _freea(faces);
+   }
+
+   void DrawCylinders(const float* view, const float* projection, const float* matrices, int matrixCount)
+   {
+      matrix_t viewInverse;
+      viewInverse.Inverse(*(matrix_t*)view);
+
+      // Define the number of segments for the circular base (higher = more detailed cylinder)
+      const int circleSegments = 16;
+
+      struct CylinderFace
+      {
+         float z;
+         ImVec2 faceCoordsScreen[3]; // Using triangles for the cylinder surface
+         ImU32 color;
+      };
+      int maxFaces = matrixCount * circleSegments * 2 * 2; // Two triangles per face (top, bottom, and sides)
+      CylinderFace* faces = (CylinderFace*)_malloca(sizeof(CylinderFace) * maxFaces);
+
+      if (!faces)
+      {
+         return;
+      }
+
+      vec_t frustum[6];
+      matrix_t viewProjection = *(matrix_t*)view * *(matrix_t*)projection;
+      ComputeFrustumPlanes(frustum, viewProjection.m16);
+
+      int faceCount = 0;
+      for (int cylinder = 0; cylinder < matrixCount; cylinder++)
+      {
+         const float* matrix = &matrices[cylinder * 16];
+
+         matrix_t res = *(matrix_t*)matrix * *(matrix_t*)view * *(matrix_t*)projection;
+
+         // Iterate over the circular base to create vertices for the cylinder
+         for (int i = 0; i < circleSegments; i++)
+         {
+            float theta1 = (i * 2 * ZPI) / circleSegments;
+            float theta2 = ((i + 1) * 2 * ZPI) / circleSegments;
+
+            vec_t vertex[4];
+
+            // Calculate vertices for the top and bottom circular faces
+            vertex[0].x = cosf(theta1); // Rotate along Z-axis for proper wheel orientation
+            vertex[0].y = 1.0f;
+            vertex[0].z = sinf(theta1);
+            vertex[0].w = 1.0f;
+
+            vertex[1].x = cosf(theta2);
+            vertex[1].y = 1.0f;
+            vertex[1].z = sinf(theta2);
+            vertex[1].w = 1.0f;
+
+            vertex[2].x = cosf(theta1);
+            vertex[2].y = -1.0f;
+            vertex[2].z = sinf(theta1);
+            vertex[2].w = 1.0f;
+
+            vertex[3].x = cosf(theta2);
+            vertex[3].y = -1.0f;
+            vertex[3].z = sinf(theta2);
+            vertex[3].w = 1.0f;
+
+            // Apply the rotation matrix (around Z-axis for the wheels)
+            for (int v = 0; v < 4; v++)
+            {
+               vertex[v].TransformPoint(vertex[v], *(matrix_t*)matrix);
+            }
+
+            // Add triangles for the cylinder sides
+            CylinderFace& sideFace1 = faces[faceCount++];
+            sideFace1.faceCoordsScreen[0] = worldToPos(vertex[0], res);
+            sideFace1.faceCoordsScreen[1] = worldToPos(vertex[2], res);
+            sideFace1.faceCoordsScreen[2] = worldToPos(vertex[1], res);
+            sideFace1.z = (vertex[0].z + vertex[1].z + vertex[2].z) / 3.0f;
+            sideFace1.color = IM_COL32(150, 150, 255, 255); // Color of cylinder side
+
+            CylinderFace& sideFace2 = faces[faceCount++];
+            sideFace2.faceCoordsScreen[0] = worldToPos(vertex[1], res);
+            sideFace2.faceCoordsScreen[1] = worldToPos(vertex[2], res);
+            sideFace2.faceCoordsScreen[2] = worldToPos(vertex[3], res);
+            sideFace2.z = (vertex[1].z + vertex[2].z + vertex[3].z) / 3.0f;
+            sideFace2.color = IM_COL32(150, 150, 255, 255);
+
+            // Add triangles for the top face
+            vec_t topCenter;
+            topCenter.x = 0.0f;
+            topCenter.y = 1.0f;
+            topCenter.z = 0.0f;
+            topCenter.w = 1.0f;
+            topCenter.TransformPoint(topCenter, *(matrix_t*)matrix);
+
+            CylinderFace& topFace1 = faces[faceCount++];
+            topFace1.faceCoordsScreen[0] = worldToPos(vertex[0], res);
+            topFace1.faceCoordsScreen[1] = worldToPos(vertex[1], res);
+            topFace1.faceCoordsScreen[2] = worldToPos(topCenter, res);
+            topFace1.z = (vertex[0].z + vertex[1].z + topCenter.z) / 3.0f;
+            topFace1.color = IM_COL32(200, 100, 100, 255); // Color of top face
+
+            // Add triangles for the bottom face
+            vec_t bottomCenter;
+            bottomCenter.x = 0.0f;
+            bottomCenter.y = -1.0f;
+            bottomCenter.z = 0.0f;
+            bottomCenter.w = 1.0f;
+            bottomCenter.TransformPoint(bottomCenter, *(matrix_t*)matrix);
+
+            CylinderFace& bottomFace1 = faces[faceCount++];
+            bottomFace1.faceCoordsScreen[0] = worldToPos(vertex[2], res);
+            bottomFace1.faceCoordsScreen[1] = worldToPos(vertex[3], res);
+            bottomFace1.faceCoordsScreen[2] = worldToPos(bottomCenter, res);
+            bottomFace1.z = (vertex[2].z + vertex[3].z + bottomCenter.z) / 3.0f;
+            bottomFace1.color = IM_COL32(100, 200, 100, 255); // Color of bottom face
+         }
+      }
+
+      // Sort faces by depth
+      qsort(faces, faceCount, sizeof(CylinderFace), [](void const* _a, void const* _b) {
+         CylinderFace* a = (CylinderFace*)_a;
+         CylinderFace* b = (CylinderFace*)_b;
+         if (a->z < b->z)
+         {
+            return 1;
+         }
+         return -1;
+         });
+
+      // Draw the faces
+      for (int iFace = 0; iFace < faceCount; iFace++)
+      {
+         const CylinderFace& face = faces[iFace];
+         gContext.mDrawList->AddConvexPolyFilled(face.faceCoordsScreen, 3, face.color);
+      }
+
+      _freea(faces);
+   }
+
+
    void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize)
    {
       matrix_t viewProjection = *(matrix_t*)view * *(matrix_t*)projection;

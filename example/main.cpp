@@ -42,8 +42,14 @@
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);		//DGM
 
+#ifndef M_PI
+#define M_PI    3.14159265358979323846264338327950288   /**< pi */
+#endif
 
 enum class ObjectType {
+   OT_CUBE,      
+   OT_CYLINDER,  
+   OT_SPHERE,    
    OT_ROOM,
    OT_DOOR,
    OT_WINDOW,
@@ -51,12 +57,12 @@ enum class ObjectType {
    OT_PERSON,
 };
 
+
 struct Object3D {
    ObjectType type;
    float transformMatrix[16];  // 4x4 transformation matrix for position, rotation, and scale
    // You can add more fields like color, texture, or mesh depending on the object type.
 };
-
 void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float* m16)
 {
 	float temp, temp2, temp3, temp4;
@@ -631,7 +637,7 @@ void UpdateCameraView(float camYAngle, float camXAngle, float camDistance, float
 }
 
 
-void RenderTransformSettings(float* cameraView, float* cameraProjection, float camDistance,
+void drawTransformSettingsWidgets_old(float* cameraView, float* cameraProjection, float camDistance,
    int gizmoCount, int& lastUsing,
    const float* identityMatrix, float objectMatrix[4][16])
 {
@@ -672,7 +678,59 @@ void RenderTransformSettings(float* cameraView, float* cameraProjection, float c
 
 }
 
-void RenderInspectorWindow(bool& useWindow, bool& isPerspective, float& fov, float& viewWidth, int& gizmoCount,
+void drawTransformSettingsWidgets(float* cameraView, float* cameraProjection, float camDistance,
+   int gizmoCount, int& lastUsing, const float* identityMatrix, std::vector<Object3D>& sceneObjects)
+{
+   if (lastUsing < 0 || lastUsing >= sceneObjects.size()) {
+      return;  // Ensure the index is valid
+   }
+
+   Object3D& selectedObject = sceneObjects[lastUsing];  // Access the currently selected object
+
+   // Decompose the transformation matrix into translation, rotation, and scale
+   float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+   ImGuizmo::DecomposeMatrixToComponents(selectedObject.transformMatrix, matrixTranslation, matrixRotation, matrixScale);
+
+   // UI to manipulate translation, rotation, and scale
+   ImGui::InputFloat3("Tr", matrixTranslation);
+   ImGui::InputFloat3("Rt", matrixRotation);
+   ImGui::InputFloat3("Sc", matrixScale);
+
+   // Recompose the transformation matrix from updated values
+   ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, selectedObject.transformMatrix);
+
+   // Handle gizmo operation modes (Translate, Rotate, Scale)
+   if (mCurrentGizmoOperation != ImGuizmo::SCALE)
+   {
+      if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
+         mCurrentGizmoMode = ImGuizmo::LOCAL;
+      ImGui::SameLine();
+      if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
+         mCurrentGizmoMode = ImGuizmo::WORLD;
+   }
+
+   static bool useSnap(false);
+   if (ImGui::IsKeyPressed(ImGuiKey_S))
+      useSnap = !useSnap;
+   ImGui::Checkbox("Snap", &useSnap);
+   ImGui::SameLine();
+
+   static float snap[3] = { 1.f, 1.f, 1.f };
+   switch (mCurrentGizmoOperation)
+   {
+   case ImGuizmo::TRANSLATE:
+      ImGui::InputFloat3("Snap", snap);
+      break;
+   case ImGuizmo::ROTATE:
+      ImGui::InputFloat("Angle Snap", &snap[0]);
+      break;
+   case ImGuizmo::SCALE:
+      ImGui::InputFloat("Scale Snap", &snap[0]);
+      break;
+   }
+}
+
+void RenderInspectorWindow_old(bool& useWindow, bool& isPerspective, float& fov, float& viewWidth, int& gizmoCount,
 	float& camDistance, float& camYAngle, float& camXAngle, float* cameraView, float* cameraProjection, int& lastUsing,
 	const float* identityMatrix, float(&objectMatrix)[4][16]) {
 
@@ -735,10 +793,83 @@ void RenderInspectorWindow(bool& useWindow, bool& isPerspective, float& fov, flo
       mCurrentGizmoOperation = ImGuizmo::SCALE;
 
 
-   RenderTransformSettings(cameraView, cameraProjection, camDistance, gizmoCount, lastUsing, identityMatrix, objectMatrix);
+   drawTransformSettingsWidgets_old(cameraView, cameraProjection, camDistance, gizmoCount, lastUsing, identityMatrix, objectMatrix);
 
 	ImGui::End();
 
+}
+
+void RenderInspectorWindow(std::vector<Object3D>& sceneObjects, bool& useWindow, bool& isPerspective, float& fov, float& viewWidth, int& gizmoCount,
+   float& camDistance, float& camYAngle, float& camXAngle, float* cameraView, float* cameraProjection, int& lastUsing,
+   const float* identityMatrix)
+{
+   ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Appearing);
+   ImGui::SetNextWindowSize(ImVec2(320, 340), ImGuiCond_Appearing);
+   ImGui::Begin("Editor");
+
+   if (ImGui::RadioButton("Full view", !useWindow)) useWindow = false;
+   ImGui::SameLine();
+   if (ImGui::RadioButton("Window", useWindow)) useWindow = true;
+
+   ImGui::Text("Camera");
+   if (ImGui::RadioButton("Perspective", isPerspective)) isPerspective = true;
+   ImGui::SameLine();
+   if (ImGui::RadioButton("Orthographic", !isPerspective)) isPerspective = false;
+
+   if (isPerspective) {
+      ImGui::SliderFloat("Fov", &fov, 20.f, 110.f);
+   }
+   else {
+      ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
+   }
+
+   bool viewDirty = false;
+   viewDirty |= ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
+   ImGui::SliderInt("Gizmo count", &gizmoCount, 1, sceneObjects.size());
+
+   if (viewDirty) {
+      UpdateCameraView(camYAngle, camXAngle, camDistance, cameraView);
+   }
+
+   ImGuiIO& io = ImGui::GetIO();
+   ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
+
+   if (ImGuizmo::IsUsing()) {
+      ImGui::Text("Using gizmo");
+   }
+   else {
+      ImGui::Text(ImGuizmo::IsOver() ? "Over gizmo" : "");
+      ImGui::SameLine();
+      ImGui::Text(ImGuizmo::IsOver(ImGuizmo::TRANSLATE) ? "Over translate gizmo" : "");
+      ImGui::SameLine();
+      ImGui::Text(ImGuizmo::IsOver(ImGuizmo::ROTATE) ? "Over rotate gizmo" : "");
+      ImGui::SameLine();
+      ImGui::Text(ImGuizmo::IsOver(ImGuizmo::SCALE) ? "Over scale gizmo" : "");
+   }
+
+   ImGui::Separator();
+
+   // Handle Gizmo Operation (Translate, Rotate, Scale)
+   if (ImGui::IsKeyPressed(ImGuiKey_T))
+      mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+   if (ImGui::IsKeyPressed(ImGuiKey_E))
+      mCurrentGizmoOperation = ImGuizmo::ROTATE;
+   if (ImGui::IsKeyPressed(ImGuiKey_R))
+      mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+   if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+      mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+   ImGui::SameLine();
+   if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+      mCurrentGizmoOperation = ImGuizmo::ROTATE;
+   ImGui::SameLine();
+   if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+      mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+   // Call updated drawTransformSettingsWidgets function, passing sceneObjects
+   drawTransformSettingsWidgets(cameraView, cameraProjection, camDistance, gizmoCount, lastUsing, identityMatrix, sceneObjects);
+
+   ImGui::End();
 }
 
 
@@ -808,42 +939,9 @@ void RenderOtherControls(unsigned int procTexture, MySequence& mySequence) {
 	ImGui::End();
 }
 
-enum class ObjectType {
-   OT_ROOM,
-   OT_DOOR,
-   OT_WINDOW,
-   OT_COMPUTER,
-   OT_PERSON,
-};
-
-// Structure to hold object data
-struct Object3D {
-   ObjectType type;
-   float transform[16];  // 4x4 transformation matrix for position, rotation, and scale
-};
-
-// List of objects in the scene
-std::vector<Object3D> sceneObjects;
-
-void AddRoom(float width, float depth, float height) {
-   Object3D room;
-   room.type = ObjectType::OT_ROOM;
-
-   // Initialize the transformation matrix (identity matrix by default)
-   ImGuizmo::RecomposeMatrixFromComponents(&room.transform[0], &room.transform[4], &room.transform[8], room.transform);
-
-   // Scale the matrix to the room dimensions
-   room.transform[0] = width;
-   room.transform[5] = height;
-   room.transform[10] = depth;
-
-   sceneObjects.push_back(room);
-}
 
 
-
-
-void RenderScene(float* cameraView, float* cameraProjection, float camDistance, int gizmoCount, int& lastUsing,
+void RenderScene_old(float* cameraView, float* cameraProjection, float camDistance, int gizmoCount, int& lastUsing,
    const float* identityMatrix, float objectMatrix[4][16])
 {
    ImGuiIO& io = ImGui::GetIO();
@@ -899,6 +997,139 @@ void RenderScene(float* cameraView, float* cameraProjection, float camDistance, 
    ImGui::PopStyleColor(1);
 }
 
+void RenderScene(std::vector<Object3D>& sceneObjects, float* cameraView, float* cameraProjection, float camDistance, int& lastUsing, const float* identityMatrix) {
+   ImGuiIO& io = ImGui::GetIO();
+   float viewManipulateRight = io.DisplaySize.x;
+   float viewManipulateTop = 0;
+   static ImGuiWindowFlags gizmoWindowFlags = 0;
+
+   // Set window size and position
+   ImGui::SetNextWindowSize(ImVec2(800, 400), ImGuiCond_Appearing);
+   ImGui::SetNextWindowPos(ImVec2(400, 20), ImGuiCond_Appearing);
+
+   // Apply style for window background color
+   ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.35f, 0.3f, 0.3f));
+
+   // Create the 3D view window
+   ImGui::Begin("3D View", nullptr, gizmoWindowFlags);
+   ImGuizmo::SetDrawlist();
+
+   // Set the size and position for the gizmo tool
+   float windowWidth = (float)ImGui::GetWindowWidth();
+   float windowHeight = (float)ImGui::GetWindowHeight();
+   ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+   viewManipulateRight = ImGui::GetWindowPos().x + windowWidth;
+   viewManipulateTop = ImGui::GetWindowPos().y;
+
+   // Get the current window and check if it's being hovered or the mouse is over the window
+   ImGuiWindow* window = ImGui::GetCurrentWindow();
+   if (ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window->InnerRect.Min, window->InnerRect.Max)) {
+      gizmoWindowFlags = ImGuiWindowFlags_NoMove;
+   }
+   else {
+      gizmoWindowFlags = 0;
+   }
+
+   // Draw grid and cubes using ImGuizmo
+   ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
+
+   // Loop through each object in the scene and draw them
+   for (int i = 0; i < sceneObjects.size(); i++) {
+      const auto& object = sceneObjects[i];
+      ImGuizmo::SetID(i);  // Set unique ID for each object to manage its gizmo state
+
+      switch (object.type) {
+      case ObjectType::OT_ROOM:
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);
+         break;
+
+      case ObjectType::OT_DOOR:
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);  // Replace with door drawing logic
+         break;
+
+      case ObjectType::OT_WINDOW:
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);  // Replace with window drawing logic
+         break;
+
+      case ObjectType::OT_COMPUTER:
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);  // Replace with computer drawing logic
+         break;
+
+      case ObjectType::OT_PERSON:
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);  // Replace with person drawing logic
+         break;
+
+      case ObjectType::OT_CUBE:
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);  // Cube-specific drawing logic
+         break;
+
+      case ObjectType::OT_CYLINDER:
+         // Replace this with cylinder drawing logic
+         ImGuizmo::DrawCylinders(cameraView, cameraProjection, object.transformMatrix, 1);  // Cube-specific drawing logic
+         break;
+
+      case ObjectType::OT_SPHERE:
+         // Replace this with sphere drawing logic
+         ImGuizmo::DrawSpheres(cameraView, cameraProjection, object.transformMatrix, 1);  // Cube-specific drawing logic
+         break;
+
+      default:
+         // Default case - draw a cube for unknown types
+         ImGuizmo::DrawCubes(cameraView, cameraProjection, object.transformMatrix, 1);
+         break;
+      }
+
+      // Allow for manipulating the transformation matrix via ImGuizmo
+      if (ImGuizmo::IsUsing()) {
+         lastUsing = i;
+      }
+   }
+
+   // Allow for view manipulation
+   ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
+
+   ImGui::End();
+   ImGui::PopStyleColor(1);
+}
+
+
+void AddObject(ObjectType type, const std::vector<float>& translation, const std::vector<float>& rotation, const std::vector<float>& scale, std::vector<Object3D>& sceneObjects) {
+   Object3D object;
+   object.type = type;  // Set the passed ObjectType
+
+   // Recompose the transformation matrix
+   ImGuizmo::RecomposeMatrixFromComponents(translation.data(), rotation.data(), scale.data(), object.transformMatrix);
+
+   // Add the object to the scene
+   sceneObjects.push_back(object);
+}
+
+void CreateCar(std::vector<Object3D>& sceneObjects) {
+   // Car body (cube)
+   AddObject(ObjectType::OT_CUBE, { 0.f, 0.f, 0.f }, { 0.f, 0.f, 0.f }, { 2.0f, 1.0f, 4.0f }, sceneObjects);
+
+   // Front left wheel (cylinder, rotated along Z-axis to align properly)
+   AddObject(ObjectType::OT_CYLINDER, { -0.7f, -0.2f, 1.0f }, { 0.f, M_PI / 2.f, 0.f }, { 0.5f, 0.5f, 0.5f }, sceneObjects);
+
+   // Front right wheel (cylinder, rotated along Z-axis to align properly)
+   AddObject(ObjectType::OT_CYLINDER, { 0.7f, -0.2f, 1.0f }, { 0.f, M_PI / 2.f, 0.f }, { 0.5f, 0.5f, 0.5f }, sceneObjects);
+
+   // Rear left wheel (cylinder, rotated along Z-axis to align properly)
+   AddObject(ObjectType::OT_CYLINDER, { -0.7f, -0.2f, -1.0f }, { 0.f, M_PI / 2.f, 0.f }, { 0.5f, 0.5f, 0.5f }, sceneObjects);
+
+   // Rear right wheel (cylinder, rotated along Z-axis to align properly)
+   AddObject(ObjectType::OT_CYLINDER, { 0.7f, -0.2f, -1.0f }, { 0.f, M_PI / 2.f, M_PI / 2.f }, { 0.5f, 0.5f, 0.5f }, sceneObjects);
+
+   // Spoiler
+   AddObject(ObjectType::OT_CUBE, { 0.f, 0.5f, -2.0f }, { 0.f, 0.f, 0.f }, { 1.0f, 0.1f, 0.5f }, sceneObjects);
+
+   // Bumper
+   AddObject(ObjectType::OT_CUBE, { 0.f, -0.25f, 2.1f }, { 0.f, 0.f, 0.f }, { 1.0f, 0.5f, 0.1f }, sceneObjects);
+
+   // Driver (sphere, placed above the front center of the car body)
+   AddObject(ObjectType::OT_SPHERE, { 0.f, 0.75f, 1.0f }, { 0.f, 0.f, 0.f }, { 0.5f, 0.5f, 0.5f }, sceneObjects);
+}
+
 
 
 
@@ -924,34 +1155,19 @@ int main(int, char**) {
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 2, 61, 90, false });
 	mySequence.myItems.push_back(MySequence::MySequenceItem{ 4, 90, 99, false });
 
-	float objectMatrix[4][16] = {
-  { 1.f, 0.f, 0.f, 0.f,
-	 0.f, 1.f, 0.f, 0.f,
-	 0.f, 0.f, 1.f, 0.f,
-	 0.f, 0.f, 0.f, 1.f },
-
-  { 1.f, 0.f, 0.f, 0.f,
-  0.f, 1.f, 0.f, 0.f,
-  0.f, 0.f, 1.f, 0.f,
-  2.f, 0.f, 0.f, 1.f },
-
-  { 1.f, 0.f, 0.f, 0.f,
-  0.f, 1.f, 0.f, 0.f,
-  0.f, 0.f, 1.f, 0.f,
-  2.f, 0.f, 2.f, 1.f },
-
-  { 1.f, 0.f, 0.f, 0.f,
-  0.f, 1.f, 0.f, 0.f,
-  0.f, 0.f, 1.f, 0.f,
-  0.f, 0.f, 2.f, 1.f }
-	};
-
    // The identity matrix is used for objects that don't require transformations (such as the static grid), or as a base matrix.
 	static const float identityMatrix[16] =
 	{ 1.f, 0.f, 0.f, 0.f,
 		 0.f, 1.f, 0.f, 0.f,
 		 0.f, 0.f, 1.f, 0.f,
 		 0.f, 0.f, 0.f, 1.f };
+
+
+   std::vector<Object3D> sceneObjects;
+
+   // Add initial objects to the scene
+   CreateCar(sceneObjects);
+
 
 	bool isPerspective = true;
 	float fov = 27.f;
@@ -983,14 +1199,14 @@ int main(int, char**) {
 		ImGuizmo::SetOrthographic(!isPerspective);
 		ImGuizmo::BeginFrame();
 
-		RenderInspectorWindow(useWindow, isPerspective, fov, viewWidth, gizmoCount,
+		RenderInspectorWindow(sceneObjects, useWindow, isPerspective, fov, viewWidth, gizmoCount,
 			camDistance, camYAngle, camXAngle, cameraView, cameraProjection,
-			lastUsing, identityMatrix, objectMatrix);
+			lastUsing, identityMatrix);
 
 		RenderOtherControls(procTexture, mySequence);
 
       // Render 3D scene
-      RenderScene(cameraView, cameraProjection, camDistance, gizmoCount, lastUsing, identityMatrix, objectMatrix);
+      RenderScene(sceneObjects, cameraView, cameraProjection, camDistance, lastUsing, identityMatrix);
 
       //RenderScenev2(cameraView, cameraProjection);
 
