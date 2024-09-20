@@ -727,6 +727,7 @@ namespace IMGUIZMO_NAMESPACE
 
       // save axis factor when using gizmo
       bool mBelowAxisLimit[3];
+      int mAxisMask = 0;
       bool mBelowPlaneLimit[3];
       float mAxisFactor[3];
 
@@ -1152,8 +1153,10 @@ namespace IMGUIZMO_NAMESPACE
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID))
       {
          // when using, use stored factors so the gizmo doesn't flip when we translate
-         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex];
-         belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex];
+
+         // Apply axis mask to axes and planes
+         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex] && ((1<<axisIndex)&gContext.mAxisMask);
+         belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex] && (((1<<axisIndex)&gContext.mAxisMask) && !(gContext.mAxisMask & (gContext.mAxisMask - 1)) || !gContext.mAxisMask);
 
          dirAxis *= gContext.mAxisFactor[axisIndex];
          dirPlaneX *= gContext.mAxisFactor[(axisIndex + 1) % 3];
@@ -1184,8 +1187,9 @@ namespace IMGUIZMO_NAMESPACE
          float axisLengthInClipSpace = GetSegmentLengthClipSpace(makeVect(0.f, 0.f, 0.f), dirAxis * gContext.mScreenFactor, localCoordinates);
 
          float paraSurf = GetParallelogram(makeVect(0.f, 0.f, 0.f), dirPlaneX * gContext.mScreenFactor, dirPlaneY * gContext.mScreenFactor);
-         belowPlaneLimit = (paraSurf > gContext.mAxisLimit);
-         belowAxisLimit = (axisLengthInClipSpace > gContext.mPlaneLimit);
+         // Apply axis mask to axes and planes
+         belowPlaneLimit = (paraSurf > gContext.mAxisLimit) && (((1<<axisIndex)&gContext.mAxisMask) && !(gContext.mAxisMask & (gContext.mAxisMask - 1)) || !gContext.mAxisMask);
+         belowAxisLimit = (axisLengthInClipSpace > gContext.mPlaneLimit) && !((1<<axisIndex)&gContext.mAxisMask);
 
          // and store values
          gContext.mAxisFactor[axisIndex] = mulAxis;
@@ -1244,6 +1248,9 @@ namespace IMGUIZMO_NAMESPACE
       }
       ImDrawList* drawList = gContext.mDrawList;
 
+      bool isMultipleAxesMasked = gContext.mAxisMask & (gContext.mAxisMask - 1);
+      bool isNoAxesMasked = !gContext.mAxisMask;
+
       // colors
       ImU32 colors[7];
       ComputeColors(colors, type, ROTATE);
@@ -1271,8 +1278,15 @@ namespace IMGUIZMO_NAMESPACE
          {
             continue;
          }
+
+         bool isAxisMasked = (1 << (2 - axis)) & gContext.mAxisMask;
+
+         if ((!isAxisMasked || isMultipleAxesMasked) && !isNoAxesMasked)
+         {
+            continue;
+         }
          const bool usingAxis = (gContext.mbUsing && type == MT_ROTATE_Z - axis);
-         const int circleMul = (hasRSC && !usingAxis ) ? 1 : 2;
+         const int circleMul = (hasRSC && !usingAxis) ? 1 : 2;
 
          ImVec2* circlePos = (ImVec2*)alloca(sizeof(ImVec2) * (circleMul * halfCircleSegmentCount + 1));
 
@@ -1296,7 +1310,7 @@ namespace IMGUIZMO_NAMESPACE
             gContext.mRadiusSquareCenter = radiusAxis;
          }
       }
-      if(hasRSC && (!gContext.mbUsing || type == MT_ROTATE_SCREEN))
+      if(hasRSC && (!gContext.mbUsing || type == MT_ROTATE_SCREEN) && (!isMultipleAxesMasked && isNoAxesMasked))
       {
          drawList->AddCircle(worldToPos(gContext.mModel.v.position, gContext.mViewProjection), gContext.mRadiusSquareCenter, colors[0], 64, gContext.mStyle.RotationOuterLineThickness);
       }
@@ -1907,6 +1921,8 @@ namespace IMGUIZMO_NAMESPACE
          {
             continue;
          }
+         bool isAxisMasked = (1 << i) & gContext.mAxisMask;
+
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
          ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit, true);
@@ -1927,7 +1943,8 @@ namespace IMGUIZMO_NAMESPACE
 
          if ((closestPointOnAxis - makeVect(posOnPlanScreen)).Length() < 12.f) // pixel size
          {
-            type = MT_SCALE_X + i;
+            if (!isAxisMasked)
+               type = MT_SCALE_X + i;
          }
       }
 
@@ -1976,6 +1993,10 @@ namespace IMGUIZMO_NAMESPACE
       {
          return MT_NONE;
       }
+
+      bool isNoAxesMasked = !gContext.mAxisMask;
+      bool isMultipleAxesMasked = gContext.mAxisMask & (gContext.mAxisMask - 1);
+
       ImGuiIO& io = ImGui::GetIO();
       int type = MT_NONE;
 
@@ -1983,6 +2004,8 @@ namespace IMGUIZMO_NAMESPACE
       float dist = deltaScreen.Length();
       if (Intersects(op, ROTATE_SCREEN) && dist >= (gContext.mRadiusSquareCenter - 4.0f) && dist < (gContext.mRadiusSquareCenter + 4.0f))
       {
+         if (!isNoAxesMasked)
+            return MT_NONE;
          type = MT_ROTATE_SCREEN;
       }
 
@@ -1997,6 +2020,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             continue;
          }
+         bool isAxisMasked = (1 << i) & gContext.mAxisMask;
          // pickup plan
          vec_t pickupPlan = BuildPlan(gContext.mModel.v.position, planNormals[i]);
 
@@ -2021,6 +2045,8 @@ namespace IMGUIZMO_NAMESPACE
          const float distance = makeVect(distanceOnScreen).Length();
          if (distance < 8.f) // pixel size
          {
+            if ((!isAxisMasked || isMultipleAxesMasked) && !isNoAxesMasked)
+               break;
             type = MT_ROTATE_X + i;
          }
       }
@@ -2034,6 +2060,10 @@ namespace IMGUIZMO_NAMESPACE
       {
         return MT_NONE;
       }
+
+      bool isNoAxesMasked = !gContext.mAxisMask;
+      bool isMultipleAxesMasked = gContext.mAxisMask & (gContext.mAxisMask - 1);
+
       ImGuiIO& io = ImGui::GetIO();
       int type = MT_NONE;
 
@@ -2050,6 +2080,7 @@ namespace IMGUIZMO_NAMESPACE
       // compute
       for (int i = 0; i < 3 && type == MT_NONE; i++)
       {
+         bool isAxisMasked = (1 << i) & gContext.mAxisMask;
          vec_t dirPlaneX, dirPlaneY, dirAxis;
          bool belowAxisLimit, belowPlaneLimit;
          ComputeTripodAxisAndVisibility(i, dirAxis, dirPlaneX, dirPlaneY, belowAxisLimit, belowPlaneLimit);
@@ -2066,6 +2097,8 @@ namespace IMGUIZMO_NAMESPACE
          vec_t closestPointOnAxis = PointOnSegment(screenCoord, makeVect(axisStartOnScreen), makeVect(axisEndOnScreen));
          if ((closestPointOnAxis - screenCoord).Length() < 12.f && Intersects(op, static_cast<OPERATION>(TRANSLATE_X << i))) // pixel size
          {
+            if (isAxisMasked)
+               break;
             type = MT_MOVE_X + i;
          }
 
@@ -2073,6 +2106,8 @@ namespace IMGUIZMO_NAMESPACE
          const float dy = dirPlaneY.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
          if (belowPlaneLimit && dx >= quadUV[0] && dx <= quadUV[4] && dy >= quadUV[1] && dy <= quadUV[3] && Contains(op, TRANSLATE_PLANS[i]))
          {
+            if ((!isAxisMasked || isMultipleAxesMasked) && !isNoAxesMasked)
+               break;
             type = MT_MOVE_YZ + i;
          }
 
@@ -2554,6 +2589,11 @@ namespace IMGUIZMO_NAMESPACE
    void SetAxisLimit(float value)
    {
      gContext.mAxisLimit=value;
+   }
+
+   void SetAxisMask(bool x, bool y, bool z)
+   {
+      gContext.mAxisMask = (x ? 1 : 0) + (y ? 2 : 0) + (z ? 4 : 0);
    }
 
    void SetPlaneLimit(float value)

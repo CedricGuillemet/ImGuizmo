@@ -250,6 +250,8 @@ namespace IMGUIZMO_NAMESPACE
 
    // Configure the limit where axis are hidden
    IMGUI_API void SetAxisLimit(float value);
+   // Set an axis mask to permanently hide a given axis (true -> hidden, false -> shown)
+   IMGUI_API void SetAxisMask(bool x, bool y, bool z);
    // Configure the limit where planes are hiden
    IMGUI_API void SetPlaneLimit(float value);
 
