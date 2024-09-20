@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.89 WIP
+// v1.91.3 WIP
 //
 // The MIT License(MIT)
 //
@@ -756,6 +756,8 @@ namespace IMGUIZMO_NAMESPACE
       float mDisplayRatio = 1.f;
 
       bool mIsOrthographic = false;
+      // check to not have multiple gizmo highlighted at the same time
+      bool mbOverGizmoHotspot = false;
 
       ImVector<ImGuiID> mIDStack;
       ImGuiID mEditingID = -1;
@@ -985,6 +987,7 @@ namespace IMGUIZMO_NAMESPACE
 
       ImGui::Begin("gizmo", NULL, flags);
       gContext.mDrawList = ImGui::GetWindowDrawList();
+      gContext.mbOverGizmoHotspot = false;
       ImGui::End();
       ImGui::PopStyleVar();
       ImGui::PopStyleColor(2);
@@ -2204,7 +2207,8 @@ namespace IMGUIZMO_NAMESPACE
       {
          // find new possible way to move
          vec_t gizmoHitProportion;
-         type = GetMoveType(op, &gizmoHitProportion);
+         type = gContext.mbOverGizmoHotspot ? MT_NONE : GetMoveType(op, &gizmoHitProportion);
+         gContext.mbOverGizmoHotspot |= type != MT_NONE;
          if (type != MT_NONE)
          {
 #if IMGUI_VERSION_NUM >= 18723
@@ -2253,7 +2257,9 @@ namespace IMGUIZMO_NAMESPACE
       if (!gContext.mbUsing)
       {
          // find new possible way to scale
-         type = GetScaleType(op);
+         type = gContext.mbOverGizmoHotspot ? MT_NONE : GetScaleType(op);
+         gContext.mbOverGizmoHotspot |= type != MT_NONE;
+
          if (type != MT_NONE)
          {
 #if IMGUI_VERSION_NUM >= 18723
@@ -2374,7 +2380,8 @@ namespace IMGUIZMO_NAMESPACE
 
       if (!gContext.mbUsing)
       {
-         type = GetRotateType(op);
+         type = gContext.mbOverGizmoHotspot ? MT_NONE : GetRotateType(op);
+         gContext.mbOverGizmoHotspot |= type != MT_NONE;
 
          if (type != MT_NONE)
          {
@@ -2599,6 +2606,14 @@ namespace IMGUIZMO_NAMESPACE
    void SetPlaneLimit(float value)
    {
      gContext.mPlaneLimit = value;
+   }
+
+   bool IsOver(float* position, float pixelRadius)
+   {
+      const ImGuiIO& io = ImGui::GetIO();
+
+      float radius = sqrtf((ImLengthSqr(worldToPos({ position[0], position[1], position[2] }, gContext.mViewProjection) - io.MousePos)));
+      return radius < pixelRadius;
    }
 
    bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)

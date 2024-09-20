@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.89 WIP
+// v1.91.3 WIP
 //
 // The MIT License(MIT)
 //
@@ -254,6 +254,8 @@ namespace IMGUIZMO_NAMESPACE
    IMGUI_API void SetAxisMask(bool x, bool y, bool z);
    // Configure the limit where planes are hiden
    IMGUI_API void SetPlaneLimit(float value);
+   // from a x,y,z point in space and using Manipulation view/projection matrix, check if mouse is in pixel radius distance of that projected point
+   IMGUI_API bool IsOver(float* position, float pixelRadius);
 
    enum COLOR
    {
