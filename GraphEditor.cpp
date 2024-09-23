@@ -837,7 +837,7 @@ void Show(Delegate& delegate, const Options& options, ViewState& viewState, bool
     captureOffset = viewState.mPosition * viewState.mFactor;
 
     //ImGui::InvisibleButton("GraphEditorButton", canvasSize);
-    ImGui::BeginChildFrame(71711, canvasSize);
+    ImGui::BeginChild(71711, canvasSize, ImGuiChildFlags_FrameStyle);
 
     ImGui::SetCursorPos(windowPos);
     ImGui::BeginGroup();
@@ -1030,7 +1030,7 @@ void Show(Delegate& delegate, const Options& options, ViewState& viewState, bool
     ImGui::PopStyleColor(1);
     ImGui::PopStyleVar(2);
     ImGui::EndGroup();
-    ImGui::EndChildFrame();
+    ImGui::EndChild();
 
     ImGui::PopStyleVar(3);
     
