@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.89 WIP
+// v1.91.3 WIP
 //
 // The MIT License(MIT)
 //
@@ -162,7 +162,7 @@ namespace ImSequencer
          ImVec2 childFramePos = ImGui::GetCursorScreenPos();
          ImVec2 childFrameSize(canvas_size.x, canvas_size.y - 8.f - headerSize.y - (hasScrollBar ? scrollBarSize.y : 0));
          ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
-         ImGui::BeginChildFrame(889, childFrameSize);
+         ImGui::BeginChild(889, childFrameSize, ImGuiChildFlags_FrameStyle);
          sequence->focused = ImGui::IsWindowFocused();
          ImGui::InvisibleButton("contentBar", ImVec2(canvas_size.x, float(controlHeight)));
          const ImVec2 contentMin = ImGui::GetItemRectMin();
@@ -511,7 +511,7 @@ namespace ImSequencer
          }
          //
 
-         ImGui::EndChildFrame();
+         ImGui::EndChild();
          ImGui::PopStyleColor();
          if (hasScrollBar)
          {

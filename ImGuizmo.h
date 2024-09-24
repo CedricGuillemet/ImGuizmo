@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.89 WIP
+// v1.91.3 WIP
 //
 // The MIT License(MIT)
 //
@@ -219,7 +219,29 @@ namespace IMGUIZMO_NAMESPACE
    IMGUI_API void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
 
    IMGUI_API void SetAlternativeWindow(ImGuiWindow* window);
+  
+   [[deprecated("Use PushID/PopID instead.")]]
    IMGUI_API void SetID(int id);
+
+	// ID stack/scopes
+	// Read the FAQ (docs/FAQ.md or http://dearimgui.org/faq) for more details about how ID are handled in dear imgui.
+	// - Those questions are answered and impacted by understanding of the ID stack system:
+	//   - "Q: Why is my widget not reacting when I click on it?"
+	//   - "Q: How can I have widgets with an empty label?"
+	//   - "Q: How can I have multiple widgets with the same label?"
+	// - Short version: ID are hashes of the entire ID stack. If you are creating widgets in a loop you most likely
+	//   want to push a unique identifier (e.g. object pointer, loop index) to uniquely differentiate them.
+	// - You can also use the "Label##foobar" syntax within widget label to distinguish them from each others.
+	// - In this header file we use the "label"/"name" terminology to denote a string that will be displayed + used as an ID,
+	//   whereas "str_id" denote a string that is only used as an ID and not normally displayed.
+	IMGUI_API void          PushID(const char* str_id);                                     // push string into the ID stack (will hash string).
+	IMGUI_API void          PushID(const char* str_id_begin, const char* str_id_end);       // push string into the ID stack (will hash string).
+	IMGUI_API void          PushID(const void* ptr_id);                                     // push pointer into the ID stack (will hash pointer).
+	IMGUI_API void          PushID(int int_id);                                             // push integer into the ID stack (will hash integer).
+	IMGUI_API void          PopID();                                                        // pop from the ID stack.
+	IMGUI_API ImGuiID       GetID(const char* str_id);                                      // calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself
+	IMGUI_API ImGuiID       GetID(const char* str_id_begin, const char* str_id_end);
+	IMGUI_API ImGuiID       GetID(const void* ptr_id);
 
    // return true if the cursor is over the operation's gizmo
    IMGUI_API bool IsOver(OPERATION op);
@@ -232,8 +254,12 @@ namespace IMGUIZMO_NAMESPACE
 
    // Configure the limit where axis are hidden
    IMGUI_API void SetAxisLimit(float value);
+   // Set an axis mask to permanently hide a given axis (true -> hidden, false -> shown)
+   IMGUI_API void SetAxisMask(bool x, bool y, bool z);
    // Configure the limit where planes are hiden
    IMGUI_API void SetPlaneLimit(float value);
+   // from a x,y,z point in space and using Manipulation view/projection matrix, check if mouse is in pixel radius distance of that projected point
+   IMGUI_API bool IsOver(float* position, float pixelRadius);
 
    enum COLOR
    {

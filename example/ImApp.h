@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.89 WIP
+// v1.91.3 WIP
 //
 // The MIT License(MIT)
 //
@@ -3478,7 +3478,7 @@ namespace ImApp
          io.KeyMap[ImGuiKey_Y] = 'Y';
          io.KeyMap[ImGuiKey_Z] = 'Z';
 
-         io.ImeWindowHandle = this->wininfo.hWnd;
+         //io.ImeWindowHandle = this->wininfo.hWnd;
          //io.RenderDrawListsFn = ImGui_RenderDrawLists;       // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
          /*
          io.SetClipboardTextFn = ImGui_SetClipboardText;

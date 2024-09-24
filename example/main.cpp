@@ -1,5 +1,5 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v 1.89 WIP
+// v1.91.3 WIP
 //
 // The MIT License(MIT)
 //
@@ -42,6 +42,9 @@ bool useWindow = true;
 int gizmoCount = 1;
 float camDistance = 8.f;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+static bool useSnap(false);
+static float snap[3] = { 1.f, 1.f, 1.f };
 
 float objectMatrix[4][16] = {
   { 1.f, 0.f, 0.f, 0.f,
@@ -237,12 +240,11 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
         if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
             mCurrentGizmoMode = ImGuizmo::WORLD;
     }
-    static bool useSnap(false);
+
     if (ImGui::IsKeyPressed(ImGuiKey_S))
         useSnap = !useSnap;
     ImGui::Checkbox(" ", &useSnap);
     ImGui::SameLine();
-    static float snap[3] = { 1.f, 1.f, 1.f };
     switch (mCurrentGizmoOperation)
     {
     case ImGuizmo::TRANSLATE:
@@ -263,11 +265,22 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
     ImGui::SetNextWindowSize(ImVec2(800, 400), ImGuiCond_Appearing);
     ImGui::SetNextWindowPos(ImVec2(400, 20), ImGuiCond_Appearing);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.35f, 0.3f, 0.3f));
-    ImGui::Begin("Gizmo", 0, gizmoWindowFlags);
-    ImGuizmo::SetDrawlist();
+    if (useWindow)
+    {
+       ImGui::Begin("Gizmo", 0, gizmoWindowFlags);
+       ImGuizmo::SetDrawlist();
+    }
     float windowWidth = (float)ImGui::GetWindowWidth();
     float windowHeight = (float)ImGui::GetWindowHeight();
-    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+    if (!useWindow)
+    {
+       ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+    }
+    else
+    {
+       ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+    }
     viewManipulateRight = ImGui::GetWindowPos().x + windowWidth;
     viewManipulateTop = ImGui::GetWindowPos().y;
     ImGuiWindow* window = ImGui::GetCurrentWindow();
@@ -281,8 +294,11 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
 
 void TransformEnd()
 {
-    ImGui::End();
-    ImGui::PopStyleColor(1);
+   if (useWindow)
+   {
+      ImGui::End();
+   }
+   ImGui::PopStyleColor(1);
 }
 
 void EditTransform(float* cameraView, float* cameraProjection, float* matrix)
@@ -290,7 +306,14 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix)
     ImGuiIO& io = ImGui::GetIO();
     float windowWidth = (float)ImGui::GetWindowWidth();
     float windowHeight = (float)ImGui::GetWindowHeight();
-    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+    if (!useWindow)
+    {
+       ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+    }
+    else
+    {
+       ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+    }
     ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL);
 }
 
@@ -480,7 +503,7 @@ struct MySequence : public ImSequencer::SequenceInterface
       draw_list->PushClipRect(clippingRect.Min, clippingRect.Max, true);
       for (int i = 0; i < 3; i++)
       {
-         for (int j = 0; j < rampEdit.mPointCount[i]; j++)
+         for (unsigned int j = 0; j < rampEdit.mPointCount[i]; j++)
          {
             float p = rampEdit.mPts[i][j].x;
             if (p < myItems[index].mFrameStart || p > myItems[index].mFrameEnd)
@@ -800,13 +823,14 @@ int main(int, char**)
       TransformStart(cameraView, cameraProjection, objectMatrix[lastUsing]);
       for (int matId = 0; matId < gizmoCount; matId++)
       {
-          ImGuizmo::SetID(matId);
+          ImGuizmo::PushID(matId);
       
           EditTransform(cameraView, cameraProjection, objectMatrix[matId]);
           if (ImGuizmo::IsUsing())
           {
               lastUsing = matId;
           }
+          ImGuizmo::PopID();
       }
       TransformEnd();
 
