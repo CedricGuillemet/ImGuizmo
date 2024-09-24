@@ -759,6 +759,7 @@ namespace IMGUIZMO_NAMESPACE
       // check to not have multiple gizmo highlighted at the same time
       bool mbOverGizmoHotspot = false;
 
+      ImGuiWindow* mAlternativeWindow = nullptr;
       ImVector<ImGuiID> mIDStack;
       ImGuiID mEditingID = -1;
       OPERATION mOperation = OPERATION(-1);
@@ -934,6 +935,8 @@ namespace IMGUIZMO_NAMESPACE
       ImGuiContext& g = *ImGui::GetCurrentContext();
       ImGuiWindow* window = ImGui::FindWindowByName(gContext.mDrawList->_OwnerName);
       if (g.HoveredWindow == window)   // Mouse hovering drawlist window
+         return true;
+      if (gContext.mAlternativeWindow != nullptr && g.HoveredWindow == gContext.mAlternativeWindow)
          return true;
       if (g.HoveredWindow != NULL)     // Any other window is hovered
          return false;
@@ -2525,6 +2528,11 @@ namespace IMGUIZMO_NAMESPACE
       mat.v.up *= validScale[1];
       mat.v.dir *= validScale[2];
       mat.v.position.Set(translation[0], translation[1], translation[2], 1.f);
+   }
+
+   void SetAlternativeWindow(ImGuiWindow* window)
+   {
+      gContext.mAlternativeWindow = window;
    }
 
    void SetID(int id)
