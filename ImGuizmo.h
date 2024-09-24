@@ -138,6 +138,9 @@ namespace IMGUIZMO_NAMESPACE
    // return true if mouse IsOver or if the gizmo is in moving state
    IMGUI_API bool IsUsing();
 
+   // return true if the view gizmo is in moving state
+   IMGUI_API bool IsUsingViewManipulate();
+
    // return true if any gizmo is in moving state
    IMGUI_API bool IsUsingAny();
 
