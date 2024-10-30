@@ -2626,7 +2626,7 @@ namespace IMGUIZMO_NAMESPACE
    {
       const ImGuiIO& io = ImGui::GetIO();
 
-      float radius = sqrtf((ImLengthSqr(worldToPos({ position[0], position[1], position[2] }, gContext.mViewProjection) - io.MousePos)));
+      float radius = sqrtf((ImLengthSqr(worldToPos({ position[0], position[1], position[2], 0.0f }, gContext.mViewProjection) - io.MousePos)));
       return radius < pixelRadius;
    }
 
