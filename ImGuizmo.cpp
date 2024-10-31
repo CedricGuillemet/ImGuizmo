@@ -668,7 +668,6 @@ namespace IMGUIZMO_NAMESPACE
    {
       Context() : mbUsing(false), mbUsingViewManipulate(false), mbEnable(true), mbUsingBounds(false)
       {
-		  mIDStack.push_back(-1);
       }
 
       ImDrawList* mDrawList;
@@ -768,7 +767,14 @@ namespace IMGUIZMO_NAMESPACE
       bool mAllowAxisFlip = true;
       float mGizmoSizeClipSpace = 0.1f;
 
-      inline ImGuiID GetCurrentID() {return mIDStack.back();}
+      inline ImGuiID GetCurrentID()
+      {
+         if (mIDStack.empty())
+         {
+            mIDStack.push_back(-1);
+         }
+         return mIDStack.back();
+      }
    };
 
    static Context gContext;
@@ -2543,12 +2549,16 @@ namespace IMGUIZMO_NAMESPACE
 
    void SetID(int id)
    {
+      if (gContext.mIDStack.empty())
+      {
+         gContext.mIDStack.push_back(-1);
+      }
       gContext.mIDStack.back() = id;
    }
 
    ImGuiID GetID(const char* str, const char* str_end)
    {
-      ImGuiID seed = gContext.mIDStack.back();
+      ImGuiID seed = gContext.GetCurrentID();
       ImGuiID id = ImHashStr(str, str_end ? (str_end - str) : 0, seed);
       return id;
    }
@@ -2560,14 +2570,14 @@ namespace IMGUIZMO_NAMESPACE
 
    ImGuiID GetID(const void* ptr)
    {
-      ImGuiID seed = gContext.mIDStack.back();
+      ImGuiID seed = gContext.GetCurrentID();
       ImGuiID id = ImHashData(&ptr, sizeof(void*), seed);
       return id;
    }
 
    ImGuiID GetID(int n)
    {
-      ImGuiID seed = gContext.mIDStack.back();
+      ImGuiID seed = gContext.GetCurrentID();
       ImGuiID id = ImHashData(&n, sizeof(n), seed);
       return id;
    }
