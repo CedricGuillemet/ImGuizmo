@@ -666,7 +666,7 @@ namespace IMGUIZMO_NAMESPACE
 
    struct Context
    {
-      Context() : mbUsing(false), mbUsingViewManipulate(false), mbEnable(true), mbUsingBounds(false), mIsViewManipulatorHovered(false)
+      Context() : mbUsing(false), mbUsingViewManipulate(false), mbEnable(true), mIsViewManipulatorHovered(false), mbUsingBounds(false)
       {
 		  mIDStack.push_back(-1);
       }

@@ -140,6 +140,8 @@ namespace IMGUIZMO_NAMESPACE
 
    // return true if the view gizmo is in moving state
    IMGUI_API bool IsUsingViewManipulate();
+   // only check if your mouse is over the view manipulator - no matter whether it's active or not
+   IMGUI_API bool IsViewManipulateHovered();
 
    // return true if any gizmo is in moving state
    IMGUI_API bool IsUsingAny();
@@ -220,8 +222,6 @@ namespace IMGUIZMO_NAMESPACE
 
    // use this version if you did not call Manipulate before and you are just using ViewManipulate
    IMGUI_API void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, ImVec2 position, ImVec2 size, ImU32 backgroundColor);
-   // only check if your mouse is over the view manipulator
-   IMGUI_API bool IsManipulatorHovered();
 
    IMGUI_API void SetAlternativeWindow(ImGuiWindow* window);
 
