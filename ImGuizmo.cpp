@@ -666,7 +666,7 @@ namespace IMGUIZMO_NAMESPACE
 
    struct Context
    {
-      Context() : mbUsing(false), mbUsingViewManipulate(false), mbEnable(true), mbUsingBounds(false)
+      Context() : mbUsing(false), mbUsingViewManipulate(false), mbEnable(true), mbUsingBounds(false), mIsViewManipulatorHovered(false)
       {
 		  mIDStack.push_back(-1);
       }
@@ -707,6 +707,7 @@ namespace IMGUIZMO_NAMESPACE
       bool mbEnable;
       bool mbMouseOver;
       bool mReversed; // reversed projection matrix
+      bool mIsViewManipulatorHovered;
 
       // translation
       vec_t mTranslationPlan;
@@ -1005,6 +1006,11 @@ namespace IMGUIZMO_NAMESPACE
    bool IsUsingViewManipulate()
    {
       return gContext.mbUsingViewManipulate;
+   }
+
+   bool IsViewManipulateHovered()
+   {
+      return gContext.mIsViewManipulatorHovered;
    }
 
    bool IsUsingAny()
@@ -2907,7 +2913,6 @@ namespace IMGUIZMO_NAMESPACE
    {
       static bool isDraging = false;
       static bool isClicking = false;
-      static bool isInside = false;
       static vec_t interpolationUp;
       static vec_t interpolationDir;
       static int interpolationFrames = 0;
@@ -3020,7 +3025,7 @@ namespace IMGUIZMO_NAMESPACE
                if (iPass)
                {
                   ImU32 directionColor = GetColorU32(DIRECTION_X + normalIndex);
-                  gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor | IM_COL32(0x80, 0x80, 0x80, 0x80)) | (isInside ? IM_COL32(0x08, 0x08, 0x08, 0) : 0));
+                  gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor | IM_COL32(0x80, 0x80, 0x80, 0x80)) | (gContext.mIsViewManipulatorHovered ? IM_COL32(0x08, 0x08, 0x08, 0) : 0));
                   if (boxes[boxCoordInt])
                   {
                      gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, IM_COL32(0xF0, 0xA0, 0x60, 0x80));
@@ -3049,7 +3054,7 @@ namespace IMGUIZMO_NAMESPACE
          vec_t newEye = camTarget + newDir * length;
          LookAt(&newEye.x, &camTarget.x, &newUp.x, view);
       }
-      isInside = gContext.mbMouseOver && ImRect(position, position + size).Contains(io.MousePos);
+      gContext.mIsViewManipulatorHovered = gContext.mbMouseOver && ImRect(position, position + size).Contains(io.MousePos);
 
       if (io.MouseDown[0] && (fabsf(io.MouseDelta[0]) || fabsf(io.MouseDelta[1])) && isClicking)
       {
