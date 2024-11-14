@@ -34,7 +34,7 @@
 #include "ImZoomSlider.h"
 #include "ImCurveEdit.h"
 #include "GraphEditor.h"
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <algorithm>
 
