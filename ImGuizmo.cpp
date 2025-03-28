@@ -44,7 +44,7 @@
 
 namespace IMGUIZMO_NAMESPACE
 {
-//Disabled White Dot By Default
+//Enabled White Dot By Default
    static bool drawCircle = true;
    static const float ZPI = 3.14159265358979323846f;
    static const float RAD2DEG = (180.f / ZPI);
