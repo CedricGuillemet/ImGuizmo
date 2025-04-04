@@ -3137,7 +3137,7 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       gContext.mbUsingViewManipulate = (interpolationFrames != 0) || isDraging;
-      if (isClicking || gContext.mbUsingViewManipulate) {
+      if (isClicking || gContext.mbUsingViewManipulate || gContext.mIsViewManipulatorHovered) {
 #if IMGUI_VERSION_NUM >= 18723
          ImGui::SetNextFrameWantCaptureMouse(true);
 #else
