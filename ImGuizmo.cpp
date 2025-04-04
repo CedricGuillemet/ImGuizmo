@@ -3137,6 +3137,13 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       gContext.mbUsingViewManipulate = (interpolationFrames != 0) || isDraging;
+      if (isClicking || gContext.mbUsingViewManipulate || gContext.mIsViewManipulatorHovered) {
+#if IMGUI_VERSION_NUM >= 18723
+         ImGui::SetNextFrameWantCaptureMouse(true);
+#else
+         ImGui::CaptureMouseFromApp();
+#endif
+      }
 
       // restore view/projection because it was used to compute ray
       ComputeContext(svgView.m16, svgProjection.m16, gContext.mModelSource.m16, gContext.mMode);
