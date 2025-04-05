@@ -179,6 +179,7 @@ namespace IMGUIZMO_NAMESPACE
    // translation is applied in world space
    enum OPERATION
    {
+      OP_NONE          = 0,
       TRANSLATE_X      = (1u << 0),
       TRANSLATE_Y      = (1u << 1),
       TRANSLATE_Z      = (1u << 2),
@@ -211,6 +212,8 @@ namespace IMGUIZMO_NAMESPACE
       LOCAL,
       WORLD
    };
+
+   IMGUI_API void ResetOperation(OPERATION operation = OP_NONE);
 
    IMGUI_API bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL);
    //
