@@ -3037,7 +3037,8 @@ namespace IMGUIZMO_NAMESPACE
                   gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, (directionColor | IM_COL32(0x80, 0x80, 0x80, 0x80)) | (gContext.mIsViewManipulatorHovered ? IM_COL32(0x08, 0x08, 0x08, 0) : 0));
                   if (boxes[boxCoordInt])
                   {
-                     gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, IM_COL32(0xF0, 0xA0, 0x60, 0x80));
+                     ImU32 selectionColor = GetColorU32(SELECTION);
+                     gContext.mDrawList->AddConvexPolyFilled(faceCoordsScreen, 4, selectionColor);
 
                      if (io.MouseDown[0] && !isClicking && !isDraging && GImGui->ActiveId == 0) {
                         overBox = boxCoordInt;
