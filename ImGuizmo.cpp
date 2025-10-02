@@ -2615,6 +2615,10 @@ namespace IMGUIZMO_NAMESPACE
    {
       IM_ASSERT(gContext.mIDStack.Size > 1); // Too many PopID(), or could be popping in a wrong/different window?
       gContext.mIDStack.pop_back();
+      if (gContext.mIDStack.empty())
+      {
+         gContext.mIDStack.clear();
+      }
    }
 
    void AllowAxisFlip(bool value)
