@@ -1,9 +1,9 @@
 // https://github.com/CedricGuillemet/ImGuizmo
-// v1.91.3 WIP
+// v1.92.5 WIP
 //
 // The MIT License(MIT)
 //
-// Copyright(c) 2021 Cedric Guillemet
+// Copyright(c) 2016-2021 Cedric Guillemet
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -2684,6 +2684,8 @@ GLEXTERN void(APIENTRY* glDetachShader)(GLuint program, GLuint shader);
 
 namespace ImApp
 {
+   ImGuiKey ImGui_ImplWin32_KeyEventToImGuiKey(WPARAM wParam, LPARAM lParam);
+
 #ifdef FMOD_API
 
 #pragma comment(lib,"fmodstudio_vc.lib")
@@ -3160,12 +3162,19 @@ namespace ImApp
          case WM_KEYDOWN:
          case WM_SYSKEYDOWN:
             if (wParam < 256)
-               io.KeysDown[wParam] = 1;
+               //io..KeysDown[wParam] = 1;
+            {
+               const ImGuiKey key = ImGui_ImplWin32_KeyEventToImGuiKey(wParam, lParam);
+               io.AddKeyEvent(key, true);
+            }
             return 0;
          case WM_KEYUP:
          case WM_SYSKEYUP:
             if (wParam < 256)
-               io.KeysDown[wParam] = 0;
+            {
+               const ImGuiKey key = ImGui_ImplWin32_KeyEventToImGuiKey(wParam, lParam);
+               io.AddKeyEvent(key, false);
+            }
             return 0;
          case WM_CHAR:
             // You can also use ToAscii()+GetKeyboardState() to retrieve characters.
@@ -3255,7 +3264,7 @@ namespace ImApp
                }
                else
                {
-                  glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
+                  glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->GetTexID());
                   glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w), (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
                   glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
                }
@@ -3450,41 +3459,13 @@ namespace ImApp
          if (g_FontTexture)
          {
             glDeleteTextures(1, &g_FontTexture);
-            ImGui::GetIO().Fonts->TexID = 0;
+            //ImGui::GetIO().Fonts->TexID = 0;
             g_FontTexture = 0;
          }
       }
 
       bool    ImGui_Init()
       {
-         ImGuiIO& io = ImGui::GetIO();
-         io.KeyMap[ImGuiKey_Tab] = VK_TAB;                       // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will update during the application lifetime.
-         io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
-         io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
-         io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
-         io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
-         io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
-         io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
-         io.KeyMap[ImGuiKey_Home] = VK_HOME;
-         io.KeyMap[ImGuiKey_End] = VK_END;
-         io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
-         io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
-         io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
-         io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
-         io.KeyMap[ImGuiKey_A] = 'A';
-         io.KeyMap[ImGuiKey_C] = 'C';
-         io.KeyMap[ImGuiKey_V] = 'V';
-         io.KeyMap[ImGuiKey_X] = 'X';
-         io.KeyMap[ImGuiKey_Y] = 'Y';
-         io.KeyMap[ImGuiKey_Z] = 'Z';
-
-         //io.ImeWindowHandle = this->wininfo.hWnd;
-         //io.RenderDrawListsFn = ImGui_RenderDrawLists;       // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
-         /*
-         io.SetClipboardTextFn = ImGui_SetClipboardText;
-         io.GetClipboardTextFn = ImGui_GetClipboardText;
-         //io.ClipboardUserData = g_Window;
-         */
          return true;
       }
 
@@ -3616,6 +3597,159 @@ namespace ImApp
    void ImApp::LoadBanks(int bankCount, const char** bankPaths) {}
    void ImApp::PlayEvent(const char* eventName) {}
 #endif
+
+
+   ImGuiKey ImGui_ImplWin32_KeyEventToImGuiKey(WPARAM wParam, LPARAM lParam)
+   {
+      // There is no distinct VK_xxx for keypad enter, instead it is VK_RETURN + KF_EXTENDED.
+      if ((wParam == VK_RETURN) && (HIWORD(lParam) & KF_EXTENDED))
+         return ImGuiKey_KeypadEnter;
+
+      const int scancode = (int)LOBYTE(HIWORD(lParam));
+      //IMGUI_DEBUG_LOG("scancode %3d, keycode = 0x%02X\n", scancode, wParam);
+      switch (wParam)
+      {
+      case VK_TAB: return ImGuiKey_Tab;
+      case VK_LEFT: return ImGuiKey_LeftArrow;
+      case VK_RIGHT: return ImGuiKey_RightArrow;
+      case VK_UP: return ImGuiKey_UpArrow;
+      case VK_DOWN: return ImGuiKey_DownArrow;
+      case VK_PRIOR: return ImGuiKey_PageUp;
+      case VK_NEXT: return ImGuiKey_PageDown;
+      case VK_HOME: return ImGuiKey_Home;
+      case VK_END: return ImGuiKey_End;
+      case VK_INSERT: return ImGuiKey_Insert;
+      case VK_DELETE: return ImGuiKey_Delete;
+      case VK_BACK: return ImGuiKey_Backspace;
+      case VK_SPACE: return ImGuiKey_Space;
+      case VK_RETURN: return ImGuiKey_Enter;
+      case VK_ESCAPE: return ImGuiKey_Escape;
+         //case VK_OEM_7: return ImGuiKey_Apostrophe;
+      case VK_OEM_COMMA: return ImGuiKey_Comma;
+         //case VK_OEM_MINUS: return ImGuiKey_Minus;
+      case VK_OEM_PERIOD: return ImGuiKey_Period;
+         //case VK_OEM_2: return ImGuiKey_Slash;
+         //case VK_OEM_1: return ImGuiKey_Semicolon;
+         //case VK_OEM_PLUS: return ImGuiKey_Equal;
+         //case VK_OEM_4: return ImGuiKey_LeftBracket;
+         //case VK_OEM_5: return ImGuiKey_Backslash;
+         //case VK_OEM_6: return ImGuiKey_RightBracket;
+         //case VK_OEM_3: return ImGuiKey_GraveAccent;
+      case VK_CAPITAL: return ImGuiKey_CapsLock;
+      case VK_SCROLL: return ImGuiKey_ScrollLock;
+      case VK_NUMLOCK: return ImGuiKey_NumLock;
+      case VK_SNAPSHOT: return ImGuiKey_PrintScreen;
+      case VK_PAUSE: return ImGuiKey_Pause;
+      case VK_NUMPAD0: return ImGuiKey_Keypad0;
+      case VK_NUMPAD1: return ImGuiKey_Keypad1;
+      case VK_NUMPAD2: return ImGuiKey_Keypad2;
+      case VK_NUMPAD3: return ImGuiKey_Keypad3;
+      case VK_NUMPAD4: return ImGuiKey_Keypad4;
+      case VK_NUMPAD5: return ImGuiKey_Keypad5;
+      case VK_NUMPAD6: return ImGuiKey_Keypad6;
+      case VK_NUMPAD7: return ImGuiKey_Keypad7;
+      case VK_NUMPAD8: return ImGuiKey_Keypad8;
+      case VK_NUMPAD9: return ImGuiKey_Keypad9;
+      case VK_DECIMAL: return ImGuiKey_KeypadDecimal;
+      case VK_DIVIDE: return ImGuiKey_KeypadDivide;
+      case VK_MULTIPLY: return ImGuiKey_KeypadMultiply;
+      case VK_SUBTRACT: return ImGuiKey_KeypadSubtract;
+      case VK_ADD: return ImGuiKey_KeypadAdd;
+      case VK_LSHIFT: return ImGuiKey_LeftShift;
+      case VK_LCONTROL: return ImGuiKey_LeftCtrl;
+      case VK_LMENU: return ImGuiKey_LeftAlt;
+      case VK_LWIN: return ImGuiKey_LeftSuper;
+      case VK_RSHIFT: return ImGuiKey_RightShift;
+      case VK_RCONTROL: return ImGuiKey_RightCtrl;
+      case VK_RMENU: return ImGuiKey_RightAlt;
+      case VK_RWIN: return ImGuiKey_RightSuper;
+      case VK_APPS: return ImGuiKey_Menu;
+      case '0': return ImGuiKey_0;
+      case '1': return ImGuiKey_1;
+      case '2': return ImGuiKey_2;
+      case '3': return ImGuiKey_3;
+      case '4': return ImGuiKey_4;
+      case '5': return ImGuiKey_5;
+      case '6': return ImGuiKey_6;
+      case '7': return ImGuiKey_7;
+      case '8': return ImGuiKey_8;
+      case '9': return ImGuiKey_9;
+      case 'A': return ImGuiKey_A;
+      case 'B': return ImGuiKey_B;
+      case 'C': return ImGuiKey_C;
+      case 'D': return ImGuiKey_D;
+      case 'E': return ImGuiKey_E;
+      case 'F': return ImGuiKey_F;
+      case 'G': return ImGuiKey_G;
+      case 'H': return ImGuiKey_H;
+      case 'I': return ImGuiKey_I;
+      case 'J': return ImGuiKey_J;
+      case 'K': return ImGuiKey_K;
+      case 'L': return ImGuiKey_L;
+      case 'M': return ImGuiKey_M;
+      case 'N': return ImGuiKey_N;
+      case 'O': return ImGuiKey_O;
+      case 'P': return ImGuiKey_P;
+      case 'Q': return ImGuiKey_Q;
+      case 'R': return ImGuiKey_R;
+      case 'S': return ImGuiKey_S;
+      case 'T': return ImGuiKey_T;
+      case 'U': return ImGuiKey_U;
+      case 'V': return ImGuiKey_V;
+      case 'W': return ImGuiKey_W;
+      case 'X': return ImGuiKey_X;
+      case 'Y': return ImGuiKey_Y;
+      case 'Z': return ImGuiKey_Z;
+      case VK_F1: return ImGuiKey_F1;
+      case VK_F2: return ImGuiKey_F2;
+      case VK_F3: return ImGuiKey_F3;
+      case VK_F4: return ImGuiKey_F4;
+      case VK_F5: return ImGuiKey_F5;
+      case VK_F6: return ImGuiKey_F6;
+      case VK_F7: return ImGuiKey_F7;
+      case VK_F8: return ImGuiKey_F8;
+      case VK_F9: return ImGuiKey_F9;
+      case VK_F10: return ImGuiKey_F10;
+      case VK_F11: return ImGuiKey_F11;
+      case VK_F12: return ImGuiKey_F12;
+      case VK_F13: return ImGuiKey_F13;
+      case VK_F14: return ImGuiKey_F14;
+      case VK_F15: return ImGuiKey_F15;
+      case VK_F16: return ImGuiKey_F16;
+      case VK_F17: return ImGuiKey_F17;
+      case VK_F18: return ImGuiKey_F18;
+      case VK_F19: return ImGuiKey_F19;
+      case VK_F20: return ImGuiKey_F20;
+      case VK_F21: return ImGuiKey_F21;
+      case VK_F22: return ImGuiKey_F22;
+      case VK_F23: return ImGuiKey_F23;
+      case VK_F24: return ImGuiKey_F24;
+      case VK_BROWSER_BACK: return ImGuiKey_AppBack;
+      case VK_BROWSER_FORWARD: return ImGuiKey_AppForward;
+      default: break;
+      }
+
+      // Fallback to scancode
+      // https://handmade.network/forums/t/2011-keyboard_inputs_-_scancodes,_raw_input,_text_input,_key_names
+      switch (scancode)
+      {
+      case 41: return ImGuiKey_GraveAccent;  // VK_OEM_8 in EN-UK, VK_OEM_3 in EN-US, VK_OEM_7 in FR, VK_OEM_5 in DE, etc.
+      case 12: return ImGuiKey_Minus;
+      case 13: return ImGuiKey_Equal;
+      case 26: return ImGuiKey_LeftBracket;
+      case 27: return ImGuiKey_RightBracket;
+      case 86: return ImGuiKey_Oem102;
+      case 43: return ImGuiKey_Backslash;
+      case 39: return ImGuiKey_Semicolon;
+      case 40: return ImGuiKey_Apostrophe;
+      case 51: return ImGuiKey_Comma;
+      case 52: return ImGuiKey_Period;
+      case 53: return ImGuiKey_Slash;
+      default: break;
+      }
+
+      return ImGuiKey_None;
+   }
 
 #endif
 }
