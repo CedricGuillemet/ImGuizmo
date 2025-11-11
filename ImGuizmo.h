@@ -119,6 +119,12 @@ struct ImGuiWindow;
 
 namespace IMGUIZMO_NAMESPACE
 {
+   // Create ImGuizmo context.
+   IMGUI_API void Create();
+
+   // Destroy ImGuizmo context.
+   IMGUI_API void Destroy();
+
    // call inside your own window and before Manipulate() in order to draw gizmo to that window.
    // Or pass a specific ImDrawList to draw to (e.g. ImGui::GetForegroundDrawList()).
    IMGUI_API void SetDrawlist(ImDrawList* drawlist = nullptr);
