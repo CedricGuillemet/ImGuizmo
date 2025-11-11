@@ -694,6 +694,8 @@ int main(int, char**)
    //config.mFullscreen = true;
    imApp.Init(config);
 
+   ImGuizmo::Create();
+
    int lastUsing = 0;
 
    float cameraView[16] =
@@ -920,6 +922,8 @@ int main(int, char**)
       glClear(GL_COLOR_BUFFER_BIT);
       imApp.EndFrame();
    }
+
+   ImGuizmo::Destroy();
 
    imApp.Finish();
 
