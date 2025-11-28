@@ -243,7 +243,7 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
 
     if (ImGui::IsKeyPressed(ImGuiKey_S))
         useSnap = !useSnap;
-    ImGui::Checkbox(" ", &useSnap);
+    ImGui::Checkbox("##useSnap", &useSnap);
     ImGui::SameLine();
     switch (mCurrentGizmoOperation)
     {
