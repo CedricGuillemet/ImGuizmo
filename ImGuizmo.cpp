@@ -1045,8 +1045,11 @@ namespace IMGUIZMO_NAMESPACE
          hoveredOperation = std::pow(2, gContext.mHoveredOperation - 5);
       else if(gContext.mHoveredOperation == 15)
          hoveredOperation = SCALE_X | SCALE_Y | SCALE_Z;
+      if(gContext.mHoveredOperation > 11 && Intersects(gContext.mOperation, SCALEU))
+         hoveredOperation *= 16;
 
-      if(op & hoveredOperation){
+      if(op & hoveredOperation)
+      {
          return true;
       }
       return false;
