@@ -747,6 +747,7 @@ namespace IMGUIZMO_NAMESPACE
 
       //
       int mCurrentOperation;
+      int mHoveredOperation;
 
       float mX = 0.f;
       float mY = 0.f;
@@ -1033,20 +1034,19 @@ namespace IMGUIZMO_NAMESPACE
 
    bool IsOver(OPERATION op)
    {
-      if(IsUsing())
-      {
-         return true;
-      }
-      if(Intersects(op, SCALE) && GetScaleType(op) != MT_NONE)
-      {
-         return true;
-      }
-      if(Intersects(op, ROTATE) && GetRotateType(op) != MT_NONE)
-      {
-         return true;
-      }
-      if(Intersects(op, TRANSLATE) && GetMoveType(op, NULL) != MT_NONE)
-      {
+      int hoveredOperation = gContext.mHoveredOperation;
+      if(gContext.mHoveredOperation == 3)
+         hoveredOperation = 4;
+      else if(gContext.mHoveredOperation == 4)
+         hoveredOperation = 6;
+      else if(gContext.mHoveredOperation == 6)
+         hoveredOperation = 3;
+      else if(gContext.mHoveredOperation > 8 && gContext.mHoveredOperation < 15)
+         hoveredOperation = std::pow(2, gContext.mHoveredOperation - 5);
+      else if(gContext.mHoveredOperation == 15)
+         hoveredOperation = SCALE_X | SCALE_Y | SCALE_Z;
+
+      if(op & hoveredOperation){
          return true;
       }
       return false;
@@ -2236,6 +2236,7 @@ namespace IMGUIZMO_NAMESPACE
          // find new possible way to move
          vec_t gizmoHitProportion;
          type = gContext.mbOverGizmoHotspot ? MT_NONE : GetMoveType(op, &gizmoHitProportion);
+         if(!gContext.mbOverGizmoHotspot) gContext.mHoveredOperation = type;
          gContext.mbOverGizmoHotspot |= type != MT_NONE;
          if (type != MT_NONE)
          {
@@ -2286,6 +2287,7 @@ namespace IMGUIZMO_NAMESPACE
       {
          // find new possible way to scale
          type = gContext.mbOverGizmoHotspot ? MT_NONE : GetScaleType(op);
+         if(!gContext.mbOverGizmoHotspot) gContext.mHoveredOperation = type;
          gContext.mbOverGizmoHotspot |= type != MT_NONE;
 
          if (type != MT_NONE)
@@ -2409,6 +2411,7 @@ namespace IMGUIZMO_NAMESPACE
       if (!gContext.mbUsing)
       {
          type = gContext.mbOverGizmoHotspot ? MT_NONE : GetRotateType(op);
+         if(!gContext.mbOverGizmoHotspot) gContext.mHoveredOperation = type;
          gContext.mbOverGizmoHotspot |= type != MT_NONE;
 
          if (type != MT_NONE)
