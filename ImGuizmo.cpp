@@ -2657,6 +2657,11 @@ namespace IMGUIZMO_NAMESPACE
       return radius < pixelRadius;
    }
 
+   void ResetOperation(OPERATION operation)
+   {
+      gContext.mOperation = operation;
+   }
+
    bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap)
    {
       gContext.mDrawList->PushClipRect (ImVec2 (gContext.mX, gContext.mY), ImVec2 (gContext.mX + gContext.mWidth, gContext.mY + gContext.mHeight), false);
