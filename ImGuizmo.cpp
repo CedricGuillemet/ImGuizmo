@@ -747,7 +747,7 @@ namespace IMGUIZMO_NAMESPACE
 
       //
       int mCurrentOperation;
-      int mHoveredOperation;
+      int mHoveredOperation = MT_NONE;
 
       float mX = 0.f;
       float mY = 0.f;
@@ -1035,12 +1035,12 @@ namespace IMGUIZMO_NAMESPACE
    bool IsOver(OPERATION op)
    {
       int hoveredOperation = gContext.mHoveredOperation;
-      if(gContext.mHoveredOperation == 3)
-         hoveredOperation = 4;
-      else if(gContext.mHoveredOperation == 4)
-         hoveredOperation = 6;
-      else if(gContext.mHoveredOperation == 6)
-         hoveredOperation = 3;
+      if(gContext.mHoveredOperation == MT_MOVE_Z)
+         hoveredOperation = TRANSLATE_Z;
+      else if(gContext.mHoveredOperation == MT_MOVE_YZ)
+         hoveredOperation = TRANSLATE_Y | TRANSLATE_Z;
+      else if(gContext.mHoveredOperation == MT_MOVE_XY)
+         hoveredOperation = TRANSLATE_X | TRANSLATE_Y;
       else if(gContext.mHoveredOperation > 8 && gContext.mHoveredOperation < 15)
          hoveredOperation = std::pow(2, gContext.mHoveredOperation - 5);
       else if(gContext.mHoveredOperation == 15)
