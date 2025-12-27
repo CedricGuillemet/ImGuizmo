@@ -34,6 +34,7 @@
 #include "ImZoomSlider.h"
 #include "ImCurveEdit.h"
 #include "GraphEditor.h"
+#include "ImLightRig.h"
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -894,6 +895,25 @@ int main(int, char**)
       {
          ImGui::Checkbox("Show GraphEditor", &showGraphEditor);
          GraphEditor::EditOptions(options);
+      }
+
+      // Light Rig
+      if (ImGui::CollapsingHeader("Light Rig"))
+      {
+         static ImLightRig::Light lights[128] = {
+            { 1.f, 0.3f, 0.1f,  1.f,  0.5f, 0.5f},
+            { 0.3f, 1.f, 0.1f,  1.f,  -0.5f, 0.5f},
+            { 0.1f, 0.3f, 1.f,  1.f,  -0.5f, -0.5f},
+         };
+         static int lightCount = 3;
+         static int selectedLight = -1;
+         selectedLight = ImLightRig::Edit(lights, lightCount, selectedLight, ImVec2(200,200));
+         if (selectedLight >= 0 && selectedLight < lightCount)
+         {
+            auto& light = lights[selectedLight];
+            ImGui::ColorEdit3("RGB", &light.r);
+            ImGui::SliderFloat("Intensity", &light.intensity, 0.f, 10.f);
+         }
       }
 
       ImGui::End();

@@ -154,6 +154,7 @@
     <ClInclude Include="..\ImCurveEdit.h" />
     <ClInclude Include="..\ImGradient.h" />
     <ClInclude Include="..\ImGuizmo.h" />
+    <ClInclude Include="..\ImLightRig.h" />
     <ClInclude Include="..\ImSequencer.h" />
     <ClInclude Include="..\ImZoomSlider.h" />
     <ClInclude Include="ImApp.h" />
