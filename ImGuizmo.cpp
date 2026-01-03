@@ -44,6 +44,8 @@
 
 namespace IMGUIZMO_NAMESPACE
 {
+//Enabled White Dot By Default
+   static bool drawCircle = true;
    static const float ZPI = 3.14159265358979323846f;
    static const float RAD2DEG = (180.f / ZPI);
    static const float DEG2RAD = (ZPI / 180.f);
@@ -1443,8 +1445,15 @@ namespace IMGUIZMO_NAMESPACE
          }
       }
 
+      
       // draw screen cirle
-      drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
+      if (ImGui::IsKeyPressed(ImGuiKey_O,false)) {
+          drawCircle = !drawCircle;
+      }
+      if (drawCircle) {
+    drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
+}
+      //  drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
 
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsScaleType(type))
       {
@@ -1529,7 +1538,14 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       // draw screen cirle
-      drawList->AddCircle(gContext.mScreenSquareCenter, 20.f, colors[0], 32, gContext.mStyle.CenterCircleSize);
+      
+      // draw screen cirle
+      if (ImGui::IsKeyPressed(ImGuiKey_O, false)) {
+          drawCircle = !drawCircle;
+      }
+      if (drawCircle) {
+          drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
+      }
 
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsScaleType(type))
       {
@@ -1622,9 +1638,13 @@ namespace IMGUIZMO_NAMESPACE
             }
          }
       }
-
-      drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
-
+      
+      if (ImGui::IsKeyPressed(ImGuiKey_O, false)) {
+          drawCircle = !drawCircle;
+      }
+      if (drawCircle) {
+          drawList->AddCircleFilled(gContext.mScreenSquareCenter, gContext.mStyle.CenterCircleSize, colors[0], 32);
+      }
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsTranslateType(type))
       {
          ImU32 translationLineColor = GetColorU32(TRANSLATION_LINE);
@@ -1940,7 +1960,7 @@ namespace IMGUIZMO_NAMESPACE
       // screen
       if (io.MousePos.x >= gContext.mScreenSquareMin.x && io.MousePos.x <= gContext.mScreenSquareMax.x &&
          io.MousePos.y >= gContext.mScreenSquareMin.y && io.MousePos.y <= gContext.mScreenSquareMax.y &&
-         Contains(op, SCALE))
+         Contains(op, SCALE)&&drawCircle)
       {
          type = MT_SCALE_XYZ;
       }
@@ -2101,7 +2121,7 @@ namespace IMGUIZMO_NAMESPACE
       // screen
       if (io.MousePos.x >= gContext.mScreenSquareMin.x && io.MousePos.x <= gContext.mScreenSquareMax.x &&
          io.MousePos.y >= gContext.mScreenSquareMin.y && io.MousePos.y <= gContext.mScreenSquareMax.y &&
-         Contains(op, TRANSLATE))
+         Contains(op, TRANSLATE)&&drawCircle)
       {
          type = MT_MOVE_SCREEN;
       }
