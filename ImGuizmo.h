@@ -252,6 +252,30 @@ namespace IMGUIZMO_NAMESPACE
    IMGUI_API bool IsOver(OPERATION op);
    IMGUI_API void SetGizmoSizeClipSpace(float value);
 
+   // Which axis/plane is currently being manipulated or hovered
+   enum MOVETYPE
+   {
+      MT_NONE,
+      MT_MOVE_X,
+      MT_MOVE_Y,
+      MT_MOVE_Z,
+      MT_MOVE_YZ,
+      MT_MOVE_ZX,
+      MT_MOVE_XY,
+      MT_MOVE_SCREEN,
+      MT_ROTATE_X,
+      MT_ROTATE_Y,
+      MT_ROTATE_Z,
+      MT_ROTATE_SCREEN,
+      MT_SCALE_X,
+      MT_SCALE_Y,
+      MT_SCALE_Z,
+      MT_SCALE_XYZ
+   };
+
+   // Returns which axis is actively being dragged, or MT_NONE
+   IMGUI_API MOVETYPE GetActiveAxis();
+
    // Allow axis to flip
    // When true (default), the guizmo axis flip for better visibility
    // When false, they always stay along the positive world/local axis

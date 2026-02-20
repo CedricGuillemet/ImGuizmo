@@ -596,26 +596,6 @@ namespace IMGUIZMO_NAMESPACE
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
 
-   enum MOVETYPE
-   {
-      MT_NONE,
-      MT_MOVE_X,
-      MT_MOVE_Y,
-      MT_MOVE_Z,
-      MT_MOVE_YZ,
-      MT_MOVE_ZX,
-      MT_MOVE_XY,
-      MT_MOVE_SCREEN,
-      MT_ROTATE_X,
-      MT_ROTATE_Y,
-      MT_ROTATE_Z,
-      MT_ROTATE_SCREEN,
-      MT_SCALE_X,
-      MT_SCALE_Y,
-      MT_SCALE_Z,
-      MT_SCALE_XYZ
-   };
-
    static bool IsTranslateType(int type)
    {
      return type >= MT_MOVE_X && type <= MT_MOVE_SCREEN;
@@ -1050,6 +1030,13 @@ namespace IMGUIZMO_NAMESPACE
          return true;
       }
       return false;
+   }
+
+   MOVETYPE GetActiveAxis()
+   {
+      if (!gContext.mbUsing && !gContext.mbUsingBounds)
+         return MT_NONE;
+      return static_cast<MOVETYPE>(gContext.mCurrentOperation);
    }
 
    void Enable(bool enable)
