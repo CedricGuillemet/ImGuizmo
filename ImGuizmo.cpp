@@ -2820,11 +2820,25 @@ namespace IMGUIZMO_NAMESPACE
             bool inFrustum = true;
             for (int iFrustum = 0; iFrustum < 6; iFrustum++)
             {
-               float dist = DistanceToPlane(centerPosition, frustum[iFrustum]);
-               if (dist < 0.f)
+               const vec_t& plane = frustum[iFrustum];
+
+               bool allOutside = true;
+
+               for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
                {
-                  inFrustum = false;
-                  break;
+                  vec_t worldPos;
+                  worldPos.TransformPoint(faceCoords[iCoord] * 0.5f * invert, *(matrix_t*)matrix);
+
+                  if (DistanceToPlane(worldPos, plane) >= 0.f)
+                  {
+                     allOutside = false;
+                     break;
+                  }
+               }
+
+               if (allOutside)
+               {
+                  continue; // face is fully outside this plane - discard
                }
             }
 
