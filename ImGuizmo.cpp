@@ -2752,6 +2752,86 @@ namespace IMGUIZMO_NAMESPACE
          frustum[i].Normalize();
       }
    }
+   
+   void DrawAxes(const float* view, const float* projection, const float* matrices, int matrixCount)
+   {
+      matrix_t viewM = *(matrix_t*)view;
+      matrix_t projM = *(matrix_t*)projection;
+      matrix_t viewProj = viewM * projM;
+
+      // build frustum
+      vec_t frustum[6];
+      ComputeFrustumPlanes(frustum, viewProj.m16);
+
+      for (int i = 0; i < matrixCount; i++)
+      {
+         const float* matrix = &matrices[i * 16];
+         matrix_t model = *(matrix_t*)matrix;
+         matrix_t mvp = model * viewProj;
+
+         // world-space origin
+         vec_t origin;
+         origin.TransformPoint(vec_t(0.f, 0.f, 0.f), model);
+
+         struct Axis
+         {
+               vec_t dir;
+               ImU32 color;
+         };
+
+         Axis axes[3] = {
+               { vec_t(1.f, 0.f, 0.f), IM_COL32(255, 0, 0, 255) }, // X - red
+               { vec_t(0.f, 1.f, 0.f), IM_COL32(0, 255, 0, 255) }, // Y - green
+               { vec_t(0.f, 0.f, 1.f), IM_COL32(0, 0, 255, 255) }  // Z - blue
+         };
+
+         for (int a = 0; a < 3; a++)
+         {
+               vec_t endLocal = axes[a].dir;
+
+               // world-space endpoint
+               vec_t end;
+               end.TransformPoint(endLocal, model);
+
+               // frustum test
+               bool visible = true;
+               for (int f = 0; f < 6; f++)
+               {
+                  float d0 = DistanceToPlane(origin, frustum[f]);
+                  float d1 = DistanceToPlane(end, frustum[f]);
+
+                  // both outside - reject
+                  if (d0 < 0.f && d1 < 0.f)
+                  {
+                     visible = false;
+                     break;
+                  }
+               }
+
+               if (!visible)
+               {
+                  continue;
+               }
+
+               // project to screen
+               ImVec2 p0 = worldToPos(vec_t(0.f, 0.f, 0.f), mvp);
+               ImVec2 p1 = worldToPos(endLocal, mvp);
+
+               // reject behind camera (clip space)
+               vec_t clip0, clip1;
+               clip0.TransformPoint(vec_t(0.f, 0.f, 0.f), mvp);
+               clip1.TransformPoint(endLocal, mvp);
+
+               if (clip0.w <= 0.f && clip1.w <= 0.f)
+               {
+                  continue;
+               }
+
+               // draw
+               gContext.mDrawList->AddLine(p0, p1, axes[a].color, 2.0f);
+         }
+      }
+   }
 
    void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount)
    {
