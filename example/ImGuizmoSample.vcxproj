@@ -156,6 +156,7 @@
     <ClInclude Include="..\ImGuizmo.h" />
     <ClInclude Include="..\ImLightRig.h" />
     <ClInclude Include="..\ImSequencer.h" />
+    <ClInclude Include="..\ImVectorEditor.h" />
     <ClInclude Include="..\ImZoomSlider.h" />
     <ClInclude Include="ImApp.h" />
     <ClInclude Include="imconfig.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="..\ImGradient.cpp" />
     <ClCompile Include="..\ImGuizmo.cpp" />
     <ClCompile Include="..\ImSequencer.cpp" />
+    <ClCompile Include="..\ImVectorEditor.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
