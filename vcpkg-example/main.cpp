@@ -859,7 +859,7 @@ static void ShowVectorEditorDemo()
       undoDebug.EndEdit();
    }
 
-   if (ImGui::TreeNodeEx("Path##VectorEditor", ImGuiTreeNodeFlags_DefaultOpen))
+   if (ImGui::TreeNodeEx("Path##VectorEditor"))
    {
       if (ImGui::Button(path.closed ? "Open Path##VectorEditor" : "Close Path##VectorEditor"))
       {
@@ -886,7 +886,7 @@ static void ShowVectorEditorDemo()
    else
       config.transform.objectPivot = VectorEditorPathCenter(path);
 
-   if (ImGui::TreeNodeEx("View##VectorEditor", ImGuiTreeNodeFlags_DefaultOpen))
+   if (ImGui::TreeNodeEx("View##VectorEditor"))
    {
       ImGui::DragFloat2("Pan##VectorEditor", &config.transform.pan.x, 1.0f);
       ImGui::SliderFloat("Zoom##VectorEditor", &config.transform.zoom, 0.25f, 4.0f, "%.2f");
@@ -896,7 +896,7 @@ static void ShowVectorEditorDemo()
       ImGui::TreePop();
    }
 
-   if (ImGui::TreeNodeEx("Style##VectorEditor", ImGuiTreeNodeFlags_DefaultOpen))
+   if (ImGui::TreeNodeEx("Style##VectorEditor"))
    {
       ImGui::Checkbox("Show Grid##VectorEditor", &config.showGrid);
       ImGui::SliderFloat("Grid Step##VectorEditor", &config.style.gridStep, 8.0f, 96.0f, "%.1f");
