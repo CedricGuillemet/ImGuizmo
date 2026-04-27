@@ -36,6 +36,13 @@ Check the sample for the documentation. More to come...
 Nodes + connections. Custom draw inside nodes is possible with the delegate system in place.
 ![Image of GraphEditor](Images/nodeeditor.jpg)
 
+### ImVectorEditor
+
+A small path editor widget for local 2D vector geometry. It supports a Pen tool,
+anchor and handle editing, closed/open paths, and host-provided transforms so it
+can compose with ImGuizmo object manipulation.
+![Image of VectorEditor](Images/vectoreditor.png)
+
 ### API doc
 
 Call BeginFrame right after ImGui_XXXX_NewFrame();
