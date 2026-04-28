@@ -1,0 +1,87 @@
+cmake_minimum_required(VERSION 3.10)
+
+# define a macro that helps defining an option
+macro(imguizmo_set_option var default type docstring)
+    if(NOT DEFINED ${var})
+        set(${var} ${default})
+    endif()
+    set(${var} ${${var}} CACHE ${type} ${docstring} FORCE)
+endmacro()
+
+
+#--------------------------------------------------------------------
+# Project Name.
+#--------------------------------------------------------------------
+
+# determine whether to create a debug or release build
+imguizmo_set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
+
+project(ImGuizmo
+        DESCRIPTION "Immediate mode 3D gizmo for scene editing and more"
+        HOMEPAGE_URL "https://github.com/CedricGuillemet/ImGuizmo"
+        LANGUAGES CXX
+)
+
+#--------------------------------------------------------------------
+# Configurations
+#--------------------------------------------------------------------
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# Check if this project is the main project
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(IMGUIZMO_MAINPROJECT ON)
+else()
+  set(IMGUIZMO_MAINPROJECT OFF)
+endif()
+
+# Add UTF-8 encoding support for MSVC compiler.
+# This ensures that the MSVC compiler interprets source files as UTF-8 encoded,
+# which is useful for projects containing non-ASCII characters in source files.
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
+# Output directories for a build tree
+if(NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+#--------------------------------------------------------------------
+# Configure variables for the library   
+#--------------------------------------------------------------------
+
+# add an option for choosing the build type (shared or static)
+imguizmo_set_option(IMGUIZMO_BUILD_SHARED ON BOOL "ON to build as shared libraries, OFF to build it as static libraries")
+
+#--------------------------------------------------------------------
+# Build library targets
+#--------------------------------------------------------------------
+
+file(GLOB IMGUIZMO_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB IMGUIZMO_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+add_library(ImGuizmo ${IMGUIZMO_SOURCES} ${IMGUIZMO_HEADERS})
+add_library(ImGuizmo::ImGuizmo ALIAS ImGuizmo)
+
+target_include_directories(ImGuizmo
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/example/>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+if(IMGUIZMO_BUILD_SHARED)
+    set_target_properties(ImGuizmo PROPERTIES BUILD_SHARED_LIBS ON)
+endif()
+
+#--------------------------------------------------------------------
+# Add Project subdirectories
+#--------------------------------------------------------------------
+
+# add an option for building the examples
+imguizmo_set_option(IMGUIZMO_BUILD_EXAMPLES ${IMGUIZMO_MAINPROJECT} BOOL "ON to build the ImGuizmo examples, OFF to ignore them")
+
+# Build the example apps
+if(IMGUIZMO_BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()
