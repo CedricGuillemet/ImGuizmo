@@ -169,6 +169,8 @@ namespace IMGUIZMO_NAMESPACE
    // default is false
    IMGUI_API void SetOrthographic(bool isOrthographic);
 
+   // Render coordinate system axes (red X, green Y and blue Z). Usefull for debug/tests
+   IMGUI_API void DrawAxes(const float* view, const float* projection, const float* matrices, int matrixCount);
    // Render a cube with face color corresponding to face normal. Usefull for debug/tests
    IMGUI_API void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount);
    IMGUI_API void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize);
@@ -251,6 +253,35 @@ namespace IMGUIZMO_NAMESPACE
    // return true if the cursor is over the operation's gizmo
    IMGUI_API bool IsOver(OPERATION op);
    IMGUI_API void SetGizmoSizeClipSpace(float value);
+
+   // Handle type used by the translate/rotate/scale gizmos.
+   enum MOVETYPE
+   {
+      MT_NONE,
+      MT_MOVE_X,
+      MT_MOVE_Y,
+      MT_MOVE_Z,
+      MT_MOVE_YZ,
+      MT_MOVE_ZX,
+      MT_MOVE_XY,
+      MT_MOVE_SCREEN,
+      MT_ROTATE_X,
+      MT_ROTATE_Y,
+      MT_ROTATE_Z,
+      MT_ROTATE_SCREEN,
+      MT_SCALE_X,
+      MT_SCALE_Y,
+      MT_SCALE_Z,
+      MT_SCALE_XYZ
+   };
+
+   // Returns which handle is actively being dragged, or MT_NONE.
+   IMGUI_API MOVETYPE GetActiveHandleType();
+   // Returns which handle is currently hovered, or MT_NONE.
+   IMGUI_API MOVETYPE GetHoveredHandleType();
+   // Aliases matching the MOVETYPE enum name.
+   IMGUI_API MOVETYPE GetActiveMoveType();
+   IMGUI_API MOVETYPE GetHoveredMoveType();
 
    // Allow axis to flip
    // When true (default), the guizmo axis flip for better visibility
