@@ -596,17 +596,17 @@ namespace IMGUIZMO_NAMESPACE
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
 
-   static bool IsTranslateType(int type)
+   static bool IsTranslateType(MOVETYPE type)
    {
      return type >= MT_MOVE_X && type <= MT_MOVE_SCREEN;
    }
 
-   static bool IsRotateType(int type)
+   static bool IsRotateType(MOVETYPE type)
    {
      return type >= MT_ROTATE_X && type <= MT_ROTATE_SCREEN;
    }
 
-   static bool IsScaleType(int type)
+   static bool IsScaleType(MOVETYPE type)
    {
      return type >= MT_SCALE_X && type <= MT_SCALE_XYZ;
    }
@@ -726,7 +726,8 @@ namespace IMGUIZMO_NAMESPACE
       matrix_t mBoundsMatrix;
 
       //
-      int mCurrentOperation;
+      MOVETYPE mCurrentHandleType = MT_NONE;
+      MOVETYPE mHoveredHandleType = MT_NONE;
 
       float mX = 0.f;
       float mY = 0.f;
@@ -775,9 +776,9 @@ namespace IMGUIZMO_NAMESPACE
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
-   static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion);
-   static int GetRotateType(OPERATION op);
-   static int GetScaleType(OPERATION op);
+   static MOVETYPE GetMoveType(OPERATION op, vec_t* gizmoHitProportion);
+   static MOVETYPE GetRotateType(OPERATION op);
+   static MOVETYPE GetScaleType(OPERATION op);
 
    Style& GetStyle()
    {
@@ -1032,11 +1033,28 @@ namespace IMGUIZMO_NAMESPACE
       return false;
    }
 
-   MOVETYPE GetActiveAxis()
+   MOVETYPE GetActiveHandleType()
    {
-      if (!gContext.mbUsing && !gContext.mbUsingBounds)
+      if (!gContext.mbUsing || gContext.GetCurrentID() != gContext.mEditingID)
+      {
          return MT_NONE;
-      return static_cast<MOVETYPE>(gContext.mCurrentOperation);
+      }
+      return gContext.mCurrentHandleType;
+   }
+
+   MOVETYPE GetHoveredHandleType()
+   {
+      return gContext.mHoveredHandleType;
+   }
+
+   MOVETYPE GetActiveMoveType()
+   {
+      return GetActiveHandleType();
+   }
+
+   MOVETYPE GetHoveredMoveType()
+   {
+      return GetHoveredHandleType();
    }
 
    void Enable(bool enable)
@@ -1046,6 +1064,8 @@ namespace IMGUIZMO_NAMESPACE
       {
          gContext.mbUsing = false;
          gContext.mbUsingBounds = false;
+         gContext.mCurrentHandleType = MT_NONE;
+         gContext.mHoveredHandleType = MT_NONE;
       }
    }
 
@@ -1250,7 +1270,7 @@ namespace IMGUIZMO_NAMESPACE
       return angle;
    }
 
-   static void DrawRotationGizmo(OPERATION op, int type)
+   static void DrawRotationGizmo(OPERATION op, MOVETYPE type)
    {
       if(!Intersects(op, ROTATE))
       {
@@ -1366,7 +1386,7 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
-   static void DrawScaleGizmo(OPERATION op, int type)
+   static void DrawScaleGizmo(OPERATION op, MOVETYPE type)
    {
       ImDrawList* drawList = gContext.mDrawList;
 
@@ -1454,7 +1474,7 @@ namespace IMGUIZMO_NAMESPACE
    }
 
 
-   static void DrawScaleUniveralGizmo(OPERATION op, int type)
+   static void DrawScaleUniveralGizmo(OPERATION op, MOVETYPE type)
    {
       ImDrawList* drawList = gContext.mDrawList;
 
@@ -1538,7 +1558,7 @@ namespace IMGUIZMO_NAMESPACE
       }
    }
 
-   static void DrawTranslationGizmo(OPERATION op, int type)
+   static void DrawTranslationGizmo(OPERATION op, MOVETYPE type)
    {
       ImDrawList* drawList = gContext.mDrawList;
       if (!drawList)
@@ -1760,7 +1780,7 @@ namespace IMGUIZMO_NAMESPACE
             bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
             bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
 
-            int type = MT_NONE;
+            MOVETYPE type = MT_NONE;
             vec_t gizmoHitProportion;
 
             if(Intersects(operation, TRANSLATE))
@@ -1915,14 +1935,14 @@ namespace IMGUIZMO_NAMESPACE
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
 
-   static int GetScaleType(OPERATION op)
+   static MOVETYPE GetScaleType(OPERATION op)
    {
       if (gContext.mbUsing)
       {
          return MT_NONE;
       }
       ImGuiIO& io = ImGui::GetIO();
-      int type = MT_NONE;
+      MOVETYPE type = MT_NONE;
 
       // screen
       if (io.MousePos.x >= gContext.mScreenSquareMin.x && io.MousePos.x <= gContext.mScreenSquareMax.x &&
@@ -1962,7 +1982,7 @@ namespace IMGUIZMO_NAMESPACE
          if ((closestPointOnAxis - makeVect(posOnPlanScreen)).Length() < 12.f) // pixel size
          {
             if (!isAxisMasked)
-               type = MT_SCALE_X + i;
+               type = static_cast<MOVETYPE>(MT_SCALE_X + i);
          }
       }
 
@@ -1998,14 +2018,14 @@ namespace IMGUIZMO_NAMESPACE
             float distance = sqrtf(ImLengthSqr(worldDirSSpace - io.MousePos));
             if (distance < 12.f)
             {
-               type = MT_SCALE_X + i;
+               type = static_cast<MOVETYPE>(MT_SCALE_X + i);
             }
          }
       }
       return type;
    }
 
-   static int GetRotateType(OPERATION op)
+   static MOVETYPE GetRotateType(OPERATION op)
    {
       if (gContext.mbUsing)
       {
@@ -2016,7 +2036,7 @@ namespace IMGUIZMO_NAMESPACE
       bool isMultipleAxesMasked = (gContext.mAxisMask & (gContext.mAxisMask - 1)) != 0;
 
       ImGuiIO& io = ImGui::GetIO();
-      int type = MT_NONE;
+      MOVETYPE type = MT_NONE;
 
       vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y, 0.f, 0.f };
       float dist = deltaScreen.Length();
@@ -2065,14 +2085,14 @@ namespace IMGUIZMO_NAMESPACE
          {
             if ((!isAxisMasked || isMultipleAxesMasked) && !isNoAxesMasked)
                break;
-            type = MT_ROTATE_X + i;
+            type = static_cast<MOVETYPE>(MT_ROTATE_X + i);
          }
       }
 
       return type;
    }
 
-   static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion)
+   static MOVETYPE GetMoveType(OPERATION op, vec_t* gizmoHitProportion)
    {
       if(!Intersects(op, TRANSLATE) || gContext.mbUsing || !gContext.mbMouseOver)
       {
@@ -2083,7 +2103,7 @@ namespace IMGUIZMO_NAMESPACE
       bool isMultipleAxesMasked = (gContext.mAxisMask & (gContext.mAxisMask - 1)) != 0;
 
       ImGuiIO& io = ImGui::GetIO();
-      int type = MT_NONE;
+      MOVETYPE type = MT_NONE;
 
       // screen
       if (io.MousePos.x >= gContext.mScreenSquareMin.x && io.MousePos.x <= gContext.mScreenSquareMax.x &&
@@ -2117,7 +2137,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             if (isAxisMasked)
                break;
-            type = MT_MOVE_X + i;
+            type = static_cast<MOVETYPE>(MT_MOVE_X + i);
          }
 
          const float dx = dirPlaneX.Dot3((posOnPlan - gContext.mModel.v.position) * (1.f / gContext.mScreenFactor));
@@ -2126,7 +2146,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             if ((!isAxisMasked || isMultipleAxesMasked) && !isNoAxesMasked)
                break;
-            type = MT_MOVE_YZ + i;
+            type = static_cast<MOVETYPE>(MT_MOVE_YZ + i);
          }
 
          if (gizmoHitProportion)
@@ -2137,18 +2157,18 @@ namespace IMGUIZMO_NAMESPACE
       return type;
    }
 
-   static bool HandleTranslation(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap)
+   static bool HandleTranslation(float* matrix, float* deltaMatrix, OPERATION op, MOVETYPE& type, const float* snap)
    {
       if(!Intersects(op, TRANSLATE) || type != MT_NONE)
       {
         return false;
       }
       const ImGuiIO& io = ImGui::GetIO();
-      const bool applyRotationLocaly = gContext.mMode == LOCAL || type == MT_MOVE_SCREEN;
+      const bool applyRotationLocaly = gContext.mMode == LOCAL || gContext.mCurrentHandleType == MT_MOVE_SCREEN;
       bool modified = false;
 
       // move
-      if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsTranslateType(gContext.mCurrentOperation))
+      if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsTranslateType(gContext.mCurrentHandleType))
       {
 #if IMGUI_VERSION_NUM >= 18723
          ImGui::SetNextFrameWantCaptureMouse(true);
@@ -2164,9 +2184,9 @@ namespace IMGUIZMO_NAMESPACE
          vec_t delta = newOrigin - gContext.mModel.v.position;
 
          // 1 axis constraint
-         if (gContext.mCurrentOperation >= MT_MOVE_X && gContext.mCurrentOperation <= MT_MOVE_Z)
+         if (gContext.mCurrentHandleType >= MT_MOVE_X && gContext.mCurrentHandleType <= MT_MOVE_Z)
          {
-            const int axisIndex = gContext.mCurrentOperation - MT_MOVE_X;
+            const int axisIndex = gContext.mCurrentHandleType - MT_MOVE_X;
             const vec_t& axisValue = *(vec_t*)&gContext.mModel.m[axisIndex];
             const float lengthOnAxis = Dot(axisValue, delta);
             delta = axisValue * lengthOnAxis;
@@ -2216,7 +2236,7 @@ namespace IMGUIZMO_NAMESPACE
             gContext.mbUsing = false;
          }
 
-         type = gContext.mCurrentOperation;
+         type = gContext.mCurrentHandleType;
       }
       else
       {
@@ -2236,7 +2256,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.GetCurrentID();
-            gContext.mCurrentOperation = type;
+            gContext.mCurrentHandleType = type;
             vec_t movePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir,
                gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir,
                -gContext.mCameraDir };
@@ -2260,7 +2280,7 @@ namespace IMGUIZMO_NAMESPACE
       return modified;
    }
 
-   static bool HandleScale(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap)
+   static bool HandleScale(float* matrix, float* deltaMatrix, OPERATION op, MOVETYPE& type, const float* snap)
    {
       if((!Intersects(op, SCALE) && !Intersects(op, SCALEU)) || type != MT_NONE || !gContext.mbMouseOver)
       {
@@ -2287,7 +2307,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.GetCurrentID();
-            gContext.mCurrentOperation = type;
+            gContext.mCurrentHandleType = type;
             const vec_t movePlanNormal[] = { gContext.mModelLocal.v.up, gContext.mModelLocal.v.dir, gContext.mModelLocal.v.right, gContext.mModelLocal.v.dir, gContext.mModelLocal.v.up, gContext.mModelLocal.v.right, -gContext.mCameraDir };
             // pickup plan
 
@@ -2302,7 +2322,7 @@ namespace IMGUIZMO_NAMESPACE
          }
       }
       // scale
-      if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsScaleType(gContext.mCurrentOperation))
+      if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsScaleType(gContext.mCurrentHandleType))
       {
 #if IMGUI_VERSION_NUM >= 18723
          ImGui::SetNextFrameWantCaptureMouse(true);
@@ -2315,9 +2335,9 @@ namespace IMGUIZMO_NAMESPACE
          vec_t delta = newOrigin - gContext.mModelLocal.v.position;
 
          // 1 axis constraint
-         if (gContext.mCurrentOperation >= MT_SCALE_X && gContext.mCurrentOperation <= MT_SCALE_Z)
+         if (gContext.mCurrentHandleType >= MT_SCALE_X && gContext.mCurrentHandleType <= MT_SCALE_Z)
          {
-            int axisIndex = gContext.mCurrentOperation - MT_SCALE_X;
+            int axisIndex = gContext.mCurrentHandleType - MT_SCALE_X;
             const vec_t& axisValue = *(vec_t*)&gContext.mModelLocal.m[axisIndex];
             float lengthOnAxis = Dot(axisValue, delta);
             delta = axisValue * lengthOnAxis;
@@ -2378,12 +2398,12 @@ namespace IMGUIZMO_NAMESPACE
             gContext.mScale.Set(1.f, 1.f, 1.f);
          }
 
-         type = gContext.mCurrentOperation;
+         type = gContext.mCurrentHandleType;
       }
       return modified;
    }
 
-   static bool HandleRotation(float* matrix, float* deltaMatrix, OPERATION op, int& type, const float* snap)
+   static bool HandleRotation(float* matrix, float* deltaMatrix, OPERATION op, MOVETYPE& type, const float* snap)
    {
       if(!Intersects(op, ROTATE) || type != MT_NONE || !gContext.mbMouseOver)
       {
@@ -2416,7 +2436,7 @@ namespace IMGUIZMO_NAMESPACE
          {
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.GetCurrentID();
-            gContext.mCurrentOperation = type;
+            gContext.mCurrentHandleType = type;
             const vec_t rotatePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir, -gContext.mCameraDir };
             // pickup plan
             if (applyRotationLocaly)
@@ -2436,7 +2456,7 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       // rotation
-      if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsRotateType(gContext.mCurrentOperation))
+      if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID) && IsRotateType(gContext.mCurrentHandleType))
       {
 #if IMGUI_VERSION_NUM >= 18723
          ImGui::SetNextFrameWantCaptureMouse(true);
@@ -2488,7 +2508,7 @@ namespace IMGUIZMO_NAMESPACE
             gContext.mbUsing = false;
             gContext.mEditingID = -1;
          }
-         type = gContext.mCurrentOperation;
+         type = gContext.mCurrentHandleType;
       }
       return modified;
    }
@@ -2650,6 +2670,7 @@ namespace IMGUIZMO_NAMESPACE
 
       // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
       ComputeContext(view, projection, matrix, (operation & SCALE) ? LOCAL : mode);
+      gContext.mHoveredHandleType = MT_NONE;
 
       // set delta to identity
       if (deltaMatrix)
@@ -2666,7 +2687,7 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       // --
-      int type = MT_NONE;
+      MOVETYPE type = MT_NONE;
       bool manipulated = false;
       if (gContext.mbEnable)
       {
@@ -2684,6 +2705,7 @@ namespace IMGUIZMO_NAMESPACE
       }
 
       gContext.mOperation = operation;
+      gContext.mHoveredHandleType = (!gContext.mbUsing && !gContext.mbUsingBounds) ? type : MT_NONE;
       if (!gContext.mbUsingBounds)
       {
          DrawRotationGizmo(operation, type);
