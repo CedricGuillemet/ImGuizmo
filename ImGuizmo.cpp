@@ -2780,7 +2780,7 @@ namespace IMGUIZMO_NAMESPACE
 
          // world-space origin
          vec_t origin;
-         origin.TransformPoint(vec_t(0.f, 0.f, 0.f), model);
+         origin.TransformPoint(makeVect(0.f, 0.f, 0.f), model);
 
          struct Axis
          {
@@ -2789,9 +2789,9 @@ namespace IMGUIZMO_NAMESPACE
          };
 
          Axis axes[3] = {
-               { vec_t(1.f, 0.f, 0.f), IM_COL32(255, 0, 0, 255) }, // X - red
-               { vec_t(0.f, 1.f, 0.f), IM_COL32(0, 255, 0, 255) }, // Y - green
-               { vec_t(0.f, 0.f, 1.f), IM_COL32(0, 0, 255, 255) }  // Z - blue
+               { makeVect(1.f, 0.f, 0.f), IM_COL32(255, 0, 0, 255) }, // X - red
+               { makeVect(0.f, 1.f, 0.f), IM_COL32(0, 255, 0, 255) }, // Y - green
+               { makeVect(0.f, 0.f, 1.f), IM_COL32(0, 0, 255, 255) }  // Z - blue
          };
 
          for (int a = 0; a < 3; a++)
@@ -2823,12 +2823,12 @@ namespace IMGUIZMO_NAMESPACE
                }
 
                // project to screen
-               ImVec2 p0 = worldToPos(vec_t(0.f, 0.f, 0.f), mvp);
+               ImVec2 p0 = worldToPos(makeVect(0.f, 0.f, 0.f), mvp);
                ImVec2 p1 = worldToPos(endLocal, mvp);
 
                // reject behind camera (clip space)
                vec_t clip0, clip1;
-               clip0.TransformPoint(vec_t(0.f, 0.f, 0.f), mvp);
+               clip0.TransformPoint(makeVect(0.f, 0.f, 0.f), mvp);
                clip1.TransformPoint(endLocal, mvp);
 
                if (clip0.w <= 0.f && clip1.w <= 0.f)
