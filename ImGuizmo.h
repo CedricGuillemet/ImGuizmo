@@ -169,6 +169,8 @@ namespace IMGUIZMO_NAMESPACE
    // default is false
    IMGUI_API void SetOrthographic(bool isOrthographic);
 
+   // Render coordinate system axes (red X, green Y and blue Z). Usefull for debug/tests
+   IMGUI_API void DrawAxes(const float* view, const float* projection, const float* matrices, int matrixCount);
    // Render a cube with face color corresponding to face normal. Usefull for debug/tests
    IMGUI_API void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount);
    IMGUI_API void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize);
