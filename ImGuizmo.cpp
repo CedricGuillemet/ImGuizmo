@@ -2780,9 +2780,9 @@ namespace IMGUIZMO_NAMESPACE
          };
 
          Axis axes[3] = {
-               { vec_t(1.f, 0.f, 0.f), IM_COL32(255, 0, 0, 255) }, // X - red
-               { vec_t(0.f, 1.f, 0.f), IM_COL32(0, 255, 0, 255) }, // Y - green
-               { vec_t(0.f, 0.f, 1.f), IM_COL32(0, 0, 255, 255) }  // Z - blue
+               { makeVect(1.f, 0.f, 0.f), IM_COL32(255, 0, 0, 255) }, // X - red
+               { makeVect(0.f, 1.f, 0.f), IM_COL32(0, 255, 0, 255) }, // Y - green
+               { makeVect(0.f, 0.f, 1.f), IM_COL32(0, 0, 255, 255) }  // Z - blue
          };
 
          for (int a = 0; a < 3; a++)
