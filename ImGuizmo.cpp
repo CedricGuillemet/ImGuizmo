@@ -194,6 +194,9 @@ namespace IMGUIZMO_NAMESPACE
    public:
       float x, y, z, w;
 
+      vec_t() = default;
+      vec_t(float _x, float _y, float _z, float _w = 0.f) : x(_x), y(_y), z(_z), w(_w) {}
+
       void Lerp(const vec_t& v, float t)
       {
          x += (v.x - x) * t;

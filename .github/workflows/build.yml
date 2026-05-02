@@ -1,0 +1,51 @@
+name: Build Example
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            cc: cl
+            cxx: cl
+            name: Windows MSVC
+          - os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+            name: Linux GCC
+          - os: ubuntu-latest
+            cc: clang
+            cxx: clang++
+            name: Linux Clang
+          - os: macos-latest
+            cc: clang
+            cxx: clang++
+            name: macOS Apple Clang
+
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libgl-dev mesa-common-dev
+
+      - name: Configure
+        run: cmake -B build -S example
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+
+      - name: Build
+        run: cmake --build build --config Release

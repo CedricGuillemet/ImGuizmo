@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version/tag for the release (e.g. v1.92.5)'
+        required: true
+        type: string
+
+jobs:
+  build-example:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            cc: clang
+            cxx: clang++
+            name: macOS
+            artifact: example-app-macos
+            binary: build/example-app
+          - os: windows-latest
+            cc: cl
+            cxx: cl
+            name: Windows
+            artifact: example-app-windows
+            binary: build/Release/example-app.exe
+          - os: ubuntu-latest
+            cc: clang
+            cxx: clang++
+            name: Linux
+            artifact: example-app-linux
+            binary: build/example-app
+
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libgl-dev mesa-common-dev clang
+
+      - name: Configure
+        run: cmake -B build -S example -DCMAKE_BUILD_TYPE=Release
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.binary }}
+          if-no-files-found: error
+
+  verify-vcpkg:
+    name: Verify vcpkg-example
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git ${{ runner.temp }}\vcpkg
+          & "${{ runner.temp }}\vcpkg\bootstrap-vcpkg.bat"
+        shell: pwsh
+
+      - name: Install vcpkg packages
+        run: |
+          & "${{ runner.temp }}\vcpkg\vcpkg.exe" install --triplet x64-windows
+        shell: pwsh
+        working-directory: vcpkg-example
+
+      - name: Configure
+        run: cmake -B build -S vcpkg-example -DCMAKE_TOOLCHAIN_FILE=${{ runner.temp }}\vcpkg\scripts\buildsystems\vcpkg.cmake
+
+      - name: Build
+        run: cmake --build build --config Release
+
+  release:
+    name: Create Release
+    needs: [build-example]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create source archive
+        run: |
+          mkdir -p staging
+          cp *.h *.cpp LICENSE staging/
+          tar -czf ImGuizmo-${{ inputs.version }}-source.tar.gz -C staging .
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: example-app-macos
+          path: artifacts/macos
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: example-app-windows
+          path: artifacts/windows
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: example-app-linux
+          path: artifacts/linux
+
+      - name: Prepare release assets
+        run: |
+          chmod +x artifacts/macos/example-app
+          chmod +x artifacts/linux/example-app
+          mv artifacts/macos/example-app   example-app-macos
+          mv artifacts/windows/example-app.exe example-app-windows.exe
+          mv artifacts/linux/example-app   example-app-linux
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ImGuizmo ${{ inputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            ImGuizmo-${{ inputs.version }}-source.tar.gz
+            example-app-macos
+            example-app-windows.exe
+            example-app-linux
