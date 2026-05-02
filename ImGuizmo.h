@@ -174,6 +174,11 @@ namespace IMGUIZMO_NAMESPACE
    // Render a cube with face color corresponding to face normal. Usefull for debug/tests
    IMGUI_API void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount);
    IMGUI_API void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize);
+   // Render grid with customizable major line step and amount of segments between major lines.
+   // NOTE(m.wlasiuk) : calling this function with majorStep = 1.0f and subdivision = 1 is equivalent to DrawGrid in terms of the end result but performs more calculations
+   IMGUI_API void DrawGridCustom(const float* view, const float* projection, const float* matrix, const float gridSize, const float majorStep, const unsigned int subdivision);
+   // Render grid with customizable major line step and amount of segments between major lines and with possibility to set custom colors for major, minor and center lines
+   IMGUI_API void DrawGridCustomColor(const float* view, const float* projection, const float* matrix, const float gridSize, const float majorStep, const unsigned int subdivision, const ImU32 majorCol, const ImU32 minorCol, const ImU32 centerCol);
 
    // call it when you want a gizmo
    // Needs view and projection matrices.
