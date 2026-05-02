@@ -29,6 +29,10 @@
 #define IMAPP_IMPL
 #include "ImApp.h"
 
+#ifdef None
+#undef None
+#endif
+
 #include "ImGuizmo.h"
 #include "ImSequencer.h"
 #include "ImZoomSlider.h"

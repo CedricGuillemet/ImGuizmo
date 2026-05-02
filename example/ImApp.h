@@ -33,6 +33,9 @@
 #if defined(_WIN32)
 #pragma comment(lib,"opengl32.lib")
 #define WINDOWS_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <Windows.h>
 #include <GL/GL.h>
 #define glGetProcAddress(name) (void *)wglGetProcAddress((LPCSTR)name)
