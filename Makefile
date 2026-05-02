@@ -1,7 +1,7 @@
 CXXFLAGS=-std=c++11
-CPPFLAGS=-I. -Iexample
+CPPFLAGS=-Isrc -Iexample
 
-LIB_OBJS = ImGuizmo.o GraphEditor.o ImCurveEdit.o ImGradient.o ImSequencer.o
+LIB_OBJS = src/ImGuizmo.o src/GraphEditor.o src/ImCurveEdit.o src/ImGradient.o src/ImSequencer.o
 EXAMPLE_OBJS = example/imgui.o example/imgui_draw.o example/imgui_tables.o example/imgui_widgets.o example/main.o
 
 EXAMPLE_NAME = example.exe

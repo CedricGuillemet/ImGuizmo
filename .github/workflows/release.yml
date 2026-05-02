@@ -46,7 +46,7 @@ jobs:
           sudo apt-get install -y libx11-dev libgl-dev mesa-common-dev clang
 
       - name: Configure
-        run: cmake -B build -S example -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
@@ -99,7 +99,7 @@ jobs:
       - name: Create source archive
         run: |
           mkdir -p staging
-          cp *.h *.cpp LICENSE staging/
+          cp src/*.h src/*.cpp LICENSE staging/
           tar -czf ImGuizmo-${{ inputs.version }}-source.tar.gz -C staging .
 
       - name: Download macOS artifact
