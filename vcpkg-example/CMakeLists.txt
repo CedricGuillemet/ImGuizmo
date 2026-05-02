@@ -16,6 +16,7 @@ target_compile_options(example-app PRIVATE "/std:c++17")
 
 target_include_directories(example-app PRIVATE
     ${Stb_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../example
 )
 
 target_link_libraries(example-app PRIVATE
