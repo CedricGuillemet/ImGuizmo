@@ -2771,7 +2771,7 @@ namespace IMGUIZMO_NAMESPACE
 
          // world-space origin
          vec_t origin;
-         origin.TransformPoint(vec_t(0.f, 0.f, 0.f), model);
+         origin.TransformPoint(makeVect(0.f, 0.f, 0.f), model);
 
          struct Axis
          {
@@ -2814,12 +2814,12 @@ namespace IMGUIZMO_NAMESPACE
                }
 
                // project to screen
-               ImVec2 p0 = worldToPos(vec_t(0.f, 0.f, 0.f), mvp);
+               ImVec2 p0 = worldToPos(makeVect(0.f, 0.f, 0.f), mvp);
                ImVec2 p1 = worldToPos(endLocal, mvp);
 
                // reject behind camera (clip space)
                vec_t clip0, clip1;
-               clip0.TransformPoint(vec_t(0.f, 0.f, 0.f), mvp);
+               clip0.TransformPoint(makeVect(0.f, 0.f, 0.f), mvp);
                clip1.TransformPoint(endLocal, mvp);
 
                if (clip0.w <= 0.f && clip1.w <= 0.f)
