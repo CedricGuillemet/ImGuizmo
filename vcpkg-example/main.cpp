@@ -935,6 +935,7 @@ int main(int, char**)
    config.mHeight = 720;
    //config.mFullscreen = true;
    imApp.Init(config);
+   ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
 
    int lastUsing = 0;
 
