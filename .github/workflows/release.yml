@@ -24,21 +24,21 @@ jobs:
             cxx: clang++
             name: macOS
             artifact: example-app-macos
-            binary: build/example-app
+            binary: build/example/example-app
             zip_name: ImGuizmo-example-macos.zip
           - os: windows-latest
             cc: cl
             cxx: cl
             name: Windows
             artifact: example-app-windows
-            binary: build/Release/example-app.exe
+            binary: build/example/Release/example-app.exe
             zip_name: ImGuizmo-example-windows.zip
           - os: ubuntu-latest
             cc: clang
             cxx: clang++
             name: Linux
             artifact: example-app-linux
-            binary: build/example-app
+            binary: build/example/example-app
             zip_name: ImGuizmo-example-linux.zip
 
     name: Build ${{ matrix.name }}
