@@ -11,6 +11,8 @@ For API reference and usage examples, see the [documentation](docs/documentation
 
 ## Widgets
 
+Each widget is a standalone `.h`/`.cpp` pair that can be used independently. A unified static library containing all components is also available via the provided CMake build.
+
 ### ImViewGizmo
 
 Manipulate view orientation with a single line of code.

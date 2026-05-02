@@ -1,12 +1,17 @@
 name: Release
 
 on:
+  release:
+    types: [created]
   workflow_dispatch:
     inputs:
       version:
         description: 'Version/tag for the release (e.g. v1.92.5)'
         required: true
         type: string
+
+env:
+  VERSION: ${{ inputs.version || github.event.release.tag_name }}
 
 jobs:
   build-example:
@@ -20,18 +25,21 @@ jobs:
             name: macOS
             artifact: example-app-macos
             binary: build/example-app
+            zip_name: ImGuizmo-example-macos.zip
           - os: windows-latest
             cc: cl
             cxx: cl
             name: Windows
             artifact: example-app-windows
             binary: build/Release/example-app.exe
+            zip_name: ImGuizmo-example-windows.zip
           - os: ubuntu-latest
             cc: clang
             cxx: clang++
             name: Linux
             artifact: example-app-linux
             binary: build/example-app
+            zip_name: ImGuizmo-example-linux.zip
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -54,11 +62,22 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
+      - name: Zip artifact (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x ${{ matrix.binary }}
+          zip -j ${{ matrix.zip_name }} ${{ matrix.binary }}
+
+      - name: Zip artifact (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path ${{ matrix.binary }} -DestinationPath ${{ matrix.zip_name }}
+        shell: pwsh
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: ${{ matrix.binary }}
+          path: ${{ matrix.zip_name }}
           if-no-files-found: error
 
   verify-vcpkg:
@@ -87,7 +106,7 @@ jobs:
         run: cmake --build build --config Release
 
   release:
-    name: Create Release
+    name: Upload Release Assets
     needs: [build-example]
     runs-on: ubuntu-latest
     permissions:
@@ -100,44 +119,23 @@ jobs:
         run: |
           mkdir -p staging
           cp src/*.h src/*.cpp LICENSE staging/
-          tar -czf ImGuizmo-${{ inputs.version }}-source.tar.gz -C staging .
+          tar -czf ImGuizmo-${{ env.VERSION }}-source.tar.gz -C staging .
 
-      - name: Download macOS artifact
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: example-app-macos
-          path: artifacts/macos
+          path: artifacts
 
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: example-app-windows
-          path: artifacts/windows
-
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: example-app-linux
-          path: artifacts/linux
-
-      - name: Prepare release assets
-        run: |
-          chmod +x artifacts/macos/example-app
-          chmod +x artifacts/linux/example-app
-          mv artifacts/macos/example-app   example-app-macos
-          mv artifacts/windows/example-app.exe example-app-windows.exe
-          mv artifacts/linux/example-app   example-app-linux
-
-      - name: Create GitHub Release
+      - name: Upload assets to release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.version }}
-          name: ImGuizmo ${{ inputs.version }}
+          tag_name: ${{ env.VERSION }}
+          name: ImGuizmo ${{ env.VERSION }}
           draft: false
           prerelease: false
           generate_release_notes: true
           files: |
-            ImGuizmo-${{ inputs.version }}-source.tar.gz
-            example-app-macos
-            example-app-windows.exe
-            example-app-linux
+            ImGuizmo-${{ env.VERSION }}-source.tar.gz
+            artifacts/example-app-macos/ImGuizmo-example-macos.zip
+            artifacts/example-app-windows/ImGuizmo-example-windows.zip
+            artifacts/example-app-linux/ImGuizmo-example-linux.zip
