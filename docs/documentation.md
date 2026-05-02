@@ -117,7 +117,7 @@ void Manipulate(const float* view, const float* projection, OPERATION operation,
 
 ## Usage Example
 
-![ImGuizmo dialog](../Images/dialog.png)
+![ImGuizmo dialog](../images/dialog.png)
 
 ```cpp
 void EditTransform(float* cameraView, float* cameraProjection, float* matrix)

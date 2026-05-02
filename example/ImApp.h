@@ -1537,6 +1537,7 @@ namespace ImApp
    // Typed objc_msgSend wrappers
    typedef id   (*msg_id)(id, SEL);
    typedef id   (*msg_id_id)(id, SEL, id);
+   typedef id   (*msg_id_id_id)(id, SEL, id, id);
    typedef id   (*msg_id_bool)(id, SEL, BOOL);
    typedef id   (*msg_id_int)(id, SEL, NSInteger);
    typedef id   (*msg_id_uint)(id, SEL, NSUInteger);
@@ -1554,6 +1555,7 @@ namespace ImApp
    typedef id (*msg_id_pattr)(id, SEL, const uint32_t*);
    typedef id (*msg_id_nsrect)(id, SEL, NSRect);
    typedef void (*msg_void_nsrect)(id, SEL, NSRect);
+   typedef NSRect (*msg_nsrect_from_id)(id, SEL);
    typedef double (*msg_double)(id, SEL);
    typedef unsigned short (*msg_ushort)(id, SEL);
    typedef NSUInteger (*msg_nsuint)(id, SEL);
@@ -1788,8 +1790,8 @@ namespace ImApp
 
       // Create NSOpenGLContext
       mGLContext = ((msg_id)objc_msgSend)(objc_cls("NSOpenGLContext"), objc_sel("alloc"));
-      mGLContext = ((msg_id_id)objc_msgSend)(mGLContext,
-         objc_sel("initWithFormat:shareContext:"), pixelFormat);
+      mGLContext = ((msg_id_id_id)objc_msgSend)(mGLContext,
+         objc_sel("initWithFormat:shareContext:"), pixelFormat, (id)nil);
 
       ((msg_void)objc_msgSend)(pixelFormat, objc_sel("release"));
 
@@ -1937,7 +1939,15 @@ namespace ImApp
 
       ((msg_void)objc_msgSend)(mNSApp, objc_sel("updateWindows"));
 
+      // Update viewport on resize
+      id contentView = ((msg_id)objc_msgSend)(mAppWindow, objc_sel("contentView"));
+      NSRect frame = ((msg_nsrect_from_id)objc_msgSend)(contentView, objc_sel("frame"));
+      ((msg_void)objc_msgSend)(mGLContext, objc_sel("update"));
+      glViewport(0, 0, (int)frame.w, (int)frame.h);
+
 #ifdef IMGUI_API
+      ImGuiIO& io2 = ImGui::GetIO();
+      io2.DisplaySize = ImVec2((float)frame.w, (float)frame.h);
       ImGui_NewFrame();
 #endif
    }

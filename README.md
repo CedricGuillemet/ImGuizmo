@@ -15,35 +15,35 @@ For API reference and usage examples, see the [documentation](docs/documentation
 
 Manipulate view orientation with a single line of code.
 
-![ImViewGizmo](Images/ImViewGizmo.gif)
+![ImViewGizmo](images/ImViewGizmo.gif)
 
 ### ImGuizmo
 
 A small library built on top of Dear ImGui that allows you to manipulate 4x4 float matrices (rotation, translation, and scale). Designed with the Immediate Mode philosophy in mind and has no additional dependencies.
 
-![Rotation](Images/rotation.gif)
-![Translation](Images/translation.gif)
-![Bounds](Images/bounds.gif)
+![Rotation](images/rotation.gif)
+![Translation](images/translation.gif)
+![Bounds](images/bounds.gif)
 
-![Sample](Images/sample.png)
+![Sample](images/sample.png)
 
 ### ImSequencer
 
 A timeline sequencer for editing frame start/end ranges across multiple events.
 
-![ImSequencer](Images/sequencer.png)
+![ImSequencer](images/sequencer.png)
 
 ### GraphEditor
 
 A node graph editor with connections and a delegate system for custom rendering inside nodes.
 
-![GraphEditor](Images/nodeeditor.jpg)
+![GraphEditor](images/nodeeditor.jpg)
 
 ### ImVectorEditor
 
 A path editor widget for 2D vector geometry. Supports a pen tool, anchor and handle editing, open and closed paths, and host-provided transforms that compose with ImGuizmo object manipulation.
 
-![ImVectorEditor](Images/vectoreditor.png)
+![ImVectorEditor](images/vectoreditor.png)
 
 ## Install
 
