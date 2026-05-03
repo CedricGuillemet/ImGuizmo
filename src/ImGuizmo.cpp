@@ -2872,36 +2872,17 @@ namespace IMGUIZMO_NAMESPACE
             const int perpYIndex = (normalIndex + 2) % 3;
             const float invert = (iFace > 2) ? -1.f : 1.f;
 
-            const vec_t faceCoords[4] = { directionUnary[normalIndex] + directionUnary[perpXIndex] + directionUnary[perpYIndex],
+            const vec_t faceCoords[4] =
+            {
+               directionUnary[normalIndex] + directionUnary[perpXIndex] + directionUnary[perpYIndex],
                directionUnary[normalIndex] + directionUnary[perpXIndex] - directionUnary[perpYIndex],
                directionUnary[normalIndex] - directionUnary[perpXIndex] - directionUnary[perpYIndex],
                directionUnary[normalIndex] - directionUnary[perpXIndex] + directionUnary[perpYIndex],
             };
 
             // clipping
-            /*
-            bool skipFace = false;
-            for (unsigned int iCoord = 0; iCoord < 4; iCoord++)
-            {
-               vec_t camSpacePosition;
-               camSpacePosition.TransformPoint(faceCoords[iCoord] * 0.5f * invert, res);
-               if (camSpacePosition.z < 0.001f)
-               {
-                  skipFace = true;
-                  break;
-               }
-            }
-            if (skipFace)
-            {
-               continue;
-            }
-            */
-            vec_t centerPosition, centerPositionVP;
-            centerPosition.TransformPoint(directionUnary[normalIndex] * 0.5f * invert, *(matrix_t*)matrix);
-            centerPositionVP.TransformPoint(directionUnary[normalIndex] * 0.5f * invert, res);
-
             bool inFrustum = true;
-            for (int iFrustum = 0; iFrustum < 6; iFrustum++)
+            for (unsigned int iFrustum = 0; iFrustum < 6; iFrustum++)
             {
                const vec_t& plane = frustum[iFrustum];
 
@@ -2921,7 +2902,8 @@ namespace IMGUIZMO_NAMESPACE
 
                if (allOutside)
                {
-                  continue; // face is fully outside this plane - discard
+                  inFrustum = false;
+                  break;
                }
             }
 
@@ -2940,6 +2922,9 @@ namespace IMGUIZMO_NAMESPACE
 
             ImU32 directionColor = GetColorU32(DIRECTION_X + normalIndex);
             cubeFace.color = directionColor | IM_COL32(0x80, 0x80, 0x80, 0);
+
+            vec_t centerPositionVP;
+            centerPositionVP.TransformPoint(directionUnary[normalIndex] * 0.5f * invert, res);
 
             cubeFace.z = centerPositionVP.z / centerPositionVP.w;
             cubeFaceCount++;
