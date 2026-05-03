@@ -1904,7 +1904,6 @@ namespace IMGUIZMO_NAMESPACE
             postScale.Translation(gContext.mBoundsLocalPivot);
             matrix_t res = preScale * scale * postScale * gContext.mBoundsMatrix;
             *matrix = res;
-            manipulated = true;
 
             // info text
             char tmps[512];
