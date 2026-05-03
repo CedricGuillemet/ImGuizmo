@@ -80,37 +80,62 @@ static const float identityMatrix[16] =
     0.f, 0.f, 1.f, 0.f,
     0.f, 0.f, 0.f, 1.f };
 
-void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float* m16)
+void Frustum(float left, float right, float bottom, float top, float znear, float zfar, float* m16, bool rightHanded)
 {
-   float temp, temp2, temp3, temp4;
-   temp = 2.0f * znear;
-   temp2 = right - left;
-   temp3 = top - bottom;
-   temp4 = zfar - znear;
+   float temp = 2.0f * znear;
+   float temp2 = right - left;
+   float temp3 = top - bottom;
+   float temp4 = zfar - znear;
+   float sign = rightHanded ? -1.0f : 1.0f;
    m16[0] = temp / temp2;
-   m16[1] = 0.0;
-   m16[2] = 0.0;
-   m16[3] = 0.0;
-   m16[4] = 0.0;
+   m16[1] = 0.0f;
+   m16[2] = 0.0f;
+   m16[3] = 0.0f;
+   m16[4] = 0.0f;
    m16[5] = temp / temp3;
-   m16[6] = 0.0;
-   m16[7] = 0.0;
+   m16[6] = 0.0f;
+   m16[7] = 0.0f;
    m16[8] = (right + left) / temp2;
    m16[9] = (top + bottom) / temp3;
-   m16[10] = (-zfar - znear) / temp4;
-   m16[11] = -1.0f;
-   m16[12] = 0.0;
-   m16[13] = 0.0;
-   m16[14] = (-temp * zfar) / temp4;
-   m16[15] = 0.0;
+   m16[10] = sign * (zfar + znear) / temp4;
+   m16[11] = sign;
+   m16[12] = 0.0f;
+   m16[13] = 0.0f;
+   m16[14] = -(temp * zfar) / temp4;
+   m16[15] = 0.0f;
 }
 
-void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar, float* m16)
+void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar, float* m16, bool rightHanded = true, bool infiniteFarPlane = false)
 {
-   float ymax, xmax;
-   ymax = znear * tanf(fovyInDegrees * 3.141592f / 180.0f);
-   xmax = ymax * aspectRatio;
-   Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16);
+   float ymax = znear * tanf(fovyInDegrees * 3.141592f / 180.0f);
+   float xmax = ymax * aspectRatio;
+   if (infiniteFarPlane)
+   {
+      float sign = rightHanded ? -1.0f : 1.0f;
+      float temp = 2.0f * znear;
+      float temp2 = 2.0f * xmax;
+      float temp3 = 2.0f * ymax;
+      m16[0] = temp / temp2;
+      m16[1] = 0.0f;
+      m16[2] = 0.0f;
+      m16[3] = 0.0f;
+      m16[4] = 0.0f;
+      m16[5] = temp / temp3;
+      m16[6] = 0.0f;
+      m16[7] = 0.0f;
+      m16[8] = 0.0f;
+      m16[9] = 0.0f;
+      m16[10] = sign;
+      m16[11] = sign;
+      m16[12] = 0.0f;
+      m16[13] = 0.0f;
+      m16[14] = sign * temp;
+      m16[15] = 0.0f;
+   }
+   else
+   {
+      Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16, rightHanded);
+   }
 }
 
 void Cross(const float* a, const float* b, float* r)
@@ -133,13 +158,22 @@ void Normalize(const float* a, float* r)
    r[2] = a[2] * il;
 }
 
-void LookAt(const float* eye, const float* at, const float* up, float* m16)
+void LookAt(const float* eye, const float* at, const float* up, float* m16, bool rightHanded = true)
 {
    float X[3], Y[3], Z[3], tmp[3];
 
-   tmp[0] = eye[0] - at[0];
-   tmp[1] = eye[1] - at[1];
-   tmp[2] = eye[2] - at[2];
+   if (rightHanded)
+   {
+      tmp[0] = eye[0] - at[0];
+      tmp[1] = eye[1] - at[1];
+      tmp[2] = eye[2] - at[2];
+   }
+   else
+   {
+      tmp[0] = at[0] - eye[0];
+      tmp[1] = at[1] - eye[1];
+      tmp[2] = at[2] - eye[2];
+   }
    Normalize(tmp, Z);
    Normalize(up, Y);
 
@@ -1019,6 +1053,8 @@ int main(int, char**)
    float viewWidth = 10.f; // for orthographic
    float camYAngle = 165.f / 180.f * 3.14159f;
    float camXAngle = 32.f / 180.f * 3.14159f;
+   bool infiniteFarPlane = false;
+   int handedness = 0; // 0 = right-handed, 1 = left-handed
 
    bool firstFrame = true;
 
@@ -1028,14 +1064,17 @@ int main(int, char**)
       imApp.NewFrame();
 
       ImGuiIO& io = ImGui::GetIO();
+      bool rightHanded = (handedness == 0);
       if (isPerspective)
       {
-         Perspective(fov, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, cameraProjection);
+         Perspective(fov, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, cameraProjection, rightHanded, infiniteFarPlane);
       }
       else
       {
          float viewHeight = viewWidth * io.DisplaySize.y / io.DisplaySize.x;
-         OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, 1000.f, -1000.f, cameraProjection);
+         float zn = rightHanded ? 1000.f : -1000.f;
+         float zf = rightHanded ? -1000.f : 1000.f;
+         OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, zn, zf, cameraProjection);
       }
       ImGuizmo::SetOrthographic(!isPerspective);
       ImGuizmo::BeginFrame();
@@ -1065,6 +1104,9 @@ int main(int, char**)
          ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
       }
       viewDirty |= ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
+      viewDirty |= ImGui::Combo("Handedness", &handedness, "Right-handed\0Left-handed\0");
+      if (isPerspective)
+         ImGui::Checkbox("Infinite far plane", &infiniteFarPlane);
       ImGui::SliderInt("Gizmo count", &gizmoCount, 1, 4);
 
       if (viewDirty || firstFrame)
@@ -1072,7 +1114,7 @@ int main(int, char**)
          float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
          float at[] = { 0.f, 0.f, 0.f };
          float up[] = { 0.f, 1.f, 0.f };
-         LookAt(eye, at, up, cameraView);
+         LookAt(eye, at, up, cameraView, rightHanded);
          firstFrame = false;
       }
 

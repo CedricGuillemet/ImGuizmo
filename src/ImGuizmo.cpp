@@ -817,6 +817,8 @@ namespace IMGUIZMO_NAMESPACE
    {
       vec_t trans;
       trans.TransformPoint(worldPos, mat);
+      if (fabsf(trans.w) < FLT_EPSILON)
+         return ImVec2(-FLT_MAX, -FLT_MAX);
       trans *= 0.5f / trans.w;
       trans += makeVect(0.5f, 0.5f);
       trans.y = 1.f - trans.y;
@@ -1902,6 +1904,7 @@ namespace IMGUIZMO_NAMESPACE
             postScale.Translation(gContext.mBoundsLocalPivot);
             matrix_t res = preScale * scale * postScale * gContext.mBoundsMatrix;
             *matrix = res;
+            manipulated = true;
 
             // info text
             char tmps[512];
