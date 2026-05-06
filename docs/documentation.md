@@ -95,6 +95,8 @@ Draws and handles a gizmo for the given matrix. Requires view and projection mat
 
 The `matrix` parameter is both input and output: it defines where the gizmo is drawn and is updated when the user interacts with it. `deltaMatrix` is optional and receives the incremental transform. `snap` points to a `float[3]` for translation snapping, or a single `float` for rotation or scale snapping. Snap angles are in degrees.
 
+> **Note:** Both finite and infinite far plane projection matrices are supported. Left-handed and right-handed coordinate systems are both supported — ImGuizmo derives its behavior from the matrices you provide.
+
 ```cpp
 enum OPERATION
 {
