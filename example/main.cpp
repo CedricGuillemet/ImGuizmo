@@ -3,7 +3,7 @@
 //
 // The MIT License(MIT)
 //
-// Copyright(c) 2016-2021 Cedric Guillemet
+// Copyright(c) 2016-2026 Cedric Guillemet and contributors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -47,10 +47,15 @@
 bool useWindow = true;
 int gizmoCount = 1;
 float camDistance = 8.f;
+float camYAngle = 165.f / 180.f * 3.14159f;
+float camXAngle = 32.f / 180.f * 3.14159f;
 static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
 static bool useSnap(false);
 static float snap[3] = { 1.f, 1.f, 1.f };
+static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
+static float boundsSnap[] = { 0.1f, 0.1f, 0.1f };
+static bool boundSizingSnap = false;
 
 float objectMatrix[4][16] = {
   { 1.f, 0.f, 0.f, 0.f,
@@ -129,7 +134,9 @@ void Perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar
       m16[11] = sign;
       m16[12] = 0.0f;
       m16[13] = 0.0f;
-      m16[14] = sign * temp;
+      // Keep the Z translation term negative for both handedness modes.
+      // Using +2n in LH flips clipping orientation and appears like inverted winding.
+      m16[14] = -temp;
       m16[15] = 0.0f;
    }
    else
@@ -244,27 +251,29 @@ inline void rotationY(const float angle, float* m16)
    m16[15] = 1.0f;
 }
 
-void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
+void TransformStart(float* cameraView, float* cameraProjection, float* matrix, bool rightHanded)
 {
-    static float bounds[] = { -0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f };
-    static float boundsSnap[] = { 0.1f, 0.1f, 0.1f };
-    static bool boundSizing = false;
-    static bool boundSizingSnap = false;
-
     if (ImGui::IsKeyPressed(ImGuiKey_T))
         mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
     if (ImGui::IsKeyPressed(ImGuiKey_E))
         mCurrentGizmoOperation = ImGuizmo::ROTATE;
     if (ImGui::IsKeyPressed(ImGuiKey_R)) // r Key
         mCurrentGizmoOperation = ImGuizmo::SCALE;
-    if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
-        mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+    bool translateActive = (mCurrentGizmoOperation & ImGuizmo::TRANSLATE) != 0;
+    bool rotateActive   = (mCurrentGizmoOperation & ImGuizmo::ROTATE) != 0;
+    bool scaleActive    = (mCurrentGizmoOperation & ImGuizmo::SCALE) != 0;
+    bool boundsActive   = (mCurrentGizmoOperation & ImGuizmo::BOUNDS) != 0;
+    if (ImGui::Checkbox("Translate", &translateActive))
+        mCurrentGizmoOperation = (ImGuizmo::OPERATION)((int)mCurrentGizmoOperation ^ (int)ImGuizmo::TRANSLATE);
     ImGui::SameLine();
-    if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
-        mCurrentGizmoOperation = ImGuizmo::ROTATE;
+    if (ImGui::Checkbox("Rotate", &rotateActive))
+        mCurrentGizmoOperation = (ImGuizmo::OPERATION)((int)mCurrentGizmoOperation ^ (int)ImGuizmo::ROTATE);
     ImGui::SameLine();
-    if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
-        mCurrentGizmoOperation = ImGuizmo::SCALE;
+    if (ImGui::Checkbox("Scale", &scaleActive))
+        mCurrentGizmoOperation = (ImGuizmo::OPERATION)((int)mCurrentGizmoOperation ^ (int)ImGuizmo::SCALE);
+    ImGui::SameLine();
+    if (ImGui::Checkbox("Bounds", &boundsActive))
+        mCurrentGizmoOperation = (ImGuizmo::OPERATION)((int)mCurrentGizmoOperation ^ (int)ImGuizmo::BOUNDS);
     float matrixTranslation[3], matrixRotation[3], matrixScale[3];
     ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
     ImGui::InputFloat3("Tr", matrixTranslation);
@@ -272,7 +281,7 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
     ImGui::InputFloat3("Sc", matrixScale);
     ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
-    if (mCurrentGizmoOperation != ImGuizmo::SCALE)
+    if (mCurrentGizmoOperation & (ImGuizmo::TRANSLATE | ImGuizmo::ROTATE | ImGuizmo::SCALE))
     {
         if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
             mCurrentGizmoMode = ImGuizmo::LOCAL;
@@ -283,19 +292,21 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
 
     if (ImGui::IsKeyPressed(ImGuiKey_S))
         useSnap = !useSnap;
-    ImGui::Checkbox("##useSnap", &useSnap);
+    ImGui::Checkbox("Use Snap", &useSnap);
     ImGui::SameLine();
-    switch (mCurrentGizmoOperation)
-    {
-    case ImGuizmo::TRANSLATE:
+    if (mCurrentGizmoOperation & ImGuizmo::TRANSLATE)
         ImGui::InputFloat3("Snap", &snap[0]);
-        break;
-    case ImGuizmo::ROTATE:
+    if (mCurrentGizmoOperation & ImGuizmo::ROTATE)
         ImGui::InputFloat("Angle Snap", &snap[0]);
-        break;
-    case ImGuizmo::SCALE:
+    if (mCurrentGizmoOperation & ImGuizmo::SCALE)
         ImGui::InputFloat("Scale Snap", &snap[0]);
-        break;
+    if (mCurrentGizmoOperation & ImGuizmo::BOUNDS)
+    {
+        ImGui::InputFloat3("Bounds Min", &bounds[0]);
+        ImGui::InputFloat3("Bounds Max", &bounds[3]);
+        ImGui::Checkbox("Snap Bounds", &boundSizingSnap);
+        if (boundSizingSnap)
+            ImGui::InputFloat3("Bounds Snap", &boundsSnap[0]);
     }
 
     ImGuiIO& io = ImGui::GetIO();
@@ -326,6 +337,20 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix)
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     gizmoWindowFlags = ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window->InnerRect.Min, window->InnerRect.Max) ? ImGuiWindowFlags_NoMove : 0;
 
+    // Drag in empty viewport area to orbit the camera
+    ImGuiIO& ioVP = ImGui::GetIO();
+    if (ImGui::IsWindowHovered() && !ImGuizmo::IsOver() && !ImGuizmo::IsUsingViewManipulate() && ioVP.MouseDown[0])
+    {
+       const float handednessSign = rightHanded ? 1.f : -1.f;
+       camYAngle += ioVP.MouseDelta.x * 0.01f * handednessSign;
+       camXAngle += ioVP.MouseDelta.y * 0.01f;
+       camXAngle = ImClamp(camXAngle, -3.14159f * 0.49f, 3.14159f * 0.49f);
+       float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
+       float at[] = { 0.f, 0.f, 0.f };
+       float up[] = { 0.f, 1.f, 0.f };
+       LookAt(eye, at, up, cameraView, rightHanded);
+    }
+
     ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
     ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
 
@@ -354,7 +379,8 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix)
     {
        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
     }
-    ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL);
+    const bool hasBounds = (mCurrentGizmoOperation & ImGuizmo::BOUNDS) != 0;
+    ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, hasBounds ? bounds : NULL, hasBounds && boundSizingSnap ? boundsSnap : NULL);
 }
 
 //
@@ -1051,8 +1077,6 @@ int main(int, char**)
    bool isPerspective = true;
    float fov = 27.f;
    float viewWidth = 10.f; // for orthographic
-   float camYAngle = 165.f / 180.f * 3.14159f;
-   float camXAngle = 32.f / 180.f * 3.14159f;
    bool infiniteFarPlane = false;
    int handedness = 0; // 0 = right-handed, 1 = left-handed
 
@@ -1084,7 +1108,7 @@ int main(int, char**)
 
       // create a window and insert the inspector
       ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Appearing);
-      ImGui::SetNextWindowSize(ImVec2(320, 340), ImGuiCond_Appearing);
+      ImGui::SetNextWindowSize(ImVec2(320, 500), ImGuiCond_Appearing);
       ImGui::Begin("Editor");
       if (ImGui::RadioButton("Full view", !useWindow)) useWindow = false;
       ImGui::SameLine();
@@ -1104,9 +1128,18 @@ int main(int, char**)
          ImGui::SliderFloat("Ortho width", &viewWidth, 1, 20);
       }
       viewDirty |= ImGui::SliderFloat("Distance", &camDistance, 1.f, 10.f);
+      if (ImGui::IsItemHovered() && io.MouseWheel != 0.f)
+      {
+         camDistance = ImClamp(camDistance - io.MouseWheel * 0.5f, 1.f, 10.f);
+         viewDirty = true;
+      }
       viewDirty |= ImGui::Combo("Handedness", &handedness, "Right-handed\0Left-handed\0");
+      // Recompute rightHanded immediately after combo so the LookAt below uses the new value
+      rightHanded = (handedness == 0);
       if (isPerspective)
-         ImGui::Checkbox("Infinite far plane", &infiniteFarPlane);
+      {
+         viewDirty |= ImGui::Checkbox("Infinite far plane", &infiniteFarPlane);
+      }
       ImGui::SliderInt("Gizmo count", &gizmoCount, 1, 4);
 
       if (viewDirty || firstFrame)
@@ -1117,6 +1150,10 @@ int main(int, char**)
          LookAt(eye, at, up, cameraView, rightHanded);
          firstFrame = false;
       }
+      // Also refresh next frame so projection catches up when handedness changed
+      static int prevHandedness = handedness;
+      if (prevHandedness != handedness) { firstFrame = true; }
+      prevHandedness = handedness;
 
       ImGui::Text("X: %f Y: %f", io.MousePos.x, io.MousePos.y);
       if (ImGuizmo::IsUsing())
@@ -1135,7 +1172,7 @@ int main(int, char**)
       }
       ImGui::Separator();
       
-      TransformStart(cameraView, cameraProjection, objectMatrix[lastUsing]);
+      TransformStart(cameraView, cameraProjection, objectMatrix[lastUsing], rightHanded);
       for (int matId = 0; matId < gizmoCount; matId++)
       {
           ImGuizmo::PushID(matId);
@@ -1151,7 +1188,7 @@ int main(int, char**)
 
       ImGui::End();
 
-      ImGui::SetNextWindowPos(ImVec2(10, 350), ImGuiCond_Appearing);
+      ImGui::SetNextWindowPos(ImVec2(10, 500), ImGuiCond_Appearing);
 
       ImGui::SetNextWindowSize(ImVec2(940, 480), ImGuiCond_Appearing);
       ImGui::Begin("Other controls");

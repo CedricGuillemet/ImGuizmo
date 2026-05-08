@@ -3,7 +3,7 @@
 //
 // The MIT License(MIT)
 //
-// Copyright(c) 2016-2021 Cedric Guillemet
+// Copyright(c) 2016-2026 Cedric Guillemet and contributors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -83,7 +83,7 @@ namespace ImZoomSlider
       const ImRect scrollBarRect(scrollBarA, scrollBarB);
       const float deltaScreen = io.MousePos[componentIndex] - scrollingSource;
       const float deltaView = ((higher - lower) / canvasSizeLength) * deltaScreen;
-      const uint32_t barColor = ImGui::GetColorU32((inScrollBar || movingScrollBar) ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+      const ImU32 barColor = ImGui::GetColorU32((inScrollBar || movingScrollBar) ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
       const float middleCoord = (scrollStart + scrollEnd) * 0.5f;
       const bool insideControl = canUseControl && ImRect(scrollBarMin, scrollBarMax).Contains(io.MousePos);
       const bool hasAnchors = !(flags & ImGuiZoomSliderFlags_NoAnchors);
