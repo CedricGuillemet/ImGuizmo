@@ -48,10 +48,17 @@ namespace ImGradient
 
       color.w = 1.f;
       draw_list->AddRectFilled(p1, p2, ImColor(color));
+#if IMGUI_VERSION_NUM < 19276
       if (editing)
          draw_list->AddRect(p1, p2, 0xFFFFFFFF, 2.f, 15, 2.5f);
       else
          draw_list->AddRect(p1, p2, 0x80FFFFFF, 2.f, 15, 1.25f);
+#else
+      if (editing)
+         draw_list->AddRect(p1, p2, 0xFFFFFFFF, 2.f, 2.5f);
+      else
+         draw_list->AddRect(p1, p2, 0x80FFFFFF, 2.f, 1.25f);
+#endif
 
       if (rc.Contains(io.MousePos))
       {
