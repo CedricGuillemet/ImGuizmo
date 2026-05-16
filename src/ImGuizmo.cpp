@@ -1774,12 +1774,43 @@ namespace IMGUIZMO_NAMESPACE
          matrix_t boundsMVP = gContext.mModelSource * gContext.mViewProjection;
          for (int i = 0; i < 4; i++)
          {
-            ImVec2 worldBound1 = worldToPos(aabb[i], boundsMVP);
-            ImVec2 worldBound2 = worldToPos(aabb[(i + 1) % 4], boundsMVP);
-            if (!IsInContextRect(worldBound1) || !IsInContextRect(worldBound2))
+            // Clip the segment against the near plane (w >= eps) so the dashed
+            // line still draws when an endpoint is behind the camera or outside
+            // the viewport. ImDrawList clips to the 2D clip rect on its own.
+            vec_t p0; p0.TransformPoint(aabb[i], boundsMVP);
+            vec_t p1; p1.TransformPoint(aabb[(i + 1) % 4], boundsMVP);
+            const float wEps = 1e-3f;
+            bool in0 = p0.w >= wEps;
+            bool in1 = p1.w >= wEps;
+            if (!in0 && !in1)
             {
                continue;
             }
+            if (!in0)
+            {
+               float t = (p1.w - wEps) / (p1.w - p0.w);
+               p0.x = p1.x + (p0.x - p1.x) * t;
+               p0.y = p1.y + (p0.y - p1.y) * t;
+               p0.z = p1.z + (p0.z - p1.z) * t;
+               p0.w = wEps;
+            }
+            else if (!in1)
+            {
+               float t = (p0.w - wEps) / (p0.w - p1.w);
+               p1.x = p0.x + (p1.x - p0.x) * t;
+               p1.y = p0.y + (p1.y - p0.y) * t;
+               p1.z = p0.z + (p1.z - p0.z) * t;
+               p1.w = wEps;
+            }
+            auto clipToScreen = [](const vec_t& c) -> ImVec2
+            {
+               float nx = c.x * (0.5f / c.w) + 0.5f;
+               float ny = c.y * (0.5f / c.w) + 0.5f;
+               ny = 1.f - ny;
+               return ImVec2(gContext.mX + nx * gContext.mWidth, gContext.mY + ny * gContext.mHeight);
+            };
+            ImVec2 worldBound1 = clipToScreen(p0);
+            ImVec2 worldBound2 = clipToScreen(p1);
             float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
             int stepCount = (int)(boundDistance / 10.f);
             stepCount = min(stepCount, 1000);
@@ -1794,11 +1825,19 @@ namespace IMGUIZMO_NAMESPACE
                drawList->AddLine(worldBoundSS1, worldBoundSS2, IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha, 2.f);
             }
             vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4]) * 0.5f;
-            ImVec2 midBound = worldToPos(midPoint, boundsMVP);
+            // Per-anchor visibility: big anchor depends only on corner i;
+            // small anchor depends only on the midpoint of edge (i, i+1).
+            vec_t pCorner; pCorner.TransformPoint(aabb[i], boundsMVP);
+            vec_t pMid;    pMid.TransformPoint(midPoint, boundsMVP);
+            ImVec2 worldBoundOrig = worldToPos(aabb[i], boundsMVP);
+            ImVec2 midBound       = worldToPos(midPoint, boundsMVP);
+            bool bigAnchorVisible   = pCorner.w >= wEps && IsInContextRect(worldBoundOrig);
+            bool smallAnchorVisible = pMid.w    >= wEps && IsInContextRect(midBound);
+
             static const float AnchorBigRadius = 8.f;
             static const float AnchorSmallRadius = 6.f;
-            bool overBigAnchor = ImLengthSqr(worldBound1 - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
-            bool overSmallAnchor = ImLengthSqr(midBound - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
+            bool overBigAnchor   = bigAnchorVisible   && ImLengthSqr(worldBoundOrig - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
+            bool overSmallAnchor = smallAnchorVisible && ImLengthSqr(midBound       - io.MousePos) <= (AnchorBigRadius * AnchorBigRadius);
 
             MOVETYPE type = MT_NONE;
             vec_t gizmoHitProportion;
@@ -1827,11 +1866,17 @@ namespace IMGUIZMO_NAMESPACE
             unsigned int bigAnchorColor = overBigAnchor ? selectionColor : (IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha);
             unsigned int smallAnchorColor = overSmallAnchor ? selectionColor : (IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha);
 
-            drawList->AddCircleFilled(worldBound1, AnchorBigRadius, IM_COL32_BLACK);
-            drawList->AddCircleFilled(worldBound1, AnchorBigRadius - 1.2f, bigAnchorColor);
+            if (bigAnchorVisible)
+            {
+               drawList->AddCircleFilled(worldBoundOrig, AnchorBigRadius, IM_COL32_BLACK);
+               drawList->AddCircleFilled(worldBoundOrig, AnchorBigRadius - 1.2f, bigAnchorColor);
+            }
 
-            drawList->AddCircleFilled(midBound, AnchorSmallRadius, IM_COL32_BLACK);
-            drawList->AddCircleFilled(midBound, AnchorSmallRadius - 1.2f, smallAnchorColor);
+            if (smallAnchorVisible)
+            {
+               drawList->AddCircleFilled(midBound, AnchorSmallRadius, IM_COL32_BLACK);
+               drawList->AddCircleFilled(midBound, AnchorSmallRadius - 1.2f, smallAnchorColor);
+            }
             int oppositeIndex = (i + 2) % 4;
             // big anchor on corners
             if (!gContext.mbUsingBounds && gContext.mbEnable && overBigAnchor && CanActivate())
