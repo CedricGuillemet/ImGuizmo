@@ -1351,7 +1351,14 @@ namespace IMGUIZMO_NAMESPACE
          }
          if (!gContext.mbUsing || usingAxis)
          {
-            drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, 0);
+            if (!!gContext.mIsOrthographic)
+            {
+               drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, gContext.mStyle.RotationLineThickness);
+            }
+            else
+            {
+               drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, 0);
+            }
          }
 
          float radiusAxis = sqrtf((ImLengthSqr(worldToPos(gContext.mModel.v.position, gContext.mViewProjection) - circlePos[0])));
@@ -2132,9 +2139,12 @@ namespace IMGUIZMO_NAMESPACE
          vec_t intersectViewPos;
          intersectViewPos.TransformPoint(intersectWorldPos, gContext.mViewMat);
 
-         if (ImAbs(modelViewPos.z) - ImAbs(intersectViewPos.z) < -FLT_EPSILON)
+         if (!gContext.mIsOrthographic)
          {
-            continue;
+            if (ImAbs(modelViewPos.z) - ImAbs(intersectViewPos.z) < -FLT_EPSILON)
+            {
+               continue;
+            }
          }
 
          const vec_t localPos = intersectWorldPos - gContext.mModel.v.position;
