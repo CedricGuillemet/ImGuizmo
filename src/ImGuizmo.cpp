@@ -1353,11 +1353,11 @@ namespace IMGUIZMO_NAMESPACE
          {
             if (!!gContext.mIsOrthographic)
             {
-               drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, gContext.mStyle.RotationLineThickness);
+               drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, 0);
             }
             else
             {
-               drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, 0);
+               drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, gContext.mStyle.RotationLineThickness);
             }
          }
 
