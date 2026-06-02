@@ -1351,7 +1351,7 @@ namespace IMGUIZMO_NAMESPACE
          }
          if (!gContext.mbUsing || usingAxis)
          {
-            if (!!gContext.mIsOrthographic)
+            if (!gContext.mIsOrthographic)
             {
                drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], gContext.mStyle.RotationLineThickness, 0);
             }
