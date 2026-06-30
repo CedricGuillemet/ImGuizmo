@@ -1200,7 +1200,7 @@ namespace IMGUIZMO_NAMESPACE
          // when using, use stored factors so the gizmo doesn't flip when we translate
 
          // Apply axis mask to axes and planes
-         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex] && ((1<<axisIndex)&gContext.mAxisMask);
+         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex] && !((1<<axisIndex)&gContext.mAxisMask);
          belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex] && (((1<<axisIndex) == gContext.mAxisMask) || !gContext.mAxisMask);
 
          dirAxis *= gContext.mAxisFactor[axisIndex];
