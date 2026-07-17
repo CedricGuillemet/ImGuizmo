@@ -710,7 +710,6 @@ namespace IMGUIZMO_NAMESPACE
       bool mbUsingViewManipulate;
       bool mbEnable;
       bool mbMouseOver;
-      bool mReversed; // reversed projection matrix
       bool mIsViewManipulatorHovered;
 
       // translation
@@ -855,25 +854,66 @@ namespace IMGUIZMO_NAMESPACE
       return ImVec2(trans.x, trans.y);
    }
 
+   static void ComputeCameraRay(vec_t& rayOrigin, vec_t& rayDir, const matrix_t& viewMatrix, const matrix_t& projectionMatrix, const ImVec2& mousePosition, ImVec2 position, ImVec2 size)
+   {
+      matrix_t mViewProjInverse;
+      mViewProjInverse.Inverse(viewMatrix * projectionMatrix);
+
+      const float mox = ((mousePosition.x - position.x) / size.x) * 2.f - 1.f;
+      const float moy = (1.f - ((mousePosition.y - position.y) / size.y)) * 2.f - 1.f;
+
+      // Unproject the mouse at both depth extremes of the clip volume.
+      // A near-zero w means the extreme lies at infinity (an infinite far plane): keep the
+      // homogeneous coordinates in that case instead of dividing by ~0.
+      vec_t hA, hB;
+      hA.Transform(makeVect(mox, moy, 0.f, 1.f), mViewProjInverse);
+      hB.Transform(makeVect(mox, moy, 1.f - FLT_EPSILON, 1.f), mViewProjInverse);
+      const bool aAtInfinity = fabsf(hA.w) < FLT_EPSILON;
+      const bool bAtInfinity = fabsf(hB.w) < FLT_EPSILON;
+      const vec_t pointA = aAtInfinity ? hA : hA * (1.f / hA.w);
+      const vec_t pointB = bAtInfinity ? hB : hB * (1.f / hB.w);
+
+      // Camera position. Derived from the view matrix so it is also correct when this is
+      // called for the ViewManipulate cube (which swaps the view/projection matrices).
+      matrix_t viewInverse;
+      viewInverse.Inverse(viewMatrix);
+      const vec_t eye = viewInverse.v.position;
+
+      // Use the unprojected extreme closest to the camera as the ray origin. This is always
+      // the near plane: finite and close to the geometry, regardless of whether the
+      // projection uses a reversed and/or (near-)infinite depth range. Picking the far
+      // extreme instead (as a mis-detected "reversed" flag could) puts the origin thousands
+      // of units away and makes 'rayOrigin + rayDir * len' a catastrophic float cancellation,
+      // which is the jitter reported in issue #423.
+      vec_t nearPoint, farPoint;
+      bool farAtInfinity;
+      if ((pointA - eye).LengthSq() <= (pointB - eye).LengthSq())
+      {
+         nearPoint = pointA; farPoint = pointB; farAtInfinity = bAtInfinity;
+      }
+      else
+      {
+         nearPoint = pointB; farPoint = pointA; farAtInfinity = aAtInfinity;
+      }
+
+      rayOrigin = nearPoint;
+      // With an infinite far plane the far extreme is unusable, so take the direction from
+      // the camera through the near point (equivalent, and always finite for perspective).
+      rayDir = farAtInfinity ? Normalized(nearPoint - eye) : Normalized(farPoint - nearPoint);
+   }
+
    static void ComputeCameraRay(vec_t& rayOrigin, vec_t& rayDir, ImVec2 position = ImVec2(gContext.mX, gContext.mY), ImVec2 size = ImVec2(gContext.mWidth, gContext.mHeight))
    {
       ImGuiIO& io = ImGui::GetIO();
+      ComputeCameraRay(rayOrigin, rayDir, gContext.mViewMat, gContext.mProjectionMat, io.MousePos, position, size);
+   }
 
-      matrix_t mViewProjInverse;
-      mViewProjInverse.Inverse(gContext.mViewMat * gContext.mProjectionMat);
-
-      const float mox = ((io.MousePos.x - position.x) / size.x) * 2.f - 1.f;
-      const float moy = (1.f - ((io.MousePos.y - position.y) / size.y)) * 2.f - 1.f;
-
-      const float zNear = gContext.mReversed ? (1.f - FLT_EPSILON) : 0.f;
-      const float zFar = gContext.mReversed ? 0.f : (1.f - FLT_EPSILON);
-
-      rayOrigin.Transform(makeVect(mox, moy, zNear, 1.f), mViewProjInverse);
-      rayOrigin *= 1.f / rayOrigin.w;
-      vec_t rayEnd;
-      rayEnd.Transform(makeVect(mox, moy, zFar, 1.f), mViewProjInverse);
-      rayEnd *= 1.f / rayEnd.w;
-      rayDir = Normalized(rayEnd - rayOrigin);
+   void ComputeMouseRay(const float* view, const float* projection, const ImVec2& mousePosition, const ImVec2& rectPosition, const ImVec2& rectSize, float* rayOrigin, float* rayDirection)
+   {
+      vec_t origin, dir;
+      ComputeCameraRay(origin, dir, *(const matrix_t*)view, *(const matrix_t*)projection, mousePosition, rectPosition, rectSize);
+      rayOrigin[0] = origin.x; rayOrigin[1] = origin.y; rayOrigin[2] = origin.z;
+      rayDirection[0] = dir.x; rayDirection[1] = dir.y; rayDirection[2] = dir.z;
    }
 
    static float GetSegmentLengthClipSpace(const vec_t& start, const vec_t& end, const bool localCoordinates = false)
@@ -1164,13 +1204,6 @@ namespace IMGUIZMO_NAMESPACE
       gContext.mCameraEye = viewInverse.v.position;
       gContext.mCameraRight = viewInverse.v.right;
       gContext.mCameraUp = viewInverse.v.up;
-
-      // projection reverse
-       vec_t nearPos, farPos;
-       nearPos.Transform(makeVect(0, 0, 1.f, 1.f), gContext.mProjectionMat);
-       farPos.Transform(makeVect(0, 0, 2.f, 1.f), gContext.mProjectionMat);
-
-       gContext.mReversed = (nearPos.z/nearPos.w) > (farPos.z / farPos.w);
 
       // compute scale from the size of camera right vector projected on screen at the matrix position
       vec_t pointRight = viewInverse.v.right;

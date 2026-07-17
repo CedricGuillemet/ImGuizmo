@@ -303,6 +303,11 @@ namespace IMGUIZMO_NAMESPACE
    // from a x,y,z point in space and using Manipulation view/projection matrix, check if mouse is in pixel radius distance of that projected point
    IMGUI_API bool IsOver(float* position, float pixelRadius);
 
+   // Compute the world-space mouse picking ray from explicit inputs, without reading ImGui IO.
+   // Useful for tests/headless usage. view and projection are column-major float[16] (same
+   // layout as Manipulate). rayOrigin and rayDirection receive a float[3] each.
+   IMGUI_API void ComputeMouseRay(const float* view, const float* projection, const ImVec2& mousePosition, const ImVec2& rectPosition, const ImVec2& rectSize, float* rayOrigin, float* rayDirection);
+
    enum COLOR
    {
       DIRECTION_X,      // directionColor[0]
