@@ -41,6 +41,7 @@
 #include "GraphEditor.h"
 #include "ImLightRig.h"
 #include <cmath>
+#include <cstdio>
 #include <vector>
 #include <algorithm>
 
@@ -1130,6 +1131,74 @@ static void ShowVectorEditorDemo()
 }
 
 
+// Regression self-test for issue #423 (gizmo jitter on hover/drag of translate planes).
+// Uses the exact matrices from the issue (view has no translation, model ~11 units away,
+// reversed-Z near-infinite perspective) and a literal mouse position, so it needs no mouse
+// input. It exercises ImGuizmo's real picking-ray computation and checks the resulting
+// world-space plane hit stays precise in float. Before the fix the ray origin sat on the
+// far plane (~1e4 units away / infinity), causing catastrophic float cancellation.
+static bool GizmoRaycastSelfTest()
+{
+   // ImGuizmo column-major m16 layout (the issue printed the matrices column-vector style).
+   const float view[16] = {
+       -0.113034f,  0.481454f,  0.869152f, 0.f,
+       -0.085660f,  0.866780f, -0.491280f, 0.f,
+       -0.989892f, -0.129983f, -0.056735f, 0.f,
+        0.f,        0.f,        0.f,        1.f };
+   const float proj[16] = {
+       1.428148f, 0.f,       0.f,  0.f,
+       0.f,       2.794813f, 0.f,  0.f,
+       0.f,       0.f,       0.f, -1.f,
+       0.f,       0.f,       0.1f, 0.f };
+   const float model[16] = {
+       -0.192083f,   0.f,        -0.981379f, 0.f,
+        0.720528f,   0.678933f,  -0.141027f, 0.f,
+        0.666290f,  -0.734200f,  -0.130411f, 0.f,
+      -10.263045f,   5.331280f,   0.555734f, 1.f };
+   const float modelPos[3] = { model[12], model[13], model[14] };
+
+   const ImVec2 rectPos(0.f, 0.f), rectSize(1957.f, 1000.f);
+
+   // view * proj (row-vector convention, m16[row*4+col]).
+   float vp[16];
+   for (int i = 0; i < 4; i++)
+       for (int j = 0; j < 4; j++)
+       {
+           float s = 0.f;
+           for (int k = 0; k < 4; k++) s += view[i * 4 + k] * proj[k * 4 + j];
+           vp[i * 4 + j] = s;
+       }
+   // Project the gizmo center to a screen-space mouse position.
+   float c[4];
+   for (int j = 0; j < 4; j++)
+       c[j] = modelPos[0] * vp[0 * 4 + j] + modelPos[1] * vp[1 * 4 + j] + modelPos[2] * vp[2 * 4 + j] + vp[3 * 4 + j];
+   const float ndcx = c[0] / c[3], ndcy = c[1] / c[3];
+   const ImVec2 mouse((ndcx * 0.5f + 0.5f) * rectSize.x + rectPos.x,
+                      (1.f - (ndcy * 0.5f + 0.5f)) * rectSize.y + rectPos.y);
+
+   float o[3], d[3];
+   ImGuizmo::ComputeMouseRay(view, proj, mouse, rectPos, rectSize, o, d);
+
+   // Intersect the ray with the XY plane (normal +Z through the gizmo position).
+   const float n[3] = { 0.f, 0.f, 1.f };
+   const float planeW = n[0] * modelPos[0] + n[1] * modelPos[1] + n[2] * modelPos[2];
+   const float denom = n[0] * d[0] + n[1] * d[1] + n[2] * d[2];
+   const float len = -((n[0] * o[0] + n[1] * o[1] + n[2] * o[2]) - planeW) / denom;
+   const float hit[3] = { o[0] + d[0] * len, o[1] + d[1] * len, o[2] + d[2] * len };
+   const float err = sqrtf((hit[0] - modelPos[0]) * (hit[0] - modelPos[0]) +
+                           (hit[1] - modelPos[1]) * (hit[1] - modelPos[1]) +
+                           (hit[2] - modelPos[2]) * (hit[2] - modelPos[2]));
+   const float originMag = sqrtf(o[0] * o[0] + o[1] * o[1] + o[2] * o[2]);
+
+   const bool pass = (originMag < 1.f) && (err < 1e-2f);
+   printf("[GizmoRaycastSelfTest] rayOrigin=(%.5f, %.5f, %.5f) mag=%.5f\n", o[0], o[1], o[2], originMag);
+   printf("[GizmoRaycastSelfTest] planeHit=(%.5f, %.5f, %.5f) expected=(%.5f, %.5f, %.5f) err=%.6f\n",
+       hit[0], hit[1], hit[2], modelPos[0], modelPos[1], modelPos[2], err);
+   printf("[GizmoRaycastSelfTest] %s\n", pass ? "PASS" : "FAIL");
+   fflush(stdout);
+   return pass;
+}
+
 int main(int, char**)
 {
    ImApp::ImApp imApp;
@@ -1139,6 +1208,8 @@ int main(int, char**)
    config.mHeight = 720;
    //config.mFullscreen = true;
    imApp.Init(config);
+
+   GizmoRaycastSelfTest();
 
    int lastUsing = 0;
 
