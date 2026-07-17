@@ -46,6 +46,18 @@
 
 bool useWindow = true;
 int gizmoCount = 1;
+bool gizmoEnabled[4] = { true, true, true, true };
+
+// Optional second viewport with its own camera
+bool useSecondView = false;
+float cameraView2[16] =
+{ 1.f, 0.f, 0.f, 0.f,
+  0.f, 1.f, 0.f, 0.f,
+  0.f, 0.f, 1.f, 0.f,
+  0.f, 0.f, 0.f, 1.f };
+float camDistance2 = 8.f;
+float camYAngle2 = 165.f / 180.f * 3.14159f;
+float camXAngle2 = 32.f / 180.f * 3.14159f;
 float camDistance = 8.f;
 float camYAngle = 165.f / 180.f * 3.14159f;
 float camXAngle = 32.f / 180.f * 3.14159f;
@@ -339,7 +351,14 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix, b
 
     // Drag in empty viewport area to orbit the camera
     ImGuiIO& ioVP = ImGui::GetIO();
-    if (ImGui::IsWindowHovered() && !ImGuizmo::IsOver() && !ImGuizmo::IsUsingViewManipulate() && ioVP.MouseDown[0])
+    // Nav-cube rect (top-right corner). Grabbing it moves the view, so it must not also orbit.
+    ImRect viewCubeRect(ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(viewManipulateRight, viewManipulateTop + 128));
+    static bool orbiting = false;
+    if (!ioVP.MouseDown[0])
+       orbiting = false;
+    else if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window->InnerRect.Min, window->InnerRect.Max) && !ImGuizmo::IsOver() && !ImGuizmo::IsUsingViewManipulate() && !viewCubeRect.Contains(ioVP.MousePos))
+       orbiting = true;
+    if (orbiting)
     {
        const float handednessSign = rightHanded ? 1.f : -1.f;
        camYAngle += ioVP.MouseDelta.x * 0.01f * handednessSign;
@@ -354,7 +373,9 @@ void TransformStart(float* cameraView, float* cameraProjection, float* matrix, b
     ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
     ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
 
+    ImGuizmo::PushID("mainView");
     ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
+    ImGuizmo::PopID();
 }
 
 void TransformEnd()
@@ -381,6 +402,98 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix)
     }
     const bool hasBounds = (mCurrentGizmoOperation & ImGuizmo::BOUNDS) != 0;
     ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, hasBounds ? bounds : NULL, hasBounds && boundSizingSnap ? boundsSnap : NULL);
+}
+
+// Second viewport rendering the same scene through an independent camera.
+void SecondView(bool isPerspective, float fov, float viewWidth, bool rightHanded, bool infiniteFarPlane)
+{
+    static bool firstFrame2 = true;
+    static int prevHandedness2 = -1;
+    const int handednessNow = rightHanded ? 0 : 1;
+    if (prevHandedness2 != handednessNow)
+    {
+        firstFrame2 = true;
+        prevHandedness2 = handednessNow;
+    }
+
+    ImGui::SetNextWindowPos(ImVec2(400, 440), ImGuiCond_Appearing);
+    ImGui::SetNextWindowSize(ImVec2(800, 400), ImGuiCond_Appearing);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, (ImVec4)ImColor(0.3f, 0.3f, 0.35f));
+    static ImGuiWindowFlags secondViewFlags = 0;
+    ImGui::Begin("Second View", &useSecondView, secondViewFlags);
+    ImGuizmo::SetDrawlist();
+
+    ImVec2 winPos = ImGui::GetWindowPos();
+    float winWidth = (float)ImGui::GetWindowWidth();
+    float winHeight = (float)ImGui::GetWindowHeight();
+    ImGuizmo::SetRect(winPos.x, winPos.y, winWidth, winHeight);
+
+    // Projection built from this viewport aspect ratio
+    float cameraProjection2[16];
+    if (isPerspective)
+    {
+        Perspective(fov, winWidth / winHeight, 0.1f, 100.f, cameraProjection2, rightHanded, infiniteFarPlane);
+    }
+    else
+    {
+        float viewHeight = viewWidth * winHeight / winWidth;
+        float zn = rightHanded ? 1000.f : -1000.f;
+        float zf = rightHanded ? -1000.f : 1000.f;
+        OrthoGraphic(-viewWidth, viewWidth, -viewHeight, viewHeight, zn, zf, cameraProjection2);
+    }
+    ImGuizmo::SetOrthographic(!isPerspective);
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImGuiWindow* window2 = ImGui::GetCurrentWindow();
+    // Prevent moving the window when dragging over its content (mirrors the 'Gizmo' view)
+    secondViewFlags = ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window2->InnerRect.Min, window2->InnerRect.Max) ? ImGuiWindowFlags_NoMove : 0;
+    bool viewDirty2 = firstFrame2;
+    // Drag in empty viewport area to orbit the second camera
+    ImRect viewCubeRect2(ImVec2(winPos.x + winWidth - 128, winPos.y), ImVec2(winPos.x + winWidth, winPos.y + 128));
+    static bool orbiting2 = false;
+    if (!io.MouseDown[0])
+        orbiting2 = false;
+    else if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered() && ImGui::IsMouseHoveringRect(window2->InnerRect.Min, window2->InnerRect.Max) && !ImGuizmo::IsOver() && !ImGuizmo::IsUsingViewManipulate() && !viewCubeRect2.Contains(io.MousePos))
+        orbiting2 = true;
+    if (orbiting2)
+    {
+        const float handednessSign = rightHanded ? 1.f : -1.f;
+        camYAngle2 += io.MouseDelta.x * 0.01f * handednessSign;
+        camXAngle2 += io.MouseDelta.y * 0.01f;
+        camXAngle2 = ImClamp(camXAngle2, -3.14159f * 0.49f, 3.14159f * 0.49f);
+        viewDirty2 = true;
+    }
+    if (viewDirty2)
+    {
+        float eye[] = { cosf(camYAngle2) * cosf(camXAngle2) * camDistance2, sinf(camXAngle2) * camDistance2, sinf(camYAngle2) * cosf(camXAngle2) * camDistance2 };
+        float at[] = { 0.f, 0.f, 0.f };
+        float up[] = { 0.f, 1.f, 0.f };
+        LookAt(eye, at, up, cameraView2, rightHanded);
+        firstFrame2 = false;
+    }
+
+    ImGuizmo::DrawGrid(cameraView2, cameraProjection2, identityMatrix, 100.f);
+    ImGuizmo::DrawCubes(cameraView2, cameraProjection2, &objectMatrix[0][0], gizmoCount);
+
+    const bool hasBounds = (mCurrentGizmoOperation & ImGuizmo::BOUNDS) != 0;
+    // distinct ID scope so this viewport's gizmo handles don't collide with the main one
+    ImGuizmo::PushID("view2");
+    for (int matId = 0; matId < gizmoCount; matId++)
+    {
+        ImGuizmo::PushID(matId);
+        ImGuizmo::Enable(gizmoEnabled[matId]);
+        ImGuizmo::SetRect(winPos.x, winPos.y, winWidth, winHeight);
+        ImGuizmo::Manipulate(cameraView2, cameraProjection2, mCurrentGizmoOperation, mCurrentGizmoMode, objectMatrix[matId], NULL, useSnap ? &snap[0] : NULL, hasBounds ? bounds : NULL, hasBounds && boundSizingSnap ? boundsSnap : NULL);
+        ImGuizmo::PopID();
+    }
+    ImGuizmo::PopID();
+
+    ImGuizmo::PushID("secondView");
+    ImGuizmo::ViewManipulate(cameraView2, camDistance2, ImVec2(winPos.x + winWidth - 128, winPos.y), ImVec2(128, 128), 0x10101010);
+    ImGuizmo::PopID();
+
+    ImGui::End();
+    ImGui::PopStyleColor(1);
 }
 
 //
@@ -1142,6 +1255,18 @@ int main(int, char**)
       }
       ImGui::SliderInt("Gizmo count", &gizmoCount, 1, 4);
 
+      if (gizmoCount > 1 && ImGui::CollapsingHeader("Gizmos enable"))
+      {
+         for (int matId = 0; matId < gizmoCount; matId++)
+         {
+            char label[32];
+            snprintf(label, sizeof(label), "Gizmo %d", matId);
+            ImGui::Checkbox(label, &gizmoEnabled[matId]);
+         }
+      }
+
+      ImGui::Checkbox("Second view", &useSecondView);
+
       if (viewDirty || firstFrame)
       {
          float eye[] = { cosf(camYAngle) * cosf(camXAngle) * camDistance, sinf(camXAngle) * camDistance, sinf(camYAngle) * cosf(camXAngle) * camDistance };
@@ -1176,7 +1301,8 @@ int main(int, char**)
       for (int matId = 0; matId < gizmoCount; matId++)
       {
           ImGuizmo::PushID(matId);
-      
+
+          ImGuizmo::Enable(gizmoEnabled[matId]);
           EditTransform(cameraView, cameraProjection, objectMatrix[matId]);
           if (ImGuizmo::IsUsing())
           {
@@ -1187,6 +1313,11 @@ int main(int, char**)
       TransformEnd();
 
       ImGui::End();
+
+      if (useSecondView)
+      {
+         SecondView(isPerspective, fov, viewWidth, rightHanded, infiniteFarPlane);
+      }
 
       ImGui::SetNextWindowPos(ImVec2(10, 500), ImGuiCond_Appearing);
 
