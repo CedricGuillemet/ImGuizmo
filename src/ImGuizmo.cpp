@@ -669,6 +669,13 @@ namespace IMGUIZMO_NAMESPACE
       vec_t mInterpolationDir;
    };
 
+   struct TripodState
+   {
+      bool mBelowAxisLimit[3] = {};
+      bool mBelowPlaneLimit[3] = {};
+      float mAxisFactor[3] = { 1.f, 1.f, 1.f };
+   };
+
    struct Context
    {
       Context() : mbUsing(false), mbUsingViewManipulate(false), mbEnable(true), mIsViewManipulatorHovered(false), mbUsingBounds(false)
@@ -730,11 +737,10 @@ namespace IMGUIZMO_NAMESPACE
       vec_t mScaleLast;
       float mSaveMousePosx;
 
-      // save axis factor when using gizmo
-      bool mBelowAxisLimit[3];
       int mAxisMask = 0;
-      bool mBelowPlaneLimit[3];
-      float mAxisFactor[3];
+      // Current camera-dependent state and the frozen state of the active drag.
+      TripodState mTripodState;
+      TripodState mActiveTripodState;
 
       float mAxisLimit=0.0025f;
       float mPlaneLimit=0.02f;
@@ -786,6 +792,11 @@ namespace IMGUIZMO_NAMESPACE
             mIDStack.push_back(-1);
          }
          return mIDStack.back();
+      }
+
+      inline TripodState& GetTripodState()
+      {
+         return mbUsing && GetCurrentID() == mEditingID ? mActiveTripodState : mTripodState;
       }
 
       // Retrieve (creating if needed) the ViewManipulate state bound to the current id.
@@ -1274,18 +1285,19 @@ namespace IMGUIZMO_NAMESPACE
       dirAxis = directionUnary[axisIndex];
       dirPlaneX = directionUnary[(axisIndex + 1) % 3];
       dirPlaneY = directionUnary[(axisIndex + 2) % 3];
+      TripodState& tripodState = gContext.GetTripodState();
 
       if (gContext.mbUsing && (gContext.GetCurrentID() == gContext.mEditingID))
       {
          // when using, use stored factors so the gizmo doesn't flip when we translate
 
          // Apply axis mask to axes and planes
-         belowAxisLimit = gContext.mBelowAxisLimit[axisIndex] && !((1<<axisIndex)&gContext.mAxisMask);
-         belowPlaneLimit = gContext.mBelowPlaneLimit[axisIndex] && (((1<<axisIndex) == gContext.mAxisMask) || !gContext.mAxisMask);
+         belowAxisLimit = tripodState.mBelowAxisLimit[axisIndex] && !((1<<axisIndex)&gContext.mAxisMask);
+         belowPlaneLimit = tripodState.mBelowPlaneLimit[axisIndex] && (((1<<axisIndex) == gContext.mAxisMask) || !gContext.mAxisMask);
 
-         dirAxis *= gContext.mAxisFactor[axisIndex];
-         dirPlaneX *= gContext.mAxisFactor[(axisIndex + 1) % 3];
-         dirPlaneY *= gContext.mAxisFactor[(axisIndex + 2) % 3];
+         dirAxis *= tripodState.mAxisFactor[axisIndex];
+         dirPlaneX *= tripodState.mAxisFactor[(axisIndex + 1) % 3];
+         dirPlaneY *= tripodState.mAxisFactor[(axisIndex + 2) % 3];
       }
       else
       {
@@ -1317,11 +1329,11 @@ namespace IMGUIZMO_NAMESPACE
          belowAxisLimit = (axisLengthInClipSpace > gContext.mPlaneLimit) && !((1<<axisIndex)&gContext.mAxisMask);
 
          // and store values
-         gContext.mAxisFactor[axisIndex] = mulAxis;
-         gContext.mAxisFactor[(axisIndex + 1) % 3] = mulAxisX;
-         gContext.mAxisFactor[(axisIndex + 2) % 3] = mulAxisY;
-         gContext.mBelowAxisLimit[axisIndex] = belowAxisLimit;
-         gContext.mBelowPlaneLimit[axisIndex] = belowPlaneLimit;
+         tripodState.mAxisFactor[axisIndex] = mulAxis;
+         tripodState.mAxisFactor[(axisIndex + 1) % 3] = mulAxisX;
+         tripodState.mAxisFactor[(axisIndex + 2) % 3] = mulAxisY;
+         tripodState.mBelowAxisLimit[axisIndex] = belowAxisLimit;
+         tripodState.mBelowPlaneLimit[axisIndex] = belowPlaneLimit;
       }
    }
 
@@ -1550,7 +1562,7 @@ namespace IMGUIZMO_NAMESPACE
                }
                drawList->AddCircleFilled(worldDirSSpace, gContext.mStyle.ScaleLineCircleSize, colors[i + 1]);
 
-               if (gContext.mAxisFactor[i] < 0.f)
+               if (gContext.GetTripodState().mAxisFactor[i] < 0.f)
                {
                   DrawHatchedAxis(dirAxis * scaleDisplay[i]);
                }
@@ -1715,7 +1727,7 @@ namespace IMGUIZMO_NAMESPACE
                drawList->AddTriangleFilled(worldDirSSpace - dir, a + ortogonalDir, a - ortogonalDir, colors[i + 1]);
                // Arrow head end
 
-               if (gContext.mAxisFactor[i] < 0.f)
+               if (gContext.GetTripodState().mAxisFactor[i] < 0.f)
                {
                   DrawHatchedAxis(dirAxis);
                }
@@ -2411,6 +2423,7 @@ namespace IMGUIZMO_NAMESPACE
          }
          if (CanActivate() && type != MT_NONE)
          {
+            gContext.mActiveTripodState = gContext.mTripodState;
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.GetCurrentID();
             gContext.mCurrentHandleType = type;
@@ -2462,6 +2475,7 @@ namespace IMGUIZMO_NAMESPACE
          }
          if (CanActivate() && type != MT_NONE)
          {
+            gContext.mActiveTripodState = gContext.mTripodState;
             gContext.mbUsing = true;
             gContext.mEditingID = gContext.GetCurrentID();
             gContext.mCurrentHandleType = type;
