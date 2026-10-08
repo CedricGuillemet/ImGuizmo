@@ -646,7 +646,7 @@ namespace ImApp
          glBindVertexArray(g_VaoHandle);
          glBindSampler(0, 0);
 
-         for (int n = 0; n < draw_data->CmdListsCount; n++)
+         for (int n = 0; n < draw_data->CmdLists.Size; n++)
          {
             const ImDrawList* cmd_list = draw_data->CmdLists[n];
             const ImDrawIdx* idx_buffer_offset = 0;
