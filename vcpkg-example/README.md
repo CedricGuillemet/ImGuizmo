@@ -44,6 +44,9 @@ The example contains a `vcpkg.json` manifest file that contains the dependencice
 supplied with the vcpkg toolchain file, the script detects this manifest file and then downloads and
 compiles the dependencies there-in
 
+The `imgui` dependency enables the `opengl3-binding` feature so that the shared
+ImApp wrapper can use Dear ImGui's upstream OpenGL3 renderer.
+
 In `CMakeLists.txt` the `find_package(imguizmo CONFIG REQUIRED)` command finds the cmake config
 added by the vcpkg install and `target_link_libraries(example-app PRIVATE imguizmo::imguizmo)` adds
 the includes and lib to the target
