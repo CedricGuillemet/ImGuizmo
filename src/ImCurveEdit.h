@@ -25,7 +25,9 @@
 //
 #pragma once
 #include <stdint.h>
+#ifndef IMGUIZMO_DONT_INCLUDE_IMGUI
 #include "imgui.h"
+#endif
 
 struct ImRect;
 
