@@ -1207,7 +1207,11 @@ int main(int, char**)
    config.mWidth = 1280;
    config.mHeight = 720;
    //config.mFullscreen = true;
-   imApp.Init(config);
+   if (!imApp.Init(config))
+   {
+      fprintf(stderr, "Failed to initialize the ImGuizmo example.\n");
+      return 1;
+   }
 
    GizmoRaycastSelfTest();
 

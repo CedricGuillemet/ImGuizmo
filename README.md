@@ -57,6 +57,24 @@ vcpkg install imguizmo
 
 See the [vcpkg example](vcpkg-example/) for more details.
 
+## Build the example
+
+```sh
+cmake -B build
+cmake --build build --config Release
+```
+
+The CMake example fetches Dear ImGui and stb. It compiles Dear ImGui's upstream
+`backends/imgui_impl_opengl3.cpp` renderer, including its embedded OpenGL loader
+and dynamic font texture support, while retaining ImApp's native Windows, X11,
+and macOS window/input handling. No separate GL loader is required.
+
+If building the example outside CMake, compile `imgui_impl_opengl3.cpp` from the
+same Dear ImGui checkout as the core sources and add `backends` to the include
+path. The legacy MinGW Makefile expects the Dear ImGui core sources in `example`
+and its backend source, header, and `imgui_impl_opengl3_loader.h` in
+`example/backends`.
+
 ## License
 
 ImGuizmo is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
