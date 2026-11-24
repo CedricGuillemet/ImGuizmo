@@ -1918,6 +1918,13 @@ namespace IMGUIZMO_NAMESPACE
             float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
             int stepCount = (int)(boundDistance / 10.f);
             stepCount = min(stepCount, 1000);
+            // Xavier fork: per-axis edge colors (translate/rotate/scale parity)
+            // instead of the stock grey. Edges alternate between the two
+            // in-plane axes by construction (even i: thirdAxis, odd i:
+            // secondAxis), so no direction measurement is needed.
+            const int edgeAxis = (i % 2 == 0) ? thirdAxis : secondAxis;
+            const ImU32 edgeBase = GetColorU32(DIRECTION_X + edgeAxis);
+            const ImU32 edgeColor = (edgeBase & 0x00FFFFFFu) | (anchorAlpha & 0xFF000000u);
             for (int j = 0; j < stepCount; j++)
             {
                float stepLength = 1.f / (float)stepCount;
@@ -1926,7 +1933,7 @@ namespace IMGUIZMO_NAMESPACE
                ImVec2 worldBoundSS1 = ImLerp(worldBound1, worldBound2, ImVec2(t1, t1));
                ImVec2 worldBoundSS2 = ImLerp(worldBound1, worldBound2, ImVec2(t2, t2));
                //drawList->AddLine(worldBoundSS1, worldBoundSS2, IM_COL32(0, 0, 0, 0) + anchorAlpha, 3.f);
-               drawList->AddLine(worldBoundSS1, worldBoundSS2, IM_COL32(0xAA, 0xAA, 0xAA, 0) + anchorAlpha, 2.f);
+               drawList->AddLine(worldBoundSS1, worldBoundSS2, edgeColor, 2.f);
             }
             vec_t midPoint = (aabb[i] + aabb[(i + 1) % 4]) * 0.5f;
             // Per-anchor visibility: big anchor depends only on corner i;
