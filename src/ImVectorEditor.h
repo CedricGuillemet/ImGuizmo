@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef IMGUIZMO_DONT_INCLUDE_IMGUI
 #include "imgui.h"
+#endif
 
 #include <string>
 #include <vector>

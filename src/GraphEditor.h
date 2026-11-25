@@ -28,8 +28,10 @@
 #include <vector>
 #include <stdint.h>
 #include <string>
+#ifndef IMGUIZMO_DONT_INCLUDE_IMGUI
 #include "imgui.h"
 #include "imgui_internal.h"
+#endif
 
 namespace GraphEditor {
 
