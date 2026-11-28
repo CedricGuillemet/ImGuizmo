@@ -753,6 +753,7 @@ namespace IMGUIZMO_NAMESPACE
       int mBoundsBestAxis;
       int mBoundsAxis[2];
       bool mbUsingBounds;
+      bool mbOverBounds = false;
       matrix_t mBoundsMatrix;
 
       //
@@ -1082,6 +1083,7 @@ namespace IMGUIZMO_NAMESPACE
       gContext.mDrawList = ImGui::GetWindowDrawList();
       gContext.mbOverGizmoHotspotLastFrame = gContext.mbOverGizmoHotspot;
       gContext.mbOverGizmoHotspot = false;
+      gContext.mbOverBounds = false;
       // view manipulate flags accumulate across every ViewManipulate call of the frame
       gContext.mbUsingViewManipulate = false;
       gContext.mIsViewManipulatorHovered = false;
@@ -1137,7 +1139,7 @@ namespace IMGUIZMO_NAMESPACE
       {
          return true;
       }
-      return false;
+      return Intersects(op, BOUNDS) && gContext.mbOverBounds;
    }
 
    MOVETYPE GetActiveHandleType()
@@ -1970,6 +1972,11 @@ namespace IMGUIZMO_NAMESPACE
             {
                overBigAnchor = false;
                overSmallAnchor = false;
+            }
+            else if (gContext.mbEnable && gContext.mbMouseOver && (overBigAnchor || overSmallAnchor))
+            {
+               gContext.mbOverBounds = true;
+               gContext.mbOverGizmoHotspot = true;
             }
 
             ImU32 selectionColor = GetColorU32(SELECTION);
@@ -2849,6 +2856,7 @@ namespace IMGUIZMO_NAMESPACE
       // Scale is always local or matrix will be skewed when applying world scale or oriented matrix
       ComputeContext(view, projection, matrix, (operation & SCALE) ? LOCAL : mode);
       gContext.mHoveredHandleType = MT_NONE;
+      gContext.mbOverBounds = false;
 
       // set delta to identity
       if (deltaMatrix)
